@@ -2,6 +2,7 @@
 # v0.9.64 stabilization: insertion context, WKWebView patch safety and retired UI.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+source "$ROOT/tools/qa-swift-env.sh"
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/mw57-qa.XXXXXXXX")"
 trap 'rm -rf -- "$TMP"' EXIT
 SWIFTC="$(command -v swiftc)"
@@ -53,11 +54,11 @@ assert 'func virtualMemories() throws -> [VirtualMemory]' in store
 assert 'virtualMemories: virtualMemories' in read('MemoryModel.swift')
 assert 'virtualSourceTexts: texts' in read('RecallScreens.swift')
 # Reject unintended persistence / window / clipboard changes.
-manifest=(r/'QA/v0.9.60-core-source.sha256').read_text().splitlines()
+manifest=(r/'QA/review-stability-core-source.sha256').read_text().splitlines()
 for row in manifest:
   digest,relative=row.split('  ',1)
   assert hashlib.sha256((r/relative).read_bytes()).hexdigest()==digest,relative+' was modified'
-print('PASS 0.9.64: retired visible entrypoints, preserved SQLite/index/search/backup, no storage model changes')
+print('PASS 0.9.64: retired visible entrypoints, preserved SQLite/index/search/backup, reviewed storage safety changes')
 PY
 if command -v node >/dev/null 2>&1; then
   python3 - "$ROOT" "$TMP/patch.js" <<'PY'

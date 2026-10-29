@@ -256,6 +256,100 @@ enum MarkdownContextCore {
     }
 }
 
+// Per-editor line checkpoints. Call invalidate BEFORE each text mutation so
+// selection notifications during AppKit edits cannot reuse stale fence state.
+// Checkpoints contain constant-sized state, including inside large Mermaid fences.
+final class MarkdownContextCache {
+    private struct State {
+        var fence: MarkdownFenceSyntax.Fence?
+        var math = false
+        var dialect: MarkdownEditingContext?
+        var inFrontMatter = false
+        var sawFrontMatter = false
+
+        mutating func consume(_ line: String) {
+            if let active = fence {
+                if MarkdownFenceSyntax.closes(line, fence: active) { fence = nil }
+                else if active.language == "mermaid", dialect == nil {
+                    let trim = line.trimmingCharacters(in: .whitespaces)
+                    if trim.isEmpty || trim.hasPrefix("%%") { return }
+                    if trim == "---" && !sawFrontMatter {
+                        inFrontMatter = true; sawFrontMatter = true; return
+                    }
+                    if inFrontMatter {
+                        if trim == "---" { inFrontMatter = false }
+                        return
+                    }
+                    dialect = MermaidEditingDialect.context(lines: [line])
+                }
+                return
+            }
+            if let opening = MarkdownFenceSyntax.opening(line), !math {
+                fence = opening; dialect = nil
+                inFrontMatter = false; sawFrontMatter = false
+                return
+            }
+            if MarkdownListSyntax.indentation(line) <= 3 {
+                let marker = line.trimmingCharacters(in: .whitespaces)
+                if marker == "$$" { math.toggle() }
+                else if marker == #"\["# { math = true }
+                else if marker == #"\]"# { math = false }
+            }
+        }
+
+        var context: MarkdownEditingContext {
+            guard let fence else { return math ? .math : .normal }
+            switch fence.language {
+            case "mermaid": return dialect ?? .mermaid
+            case "latex", "tex", "math": return .math
+            case "markmap": return .markmap
+            default: return .code
+            }
+        }
+    }
+
+    private var checkpoints: [(offset: Int, state: State)] = [(0, State())]
+    private(set) var scannedLineCount = 0
+
+    func reset() { checkpoints = [(0, State())] }
+
+    func invalidate(fromUTF16 offset: Int) {
+        let index = checkpointIndex(at: max(0, offset))
+        if index + 1 < checkpoints.count { checkpoints.removeSubrange((index + 1)..<checkpoints.count) }
+    }
+
+    private func checkpointIndex(at offset: Int) -> Int {
+        var low = 0, high = checkpoints.count
+        while low < high {
+            let middle = (low + high) / 2
+            if checkpoints[middle].offset <= offset { low = middle + 1 }
+            else { high = middle }
+        }
+        return max(0, low - 1)
+    }
+
+    func context(in source: String, utf16Offset: Int) -> MarkdownEditingContext {
+        let text = source as NSString
+        let end = max(0, min(utf16Offset, text.length))
+        let index = checkpointIndex(at: end)
+        var position = checkpoints[index].offset
+        var state = checkpoints[index].state
+        while position < end {
+            let newline = text.range(of: "\n", options: [], range: NSRange(location: position, length: end - position))
+            guard newline.location != NSNotFound else { break }
+            state.consume(text.substring(with: NSRange(location: position, length: newline.location - position)))
+            scannedLineCount += 1
+            position = newline.location + 1
+            if position > checkpoints.last!.offset { checkpoints.append((position, state)) }
+        }
+        // A caret can be in a partial fence/dialect directive. Never cache the
+        // partial line as if it were a complete line.
+        state.consume(text.substring(with: NSRange(location: position, length: end - position)))
+        scannedLineCount += 1
+        return state.context
+    }
+}
+
 // Context-sensitive editing palette: all commands insert plain source into
 // NSTextView. Grouping is a UI convenience; there is no parallel rich editor.
 enum MarkdownAssistGroup: String, CaseIterable {

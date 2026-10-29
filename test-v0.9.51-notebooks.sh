@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+source "$ROOT/tools/qa-swift-env.sh"
 cd "$ROOT"
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/memoweaver-notebook-qa.XXXXXXXX")"
 trap 'rm -rf "$TMP"' EXIT
@@ -38,6 +39,6 @@ PY
 S=(Models.swift Storage.swift NotebookMembershipCore.swift NotesListFilter.swift WorkBlocks.swift QuickCaptureCore.swift MemoryCore.swift MemoryRelationCore.swift VirtualMemoryCore.swift MemoWeaverAttachments.swift PlannerCore.swift LegacyNoteTextConverter.swift MemoryTimelineCore.swift)
 FILES=()
 for file in "${S[@]}"; do FILES+=("$ROOT/WorkOSMac/$file"); done
-"$SWIFTC" "${SQL_FLAGS[@]}" -Onone -j 1 -lsqlite3 "${FILES[@]}" "$ROOT/Tests/MultiNotebookIntegration.swift" -o "$TMP/notebook-db"
+"$SWIFTC" ${SQL_FLAGS[@]+"${SQL_FLAGS[@]}"} -Onone -j 1 -lsqlite3 "${FILES[@]}" "$ROOT/Tests/MultiNotebookIntegration.swift" -o "$TMP/notebook-db"
 python3 "$ROOT/Tests/LegacyNotebookFixture.py" "$TMP/legacy"
 "$TMP/notebook-db" "$TMP/legacy" "$TMP/restored"

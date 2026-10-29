@@ -2,6 +2,7 @@
 # Portable policy checks + source contracts. Does not open user data or install.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+source "$ROOT/tools/qa-swift-env.sh"
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/mw-0927.XXXXXXXX")"
 trap 'rm -rf -- "$TMP"' EXIT
 swiftc -swift-version 5 -j 1 -parse-as-library \

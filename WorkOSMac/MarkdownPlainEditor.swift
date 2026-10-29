@@ -654,6 +654,8 @@ struct MarkdownPlainEditor: NSViewRepresentable {
         // published source so the explicit post-insertion check cannot
         // duplicate save/preview work when textDidChange has already fired.
         private var lastPublishedText = ""
+        private let contextCache = MarkdownContextCache()
+        private var contextEditPrepared = false
         private var lastContext: MarkdownEditingContext = .normal
         private var lastContextLine = -1
         private var lastContextFenceHint = ""
@@ -879,6 +881,7 @@ struct MarkdownPlainEditor: NSViewRepresentable {
             self.onCaretStatusChange = onCaretStatusChange
         }
         func loadSource(_ source: String) {
+            contextCache.reset()
             lastPublishedText = source
             cachedLineStarts = EditorLineNumberRules.lineStarts(in: source)
             lastContext = .normal
@@ -894,8 +897,16 @@ struct MarkdownPlainEditor: NSViewRepresentable {
             updateContext(for: editor)
             updateCaretLine(for: editor)
         }
+        func textView(_ textView: NSTextView, shouldChangeTextIn affectedCharRange: NSRange,
+                      replacementString: String?) -> Bool {
+            contextCache.invalidate(fromUTF16: affectedCharRange.location)
+            contextEditPrepared = true
+            return true
+        }
         func textDidChange(_ notification: Notification) {
             guard let editor = notification.object as? NSTextView else { return }
+            if !contextEditPrepared { contextCache.reset() }
+            contextEditPrepared = false
             // Reparse the Markdown block on syntax-bearing edits, but keep the
             // fast path for ordinary typing inside large notes. Multi-line
             // edits also update cachedLineStarts below, so a changed caret
@@ -971,6 +982,7 @@ struct MarkdownPlainEditor: NSViewRepresentable {
             // Explicitly notify the SwiftUI draft/preview after an inserted
             // Math/Mermaid/Markmap template, even if AppKit did not call the
             // text delegate. Also run after slash-palette insertion.
+            contextCache.reset()
             publishEditedTextIfNeeded(in: editor)
             // Toolbox and slash insertion should render immediately, not
             // wait for a subsequent keystroke or the ordinary idle debounce.
@@ -994,10 +1006,9 @@ struct MarkdownPlainEditor: NSViewRepresentable {
             let range = ns.lineRange(for: NSRange(location: caret, length: 0))
             let lineText = ns.substring(with: range)
             let hint = lineText.contains("```") || lineText.contains("~~~") || lineText.contains("$$") ? lineText : ""
-            if line == lastContextLine && hint == lastContextFenceHint { return }
             lastContextLine = line
             lastContextFenceHint = hint
-            let next = MarkdownContextCore.context(in: editor.string, utf16Offset: caret)
+            let next = contextCache.context(in: editor.string, utf16Offset: caret)
             if next != lastContext {
                 lastContext = next
                 onContextChange(next)

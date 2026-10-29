@@ -2,6 +2,7 @@
 # No user notes or SQLite DB accessed. The same Swift target as build.sh on macOS.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+source "$ROOT/tools/qa-swift-env.sh"
 PLATFORM=()
 if [[ "$(uname -s)" == Darwin ]]; then
   export DEVELOPER_DIR="${WORKOS_CLT_DIR:-/Library/Developer/CommandLineTools}"

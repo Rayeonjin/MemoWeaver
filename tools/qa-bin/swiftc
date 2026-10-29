@@ -1,0 +1,12 @@
+#!/bin/bash
+set -euo pipefail
+# swiftc recognizes -frontend only as the first argument.
+if [[ "${1:-}" == -frontend ]]; then
+  shift
+  exec "$MEMOWEAVER_QA_SWIFTC" -frontend -sdk "$MEMOWEAVER_QA_SDK" \
+    -target "$(uname -m)-apple-macosx14.0" \
+    -module-cache-path "$MEMOWEAVER_QA_CACHE_DIR" "$@"
+fi
+exec "$MEMOWEAVER_QA_SWIFTC" -sdk "$MEMOWEAVER_QA_SDK" \
+  -target "$(uname -m)-apple-macosx14.0" \
+  -module-cache-path "$MEMOWEAVER_QA_CACHE_DIR" "$@"

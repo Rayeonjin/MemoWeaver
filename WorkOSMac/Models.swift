@@ -50,6 +50,22 @@ enum WorkOSDate {
     static func display(_ value: String) -> String {
         String(value.prefix(16)).replacingOccurrences(of: "T", with: " ")
     }
+    static func localDay(_ iso: String, calendar: Calendar = .current) -> String? {
+        let parser = ISO8601DateFormatter()
+        parser.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let parsed = parser.date(from: iso) ?? {
+            parser.formatOptions = [.withInternetDateTime]
+            return parser.date(from: iso)
+        }()
+        guard let date = parsed else { return nil }
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.calendar = calendar
+        formatter.timeZone = calendar.timeZone
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
+    }
+
     static func localTime(_ iso: String) -> String {
         let parser = ISO8601DateFormatter()
         parser.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -78,8 +94,40 @@ struct WorkNote: Identifiable, Hashable {
     var archived: Bool
     var deletedAt: String
     var createdAt: String
-    var updatedAt: String
-    var rawJSON: String
+    var updatedAt: String {
+        didSet {
+            cachedLocalUpdatedDay = WorkOSDate.localDay(updatedAt) ?? String(updatedAt.prefix(10))
+            cachedUpdateTimeZone = .current
+        }
+    }
+    var rawJSON: String {
+        didSet { decodedPayload = WorkOSJSON.dictionary(rawJSON) }
+    }
+    // Decode once per immutable database snapshot, not once per UI property read.
+    // rawJSON remains canonical for unknown fields and backward-compatible exports.
+    private var decodedPayload: [String: Any] = [:]
+    private var cachedLocalUpdatedDay = ""
+    private var cachedUpdateTimeZone = TimeZone.current
+    var localUpdatedDay: String {
+        if cachedUpdateTimeZone == .current { return cachedLocalUpdatedDay }
+        return WorkOSDate.localDay(updatedAt) ?? String(updatedAt.prefix(10))
+    }
+
+    static func == (lhs: WorkNote, rhs: WorkNote) -> Bool {
+        lhs.id == rhs.id && lhs.title == rhs.title && lhs.bodyHTML == rhs.bodyHTML &&
+        lhs.plainBody == rhs.plainBody && lhs.typeID == rhs.typeID && lhs.bookID == rhs.bookID &&
+        lhs.noteDate == rhs.noteDate && lhs.status == rhs.status && lhs.sourceURL == rhs.sourceURL &&
+        lhs.pinned == rhs.pinned && lhs.archived == rhs.archived && lhs.deletedAt == rhs.deletedAt &&
+        lhs.createdAt == rhs.createdAt && lhs.updatedAt == rhs.updatedAt && lhs.rawJSON == rhs.rawJSON
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id); hasher.combine(title); hasher.combine(bodyHTML)
+        hasher.combine(plainBody); hasher.combine(typeID); hasher.combine(bookID)
+        hasher.combine(noteDate); hasher.combine(status); hasher.combine(sourceURL)
+        hasher.combine(pinned); hasher.combine(archived); hasher.combine(deletedAt)
+        hasher.combine(createdAt); hasher.combine(updatedAt); hasher.combine(rawJSON)
+    }
 
     static func make(typeID: String = "type-note", markdown: Bool = false) -> WorkNote {
         let timestamp = WorkOSDate.now()
@@ -108,7 +156,7 @@ struct WorkNote: Identifiable, Hashable {
     static func from(_ dict: [String: Any]) -> WorkNote {
         let html = WorkOSJSON.string(dict, "body")
         let id = WorkOSJSON.string(dict, "id", default: UUID().uuidString)
-        return WorkNote(
+        var note = WorkNote(
             id: id,
             title: WorkOSJSON.string(dict, "title"),
             bodyHTML: html,
@@ -125,16 +173,19 @@ struct WorkNote: Identifiable, Hashable {
             updatedAt: WorkOSJSON.string(dict, "updatedAt", default: WorkOSDate.now()),
             rawJSON: (try? WorkOSJSON.encode(dict)) ?? "{}"
         )
+        note.decodedPayload = dict
+        note.cachedLocalUpdatedDay = WorkOSDate.localDay(note.updatedAt) ?? String(note.updatedAt.prefix(10))
+        return note
     }
 
     var notebookIDs: [String] {
-        NotebookMembershipCore.from(WorkOSJSON.dictionary(rawJSON))
+        NotebookMembershipCore.from(decodedPayload)
     }
 
-    var isMarkdown: Bool { WorkOSJSON.string(WorkOSJSON.dictionary(rawJSON), "bodyFormat") == "markdown" }
-    var workosBlocks: [WorkBlock] { WorkBlock.read(WorkOSJSON.items(WorkOSJSON.dictionary(rawJSON), "workosBlocks")) }
-    var revisions: [[String: Any]] { WorkOSJSON.items(WorkOSJSON.dictionary(rawJSON), "revisions") }
-    var progress: [[String: Any]] { WorkOSJSON.items(WorkOSJSON.dictionary(rawJSON), "progress") }
+    var isMarkdown: Bool { WorkOSJSON.string(decodedPayload, "bodyFormat") == "markdown" }
+    var workosBlocks: [WorkBlock] { WorkBlock.read(WorkOSJSON.items(decodedPayload, "workosBlocks")) }
+    var revisions: [[String: Any]] { WorkOSJSON.items(decodedPayload, "revisions") }
+    var progress: [[String: Any]] { WorkOSJSON.items(decodedPayload, "progress") }
     var visibleTitle: String {
         if !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return title }
         if isMarkdown && !plainBody.isEmpty {

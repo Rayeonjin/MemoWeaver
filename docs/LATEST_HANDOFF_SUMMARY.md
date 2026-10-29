@@ -1,10 +1,14 @@
 # MemoWeaver / latest developer handoff
 
-**Frozen source baseline:** v0.9.64 / Build 97 (2026-10-28). First GitHub
-source-control handoff: 2026-10-29. This repository's application source and
-existing tests were copied byte-for-byte from the original full source ZIP.
-The new repository policy and Codex documentation do not constitute app code
-changes and do not increment the app version.
+**Original source baseline:** v0.9.64 / Build 97 (2026-10-28). First GitHub
+source-control handoff: 2026-10-29. The original transfer was byte-identical to
+its source ZIP. The current checkout includes an unreleased stability update
+on 2026-10-29; see `../CHANGELOG_UNRELEASED.md` and
+`STABILITY_REVIEW_2026-10-29.md`. Version/build remain unchanged until an actual
+release is prepared. The original manifests and private source ZIP are retained.
+
+The transfer folder has no `.git` directory. No branch, commit, push or app
+installation was performed during this update.
 
 ## What this product is
 
@@ -49,9 +53,11 @@ outweigh adding new visible tools.
 
 ## Quality / limitations
 
-Linux source/runtime test suites were previously reported PASS. Mac SwiftUI/
-AppKit whole-app compile, real first-click, notification/GUI, and real
-write-save-restart/restore QA are **not verified in this environment**.
+On 2026-10-29, the unreleased stability update passed all 12 current installer
+QA suites and a full native arm64 SwiftUI/AppKit compile/link with ad-hoc
+signature verification. Detailed evidence is in `STABILITY_REVIEW_2026-10-29.md`.
+Human first-click/Korean IME, notification delivery, live Ollama, GUI and real
+write-save-restart/restore acceptance remain NOT RUN.
 `./install-v0.9.64.sh --verify` is the home Mac acceptance gate and DOES NOT
 install or overwrite the existing app.
 

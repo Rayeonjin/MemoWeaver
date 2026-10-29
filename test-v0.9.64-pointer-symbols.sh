@@ -2,6 +2,7 @@
 # v0.9.64: slash command pointer path, large math symbol picker, core safety.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+source "$ROOT/tools/qa-swift-env.sh"
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/memoweaver-pointer-symbols-62.XXXXXXXX")"
 trap 'rm -rf -- "$TMP"' EXIT
 
@@ -50,9 +51,9 @@ assert '.frame(height: 30, alignment: .center)' in header, 'toolbar row stays 30
 plist=plistlib.loads((w/'Info.plist').read_bytes())
 assert (plist['CFBundleShortVersionString'], plist['CFBundleVersion']) == ('0.9.64','97')
 assert plist['CFBundleIdentifier']=='com.local.workos.notes'
-for row in (r/'QA/v0.9.60-core-source.sha256').read_text().splitlines():
+for row in (r/'QA/review-stability-core-source.sha256').read_text().splitlines():
     digest,name=row.split('  ',1)
     assert hashlib.sha256((r/name).read_bytes()).hexdigest()==digest, name+' changed'
 print('PASS v0.9.64: pointer-selectable slash popover contract, guard, dismissal and editor focus')
-print('PASS v0.9.64: enlarged symbol grid and 30pt toolbar contract; protected sources unchanged')
+print('PASS v0.9.64: enlarged symbol grid and 30pt toolbar contract; reviewed core hashes match')
 PY

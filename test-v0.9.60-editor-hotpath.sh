@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+source "$ROOT/tools/qa-swift-env.sh"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 swiftc -frontend -parse -swift-version 5 "$ROOT"/WorkOSMac/*.swift
@@ -55,10 +56,10 @@ assert 'if (isAutomaticMemoryIndexing || isAutomaticRelationAnalysis)' in activi
 assert 'if backgroundAITask == nil { scheduleBackgroundAI() }' in activity
 assert 'lastEditorAIPauseAt' in activity
 # Avoid any destructive schema update in this performance-focused release.
-for row in (r/'QA/v0.9.60-core-source.sha256').read_text().splitlines():
+for row in (r/'QA/review-stability-core-source.sha256').read_text().splitlines():
  digest,name=row.split('  ',1)
  assert hashlib.sha256((r/name).read_bytes()).hexdigest()==digest, name+' changed'
 assert 'CREATE TABLE IF NOT EXISTS note_notebooks' in (w/'Storage.swift').read_text()
 assert 'CREATE TABLE IF NOT EXISTS virtual_memories' in (w/'Storage.swift').read_text()
-print('PASS: caret-row-only invalidations, AI task churn reduced, storage hash unchanged')
+print('PASS: caret-row-only invalidations, AI task churn reduced, reviewed core hashes match')
 PY2

@@ -209,9 +209,7 @@ struct MarkdownNoteEditorScreen: View {
                 guard let previous = await MemoWeaverDraftRecoveryStore.shared.read(noteID: note.id),
                       previous.storageEpoch == currentStorageEpoch,
                       previous.capturedAt > note.updatedAt,
-                      previous.body != LegacyNoteTextConverter.editableText(for: note) ||
-                      previous.title != note.title || previous.typeID != note.typeID ||
-                      previous.bookID != note.bookID || previous.pinned != note.pinned else { return }
+                      !previous.hasSameContent(as: recoverySnapshot()) else { return }
                 recoveryDraft = previous
             }
         }

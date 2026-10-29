@@ -18,6 +18,19 @@ struct MemoWeaverRecoveryDraft: Codable {
     let status: String
     let sourceURL: String
     let pinned: Bool
+
+    func hasSameContent(as other: MemoWeaverRecoveryDraft) -> Bool {
+        func memberships(_ draft: MemoWeaverRecoveryDraft) -> [String] {
+            var seen = Set<String>()
+            return ([draft.bookID] + (draft.notebookIDs ?? [])).filter {
+                !$0.isEmpty && seen.insert($0).inserted
+            }
+        }
+        return title == other.title && body == other.body && typeID == other.typeID &&
+            bookID == other.bookID && memberships(self) == memberships(other) &&
+            noteDay == other.noteDay && status == other.status &&
+            sourceURL == other.sourceURL && pinned == other.pinned
+    }
 }
 
 actor MemoWeaverDraftRecoveryStore {

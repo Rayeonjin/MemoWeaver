@@ -23,7 +23,7 @@ final class LocalDatabase {
     let databaseURL: URL
     private var handle: OpaquePointer?
     private let transient = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
-    private static let maxJSONBackupBytes = 512 * 1024 * 1024
+    static let maxJSONBackupBytes = 512 * 1024 * 1024
     // New exports identify the independent product. Both identifiers keep
     // the exact same schema-1 payload; pre-rename backups stay importable.
     private static let backupAppID = "memoweaver-notes"
@@ -394,6 +394,7 @@ final class LocalDatabase {
         if differsFromLast && (checkpoint || elapsedSinceCheckpoint >= 15 * 60) {
             revisions.append([
                 "id": UUID().uuidString, "at": now, "title": title, "body": bodyHTML,
+                "bodyFormat": (migrating || old.isMarkdown) ? "markdown" : "html",
                 "typeId": typeID, "bookId": primaryBookID, "notebookIds": memberships, "noteDate": noteDate,
                 "status": status, "sourceUrl": sourceURL, "workosBlocks": WorkBlock.encode(old.workosBlocks),
                 "action": last == nil ? "최초 작성" : (checkpoint ? "편집 세션 종료" : "자동 체크포인트")
@@ -708,6 +709,33 @@ final class LocalDatabase {
     // Explicit disaster recovery is distinct from the add-only importer.
     // Snapshot the live database first, clear in one transaction, then run the
     // same validated importer. A failure rolls back the complete replacement.
+    static func readBackupData(from file: URL) throws -> Data {
+        let size = try file.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
+        guard size < maxJSONBackupBytes else { throw Failure.backupTooLarge }
+        let data = try Data(contentsOf: file, options: .mappedIfSafe)
+        guard data.count < maxJSONBackupBytes else { throw Failure.backupTooLarge }
+        return data
+    }
+
+    static func validateReplacementCollections(_ raw: [String: Any]) throws {
+        for key in ["notes", "types", "books", "sources", "events"] {
+            if raw[key] == nil && (key == "sources" || key == "events") { continue }
+            guard let rows = raw[key] as? [[String: Any]] else { throw Failure.badBackup }
+            var seen = Set<String>()
+            guard rows.allSatisfy({ row in
+                guard let id = row["id"] as? String, !id.isEmpty else { return false }
+                return seen.insert(id).inserted
+            }) else { throw Failure.badBackup }
+        }
+        // Categories share a primary key even though their UI collections differ.
+        let types = raw["types"] as? [[String: Any]] ?? []
+        let books = raw["books"] as? [[String: Any]] ?? []
+        let typeIDs = Set(types.compactMap { $0["id"] as? String })
+        guard books.allSatisfy({ !typeIDs.contains($0["id"] as? String ?? "") }) else {
+            throw Failure.badBackup
+        }
+    }
+
     func replaceAllWithBrowserBackup(_ data: Data) throws -> (notes: Int, archives: Int) {
         guard data.count < Self.maxJSONBackupBytes else { throw Failure.backupTooLarge }
         guard let raw = try JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -719,6 +747,7 @@ final class LocalDatabase {
               items.count < 60000,
               items.allSatisfy({ ($0["id"] as? String)?.isEmpty == false && $0["body"] is String })
             else { throw Failure.badBackup }
+        try Self.validateReplacementCollections(raw)
         _ = try snapshotBackupIfNeeded(force: true)
         var imported = (notes: 0, archives: 0)
         try transaction {
@@ -728,6 +757,10 @@ final class LocalDatabase {
                 try execute("DELETE FROM " + table)
             }
             imported = try importBrowserBackup(data)
+            guard imported.notes == items.count,
+                  imported.archives == (raw["sources"] as? [[String: Any]] ?? []).count else {
+                throw Failure.badBackup
+            }
             // An older backup may contain an empty type collection.
             let count: Int = try query("SELECT COUNT(*) FROM categories WHERE category_kind='type'") {
                 Int(sqlite3_column_int($0, 0))
