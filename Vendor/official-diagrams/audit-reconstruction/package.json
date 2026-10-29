@@ -1,0 +1,15 @@
+{
+  "name": "memoweaver-official-diagrams-audit-reconstruction",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "es-toolkit": "1.52.0",
+    "markmap-lib": "0.18.12",
+    "markmap-view": "0.18.12",
+    "mermaid": "12.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  }
+}

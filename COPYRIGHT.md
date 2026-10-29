@@ -19,8 +19,8 @@ and `BRAND_ASSETS.md`. No trademark registration or exclusive rights in
 third-party artwork are asserted by this notice.
 
 Bundled dependencies remain subject to their own licenses and attribution.
-See `THIRD_PARTY_NOTICES.md` and the pending dependency inventory in
-`docs/KNOWN_RISKS_RELEASE_GATES.md`. The project license does not replace those
-upstream terms. This copyright notice does not complete that inventory.
+See `THIRD_PARTY_NOTICES.md`, `THIRD_PARTY_LICENSES/` and the scope/limitations in
+`docs/THIRD_PARTY_LICENSE_AUDIT_2026-10-29.md`. The project license does not replace
+those upstream terms; this copyright notice does not certify legal compliance.
 
 Canonical source: https://github.com/Rayeonjin/MemoWeaver

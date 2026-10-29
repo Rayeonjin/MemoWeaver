@@ -1,0 +1,113 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/gwtproject/gwt/2.10.0/distro-source/core/src/COPYING",
+    "path": "THIRD_PARTY_LICENSES/supplemental/gwt-2.10.0/distro-source/core/src/COPYING",
+    "sha256": "12c6d37dfddf0b524ab8e10b1702a77da71d0e708ba35fefd86d16a15a9200ef"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/gwtproject/gwt/2.10.0/user/super/com/google/gwt/emul/COPYING",
+    "path": "THIRD_PARTY_LICENSES/supplemental/gwt-2.10.0/user/super/com/google/gwt/emul/COPYING",
+    "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/gwtproject/gwt/2.10.0/user/src/com/google/gwt/core/COPYING",
+    "path": "THIRD_PARTY_LICENSES/supplemental/gwt-2.10.0/user/src/com/google/gwt/core/COPYING",
+    "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/gwtproject/gwt/2.10.0/user/src/com/google/gwt/i18n/COPYING",
+    "path": "THIRD_PARTY_LICENSES/supplemental/gwt-2.10.0/user/src/com/google/gwt/i18n/COPYING",
+    "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/gwtproject/gwt/2.10.0/user/src/com/google/gwt/json/COPYING",
+    "path": "THIRD_PARTY_LICENSES/supplemental/gwt-2.10.0/user/src/com/google/gwt/json/COPYING",
+    "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/gwtproject/gwt/2.10.0/user/src/com/google/gwt/user/COPYING",
+    "path": "THIRD_PARTY_LICENSES/supplemental/gwt-2.10.0/user/src/com/google/gwt/user/COPYING",
+    "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/gwtproject/gwt/2.10.0/user/src/com/google/gwt/xml/COPYING",
+    "path": "THIRD_PARTY_LICENSES/supplemental/gwt-2.10.0/user/src/com/google/gwt/xml/COPYING",
+    "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/google/guava/v31.1/COPYING",
+    "path": "THIRD_PARTY_LICENSES/supplemental/guava-31.1/COPYING",
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/google/guava/v31.1/CONTRIBUTORS",
+    "path": "THIRD_PARTY_LICENSES/supplemental/guava-31.1/CONTRIBUTORS",
+    "sha256": "d4a4c0cc8afab07b561e2dc9d5147d4e1ea28b583992c0f71e3a811a02908869"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/eclipse-elk/elk/62d5909f96fad541bc101ad52dabaece6b7eab7e/LICENSE.md",
+    "path": "THIRD_PARTY_LICENSES/supplemental/elk-0.9.1/LICENSE.md",
+    "sha256": "89591d4578fb1ebd91501312a3d25f021bd865a2e436641c1cf7b1bc7e3c1617"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/eclipse-elk/elk/62d5909f96fad541bc101ad52dabaece6b7eab7e/NOTICE.md",
+    "path": "THIRD_PARTY_LICENSES/supplemental/elk-0.9.1/NOTICE.md",
+    "sha256": "7de45b79fc60e032a38f11dff896751f834af46c449c26c7735f9bb5effcddaf"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/kieler/elkjs/a8304cf79fde75bc2ab1a89d28320f53f8637436/LICENSE.md",
+    "path": "THIRD_PARTY_LICENSES/supplemental/elkjs-0.9.3/LICENSE.md",
+    "sha256": "89591d4578fb1ebd91501312a3d25f021bd865a2e436641c1cf7b1bc7e3c1617"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/kieler/elkjs/a8304cf79fde75bc2ab1a89d28320f53f8637436/build.gradle",
+    "path": "THIRD_PARTY_LICENSES/supplemental/elkjs-0.9.3/build.gradle",
+    "sha256": "092b8e2eebf0ea37e9d5b688be6e1e00e404b4a3865d4c1b943c0c5fb56ea1c2"
+  },
+  {
+    "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/31.1-jre/guava-parent-31.1-jre.pom",
+    "path": "THIRD_PARTY_LICENSES/supplemental/maven-parents/guava-parent-31.1-jre.pom",
+    "sha256": "4439626783b44ad25ef05ff07621dd4bb796cc4eb4f2966a4a461fea4130e0fc"
+  },
+  {
+    "url": "https://repo.maven.apache.org/maven2/org/gwtproject/gwt/2.10.0/gwt-2.10.0.pom",
+    "path": "THIRD_PARTY_LICENSES/supplemental/maven-parents/gwt-2.10.0.pom",
+    "sha256": "828957536dbf9b7e32d28f7958b270d9e2c7f8e053ca7594884e07e9428e6332"
+  },
+  {
+    "url": "https://repo.maven.apache.org/maven2/com/genmymodel/emf/gwt/emf-parent/2.12.4/emf-parent-2.12.4.pom",
+    "path": "THIRD_PARTY_LICENSES/supplemental/maven-parents/emf-parent-2.12.4.pom",
+    "sha256": "f3688fb1dcc98b2a87893214a0cf0c1607178bbd7200071594ae7bfc26c14b0d"
+  },
+  {
+    "url": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.14.1.tgz#package/LICENSE",
+    "path": "THIRD_PARTY_LICENSES/embedded/regenerator-runtime-LICENSE",
+    "sha256": "51887a3d47051ac2fce1210562e5b9fe0830a8a8fabeb272c2d586eeb18a05fd",
+    "note": "Supplemental MIT permission text; the embedded DOMPurify banner does not identify a runtime version."
+  },
+  {
+    "url": "https://www.eclipse.org/org/documents/epl-v10.html",
+    "path": "THIRD_PARTY_LICENSES/supplemental/EPL-1.0.html",
+    "sha256": "9a96d0daf98aa6fb4aa530d399c742c66121b0bdae4a1f7ffa22d2135e1df7fd"
+  },
+  {
+    "url": "https://registry.npmjs.org/fastdom/-/fastdom-1.0.12.tgz#package/package.json",
+    "path": "THIRD_PARTY_LICENSES/packages/fastdom/1.0.12/package.json",
+    "sha256": "59d7cb811e170491bac1d4bc3c881a2fa3f23f50691ed60e6bd9bb9a1e197858"
+  },
+  {
+    "url": "https://registry.npmjs.org/fastdom/-/fastdom-1.0.12.tgz#package/README.md",
+    "path": "THIRD_PARTY_LICENSES/packages/fastdom/1.0.12/README.md",
+    "sha256": "cc5669ab6f7741bb061c8a7244addc8e3af1f84ec7d2445744b59d0169a87d11"
+  },
+  {
+    "url": "https://registry.npmjs.org/fastdom/-/fastdom-1.0.12.tgz#package/fastdom.js",
+    "path": "THIRD_PARTY_LICENSES/packages/fastdom/1.0.12/UPSTREAM-AUTHORS.txt",
+    "sha256": "9499a04a2cb07d32f103c0edf94a9cd22935f889174b7c4989d9f0c167e8076a"
+  },
+  {
+    "url": "https://registry.npmjs.org/katex/-/katex-0.16.27.tgz#package/LICENSE (permission text only; component attribution supplied separately)",
+    "path": "THIRD_PARTY_LICENSES/embedded/MIT-permission-text.txt",
+    "sha256": "f9c4c77baa3828004ee54b8a4f2db2e88ed44a6237a493965bf551fac0fcb62d"
+  }
+]

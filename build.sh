@@ -103,8 +103,8 @@ else
   echo '[MemoWeaver] Optional ONE-TIME setup: ./prepare-official-renderers.sh'
 fi
 # Distribute the notices with the app, not only with the source archive.
-# This file is still an INCOMPLETE transitive dependency audit; do not label
-# the binary redistribution-ready before the full license inventory is done.
+# Original legal files, source-availability statements and audit limitations
+# are shipped together; native/manual release acceptance remains separate.
 [[ -s "$ROOT/THIRD_PARTY_NOTICES.md" ]] || fail "Third-party notices missing."
 cp "$ROOT/THIRD_PARTY_NOTICES.md" "$STAGED_APP/Contents/Resources/THIRD_PARTY_NOTICES.md"
 # Carry the project's actual license and attribution into every compiled app.
@@ -113,6 +113,9 @@ for legal_file in LICENSE NOTICE COPYRIGHT.md TRADEMARKS.md BRAND_ASSETS.md; do
   [[ -s "$ROOT/$legal_file" ]] || fail "Required legal notice missing: $legal_file"
   cp "$ROOT/$legal_file" "$STAGED_APP/Contents/Resources/$legal_file"
 done
+# Ship original upstream legal texts and EPL source-availability notices.
+[[ -s "$ROOT/THIRD_PARTY_LICENSES/manifest.json" && -s "$ROOT/THIRD_PARTY_LICENSES/ALL_LICENSES.txt" ]] || fail "Third-party license inventory missing."
+cp -R "$ROOT/THIRD_PARTY_LICENSES" "$STAGED_APP/Contents/Resources/Licenses"
 # Build the user-selected mosaic memory icon with built-in macOS tools.
 # This runs only during compilation; the installed app does not need sips/iconutil.
 ICON_PNG="$SOURCE_DIR/Resources/MemoWeaverIcon.png"

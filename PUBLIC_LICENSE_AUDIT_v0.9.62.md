@@ -1,3 +1,8 @@
+> Historical v0.9.62 assessment. Its missing-LICENSE/NOTICE and inventory findings
+> are superseded for the current retained assets by
+> [the 2026-10-29 audit](docs/THIRD_PARTY_LICENSE_AUDIT_2026-10-29.md).
+> The original assessment below is preserved as history.
+
 # MemoWeaver v0.9.62 / Build 95 — 외부 라이브러리 라이선스 실물 감사
 
 **검토일:** 2026-10-28  

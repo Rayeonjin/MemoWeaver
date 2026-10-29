@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "comparison": "scope-aware AST alpha equivalence",
+  "originalSHA256": "9bbaa30a1961ce26626502392bc5f63280ec5822cfa45b7a9702092c96d1eff5",
+  "reconstructionSHA256": "5e49569bc5295435b54f8ce5c674d7af64979b51d9c49f00f1e1de835c8b785d",
+  "libraryStatements": 4233,
+  "matchedLibraryStatements": 4233,
+  "excludedLocalBridgeStatement": 4233,
+  "differingStatements": [
+    4233
+  ],
+  "originalBuildReceipt": false,
+  "auditReconstructionFiles": {
+    "package.json": "3d099b63b2276524489075e77903794fafc7938e84527b77aedfbefcaca37a95",
+    "package-lock.json": "c3053d802c91ae63a485cc0142748cbcab189957e33288774c9b1acdffd43ee5",
+    "entry.js": "79e958b973213bdc513a4cdd4a39d21c7661588cfbe81a95f1df4ed922cc31aa",
+    "metafile.json": "9636310313d34583a4379172b5f140917d80916c9d5a588075d1dfa289285a35"
+  }
+}

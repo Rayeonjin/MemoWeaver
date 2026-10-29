@@ -1,0 +1,167 @@
+{
+  "basis": "elkjs 0.9.3 build.gradle; conservative source/build dependency notice coverage, not proof every Java class survives GWT compilation",
+  "packages": [
+    {
+      "group": "com.google.guava",
+      "artifact": "guava",
+      "version": "31.1-jre",
+      "scope": "ELK build-declared source dependency",
+      "pomURL": "https://repo.maven.apache.org/maven2/com/google/guava/guava/31.1-jre/guava-31.1-jre.pom",
+      "declaredLicenses": [],
+      "sourceURL": "https://repo.maven.apache.org/maven2/com/google/guava/guava/31.1-jre/guava-31.1-jre-sources.jar",
+      "sourceSHA256": "8ab1853cdaf936ec88be80c17302b7c20abafbd4f54d4fb54d7011c529e3a44a",
+      "licenseFiles": [
+        {
+          "path": "THIRD_PARTY_LICENSES/maven/com.google.guava/guava/31.1-jre/SOURCE_COPYRIGHT_HEADERS.txt",
+          "sha256": "3d80bc2386bdd438a38ca470067431c10b0fde9251f7206b314bcd603273c14f"
+        }
+      ],
+      "sourceHeaderCount": 39,
+      "selectedLicense": "Apache-2.0"
+    },
+    {
+      "group": "com.google.guava",
+      "artifact": "guava-gwt",
+      "version": "31.1-jre",
+      "scope": "ELK GWT-translated source dependency",
+      "pomURL": "https://repo.maven.apache.org/maven2/com/google/guava/guava-gwt/31.1-jre/guava-gwt-31.1-jre.pom",
+      "declaredLicenses": [],
+      "sourceURL": "https://repo.maven.apache.org/maven2/com/google/guava/guava-gwt/31.1-jre/guava-gwt-31.1-jre-sources.jar",
+      "sourceSHA256": "d7e52f41ac6ea010787b5b3c8db7ffb54375d8d0c39c98c2badc9c38de7bf14b",
+      "licenseFiles": [
+        {
+          "path": "THIRD_PARTY_LICENSES/maven/com.google.guava/guava-gwt/31.1-jre/SOURCE_COPYRIGHT_HEADERS.txt",
+          "sha256": "52b68dac79436abec8f84c0c201040946eeec5f218d95826a48c7de3665dd8c7"
+        }
+      ],
+      "sourceHeaderCount": 35,
+      "selectedLicense": "Apache-2.0"
+    },
+    {
+      "group": "org.gwtproject",
+      "artifact": "gwt-user",
+      "version": "2.10.0",
+      "scope": "ELK GWT runtime/emulation source dependency",
+      "pomURL": "https://repo.maven.apache.org/maven2/org/gwtproject/gwt-user/2.10.0/gwt-user-2.10.0.pom",
+      "declaredLicenses": [],
+      "sourceURL": "https://repo.maven.apache.org/maven2/org/gwtproject/gwt-user/2.10.0/gwt-user-2.10.0-sources.jar",
+      "sourceSHA256": "731ff22188418a1dfaca30c8956ea107e87219ba7c4fb32d2f059ede317660b9",
+      "licenseFiles": [
+        {
+          "path": "THIRD_PARTY_LICENSES/maven/org.gwtproject/gwt-user/2.10.0/SOURCE_COPYRIGHT_HEADERS.txt",
+          "sha256": "a54e81816263b2abe62f6e8044613e3266cfc9953bc34c2a3c48594b3dba75f7"
+        }
+      ],
+      "sourceHeaderCount": 44,
+      "selectedLicense": "Apache-2.0"
+    },
+    {
+      "group": "org.gwtproject",
+      "artifact": "gwt-dev",
+      "version": "2.10.0",
+      "scope": "ELK upstream build-tool dependency; conservative notices",
+      "pomURL": "https://repo.maven.apache.org/maven2/org/gwtproject/gwt-dev/2.10.0/gwt-dev-2.10.0.pom",
+      "declaredLicenses": [],
+      "sourceURL": "https://repo.maven.apache.org/maven2/org/gwtproject/gwt-dev/2.10.0/gwt-dev-2.10.0-sources.jar",
+      "sourceSHA256": "a6fa83d53ea164c26556d791369391d25280a92f5d19657eeb0c865a9af2a097",
+      "licenseFiles": [
+        {
+          "path": "THIRD_PARTY_LICENSES/maven/org.gwtproject/gwt-dev/2.10.0/SOURCE_COPYRIGHT_HEADERS.txt",
+          "sha256": "51d90113c0de163aeae4eca79c64bb9b2db140dc6a4eba5a3023eec44e740af2"
+        }
+      ],
+      "sourceHeaderCount": 35,
+      "selectedLicense": "Apache-2.0"
+    },
+    {
+      "group": "com.genmymodel.emf.gwt",
+      "artifact": "emf-common",
+      "version": "2.12.4",
+      "scope": "ELK GWT-translated source dependency",
+      "pomURL": "https://repo.maven.apache.org/maven2/com/genmymodel/emf/gwt/emf-common/2.12.4/emf-common-2.12.4.pom",
+      "declaredLicenses": [],
+      "sourceURL": "https://repo.maven.apache.org/maven2/com/genmymodel/emf/gwt/emf-common/2.12.4/emf-common-2.12.4-sources.jar",
+      "sourceSHA256": "8dfc4e97ca8eee5474927e2b0c5f3bdbd9a52dcd5dff8c0b433b1e938b843bbe",
+      "licenseFiles": [
+        {
+          "path": "THIRD_PARTY_LICENSES/maven/com.genmymodel.emf.gwt/emf-common/2.12.4/SOURCE_COPYRIGHT_HEADERS.txt",
+          "sha256": "5f33c9e0d1ff33259a83390706acd3318b4534f4b37b4b229b5235a8aa662445"
+        }
+      ],
+      "sourceHeaderCount": 14,
+      "selectedLicense": "EPL-1.0"
+    },
+    {
+      "group": "com.genmymodel.emf.gwt",
+      "artifact": "emf-ecore",
+      "version": "2.12.4",
+      "scope": "ELK GWT-translated source dependency",
+      "pomURL": "https://repo.maven.apache.org/maven2/com/genmymodel/emf/gwt/emf-ecore/2.12.4/emf-ecore-2.12.4.pom",
+      "declaredLicenses": [],
+      "sourceURL": "https://repo.maven.apache.org/maven2/com/genmymodel/emf/gwt/emf-ecore/2.12.4/emf-ecore-2.12.4-sources.jar",
+      "sourceSHA256": "dd3b8c1c3bd0a27c1fbba908bcf0ff21a999148da4e68b3546bcde1dbce7b13a",
+      "licenseFiles": [
+        {
+          "path": "THIRD_PARTY_LICENSES/maven/com.genmymodel.emf.gwt/emf-ecore/2.12.4/SOURCE_COPYRIGHT_HEADERS.txt",
+          "sha256": "8cb559703bc0944a4662c84bb2ba2ec5557dda840fd9b89b6b18ceb46414aec5"
+        }
+      ],
+      "sourceHeaderCount": 29,
+      "selectedLicense": "EPL-1.0"
+    },
+    {
+      "group": "org.eclipse.xtend",
+      "artifact": "org.eclipse.xtend.lib",
+      "version": "2.28.0",
+      "scope": "ELK GWT-translated source dependency",
+      "pomURL": "https://repo.maven.apache.org/maven2/org/eclipse/xtend/org.eclipse.xtend.lib/2.28.0/org.eclipse.xtend.lib-2.28.0.pom",
+      "declaredLicenses": [
+        {
+          "name": "Eclipse Public License, Version 2.0",
+          "url": "http://www.eclipse.org/legal/epl-2.0"
+        }
+      ],
+      "sourceURL": "https://repo.maven.apache.org/maven2/org/eclipse/xtend/org.eclipse.xtend.lib/2.28.0/org.eclipse.xtend.lib-2.28.0-sources.jar",
+      "sourceSHA256": "899f1ffb8d761f11bb5f7b74e46cdd790bd8f9bc398221cd62524eea9344d926",
+      "licenseFiles": [
+        {
+          "path": "THIRD_PARTY_LICENSES/maven/org.eclipse.xtend/org.eclipse.xtend.lib/2.28.0/about_org.eclipse.xtend.lib.html",
+          "sha256": "ee66d2fb3b4c0d2ed2e7f698bc9ed4e3d6cf77fa5caf40ad03296125db1ac5f0"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/maven/org.eclipse.xtend/org.eclipse.xtend.lib/2.28.0/SOURCE_COPYRIGHT_HEADERS.txt",
+          "sha256": "c94020d1d9792c9a51eb1534795e35dcabc63aa481d4116d70c09fa1ebc3ef7d"
+        }
+      ],
+      "sourceHeaderCount": 5,
+      "selectedLicense": "EPL-2.0"
+    },
+    {
+      "group": "org.eclipse.xtext",
+      "artifact": "org.eclipse.xtext.xbase.lib",
+      "version": "2.28.0",
+      "scope": "ELK GWT-translated source dependency",
+      "pomURL": "https://repo.maven.apache.org/maven2/org/eclipse/xtext/org.eclipse.xtext.xbase.lib/2.28.0/org.eclipse.xtext.xbase.lib-2.28.0.pom",
+      "declaredLicenses": [
+        {
+          "name": "Eclipse Public License, Version 2.0",
+          "url": "http://www.eclipse.org/legal/epl-2.0"
+        }
+      ],
+      "sourceURL": "https://repo.maven.apache.org/maven2/org/eclipse/xtext/org.eclipse.xtext.xbase.lib/2.28.0/org.eclipse.xtext.xbase.lib-2.28.0-sources.jar",
+      "sourceSHA256": "2b35e9ccd4308f605e213371bb26f458b6a84bbd1e3a13cecaac0eba607db69f",
+      "licenseFiles": [
+        {
+          "path": "THIRD_PARTY_LICENSES/maven/org.eclipse.xtext/org.eclipse.xtext.xbase.lib/2.28.0/about_org.eclipse.xtext.xbase.lib.html",
+          "sha256": "ee66d2fb3b4c0d2ed2e7f698bc9ed4e3d6cf77fa5caf40ad03296125db1ac5f0"
+        },
+        {
+          "path": "THIRD_PARTY_LICENSES/maven/org.eclipse.xtext/org.eclipse.xtext.xbase.lib/2.28.0/SOURCE_COPYRIGHT_HEADERS.txt",
+          "sha256": "bf46ebf774d5604fe2167faf2e65ff7d8541576d2340f522407c40eccea30ffd"
+        }
+      ],
+      "sourceHeaderCount": 14,
+      "selectedLicense": "EPL-2.0"
+    }
+  ]
+}

@@ -11,14 +11,31 @@ Git was initialized on 2026-10-29 after the stability work. The original source
 is preserved as `v0.9.64-qa`; stability and GitHub setup are separate commits.
 The remote is `https://github.com/Rayeonjin/MemoWeaver.git`. The owner subsequently
 authorized PUBLIC visibility on 2026-10-29 to download sources at work without
-GitHub login. See `GITHUB_SETUP.md`. License inventory and manual GUI acceptance
-remain pending. No app installation was performed.
+GitHub login. See `GITHUB_SETUP.md`. The current dependency audit is documented
+in `THIRD_PARTY_LICENSE_AUDIT_2026-10-29.md`; manual GUI acceptance remains pending. No app installation was performed.
 
 On 2026-10-29 the owner selected the same copyright-holder attribution as
 Catoshi: `Copyright (c) 2026 Rayeonjin`. MemoWeaver retains Apache License 2.0;
 Catoshi's separate community license was not adopted. `COPYRIGHT.md` clarifies
 scope and third-party exceptions. The build now includes the project's LICENSE,
 NOTICE, COPYRIGHT and brand policy documents alongside third-party notices.
+
+## Third-party audit update — 2026-10-29
+
+`THIRD_PARTY_NOTICES.md` now indexes original legal texts for 171 npm version
+records (runtime evidence plus conservative dependency/type/tool coverage),
+eight ELK Java source/build dependencies and embedded contribution banners.
+DOMPurify selects Apache-2.0; EPL-2.0 ELK and EPL-1.0 EMF source access is
+preserved. The original two JavaScript assets remain byte-identical. A locked
+reconstruction matches all 4,233 library statements; only the final local app
+bridge is excluded. This is not the missing original build receipt.
+
+The build ships Licenses/ and standalone HTML carries exact legal/source text
+as non-executable JSON. The new offline license/export regression is part of
+`--verify`. Optional Node/npm audit tools never run during ordinary app use.
+All 13 installer QA suites, full native app compile/link/sign, strict signature
+verification and exact packaged legal-file comparisons passed. See
+`THIRD_PARTY_LICENSE_AUDIT_2026-10-29.md` for evidence and limits.
 
 ## What this product is
 
