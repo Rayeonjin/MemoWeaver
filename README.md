@@ -3,9 +3,9 @@
 > Local-first macOS notes, Markdown when helpful, and optional AI-assisted
 > connections between ideas. **Current baseline: v0.9.64 / Build 97 (QA candidate).**
 
-The development repository is [feelbest/MemoWeaver](https://github.com/feelbest/MemoWeaver)
+The development repository is [Rayeonjin/MemoWeaver](https://github.com/Rayeonjin/MemoWeaver)
 and is **public** for anonymous source downloads, as requested by the owner.
-[Download the latest source ZIP without signing in](https://github.com/feelbest/MemoWeaver/archive/refs/heads/main.zip).
+[Download the latest source ZIP without signing in](https://github.com/Rayeonjin/MemoWeaver/archive/refs/heads/main.zip).
 The complete third-party license inventory and manual GUI acceptance remain
 pending; source availability is not a compliance or production-release sign-off.
 The unreleased stability changes passed the native build and current automated checks; see

@@ -5,7 +5,7 @@ build without signing into GitHub. Only the owner's home computer should push.
 
 ## Current setup (2026-10-29)
 
-`https://github.com/feelbest/MemoWeaver` is the public source repository, opened
+`https://github.com/Rayeonjin/MemoWeaver` is the public source repository, opened
 by the owner's explicit request for anonymous downloads on 2026-10-29.
 The original v0.9.64 QA source is preserved in the first commit/tag; reviewed
 stability fixes are a subsequent commit. Do not recreate this repository.

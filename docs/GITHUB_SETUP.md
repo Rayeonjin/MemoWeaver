@@ -1,7 +1,10 @@
 # GitHub setup — 2026-10-29
 
-Repository: https://github.com/feelbest/MemoWeaver (PUBLIC, owner-authorized anonymous source access).
+Repository: https://github.com/Rayeonjin/MemoWeaver (PUBLIC, owner-authorized anonymous source access).
 Local Git root: the `PUBLIC_REPOSITORY/MemoWeaver` folder of the transfer.
+Transferred from the original personal repository to the `Rayeonjin` organization
+on 2026-10-29 at the owner's request; commit history and tags are retained.
+
 Default branch: `main`. The root transfer folder and `PRIVATE_KEEP_OFF_GITHUB`
 are outside Git. Build results, app bundles, user databases, attachments,
 backup archives and credentials are excluded from source tracking.
@@ -27,13 +30,13 @@ and tests run locally with `./install-v0.9.64.sh --verify`.
 No GitHub login is needed to download the source ZIP or clone/pull this public
 repository. Other computers remain read-only under project policy.
 
-Source ZIP: https://github.com/feelbest/MemoWeaver/archive/refs/heads/main.zip
+Source ZIP: https://github.com/Rayeonjin/MemoWeaver/archive/refs/heads/main.zip
 
 Unzip, open Terminal in the extracted folder and run the verification below.
 The ZIP contains source code; it must be compiled on macOS before running.
 
 ```bash
-git clone https://github.com/feelbest/MemoWeaver.git
+git clone https://github.com/Rayeonjin/MemoWeaver.git
 cd MemoWeaver
 ./install-v0.9.64.sh --verify
 ```
