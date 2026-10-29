@@ -3,6 +3,8 @@
 > Local-first macOS notes, Markdown when helpful, and optional AI-assisted
 > connections between ideas. **Current baseline: v0.9.64 / Build 97 (QA candidate).**
 
+**바로가기:** [설치·빌드](#build-from-source-macos-14) · [문서 안내](docs/README.md) · [최신 변경 사항](docs/releases/CHANGELOG_UNRELEASED.md) · [테스트 안내](scripts/README.md) · [라이선스 고지](THIRD_PARTY_NOTICES.md)
+
 The development repository is [Rayeonjin/MemoWeaver](https://github.com/Rayeonjin/MemoWeaver)
 and is **public** for anonymous source downloads, as requested by the owner.
 [Download the latest source ZIP without signing in](https://github.com/Rayeonjin/MemoWeaver/archive/refs/heads/main.zip).
@@ -47,7 +49,7 @@ chmod +x build.sh install-v0.9.64.sh backup-before-real-use.sh
 The output is `build/Release/MemoWeaver.app`. Before installing any update to
 an existing installation, quit MemoWeaver, run `./backup-before-real-use.sh`,
 and keep the verified archive separate. Only after completing the relevant
-`MAC_ACCEPTANCE_v0.9.64.md` and `MAC_ACCEPTANCE_v0.9.63.md` checks should an
+`docs/releases/MAC_ACCEPTANCE_v0.9.64.md` and `docs/releases/MAC_ACCEPTANCE_v0.9.63.md` checks should an
 owner elect to run `./install-v0.9.64.sh` (which changes the installed app).
 
 A user working on a read-only computer may anonymously download or `git pull`
@@ -97,3 +99,26 @@ organized as one quality-controlled update per week. See
 
 This repository does not include personal notes, SQLite databases, backups,
 Ollama model weights, API keys, or any proprietary signing certificate.
+
+## Repository layout
+
+```text
+MemoWeaver/
+├── README.md                 # 프로젝트 소개와 설치·빌드 안내
+├── build.sh / install*.sh    # 기존 빌드·설치 진입점
+├── WorkOSMac/                # macOS 앱 소스
+├── Tests/                    # Swift·Python 회귀 검사 코드
+├── scripts/
+│   ├── tests/                # 버전별 테스트 실행 스크립트
+│   ├── renderers/            # 개발용 렌더러 준비·이전 도구
+│   └── diagnostics/          # 진단 도구
+├── docs/                     # 개발·운영·감사 문서
+│   └── releases/             # 변경 이력과 버전별 수용 검사
+├── tools/                    # 소스·라이선스 검증 도구
+├── QA/                       # 검증용 해시 기록
+├── Vendor/                   # 렌더러 소스 및 감사 재구성 자료
+└── THIRD_PARTY_LICENSES/      # 외부 라이브러리 원문 고지
+```
+
+최상위에는 README와 빌드·설치·라이선스 진입점을 유지합니다.
+기존 `./install-v0.9.64.sh --verify` 명령은 그대로 사용할 수 있습니다.

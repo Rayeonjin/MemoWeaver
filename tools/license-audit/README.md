@@ -1,7 +1,7 @@
 # Third-party audit tools
 
 Normal release checks are offline: `python3 tools/verify-third-party-licenses.py`
-and `./test-third-party-licenses.sh`. After a native build, also run
+and `./scripts/tests/test-third-party-licenses.sh`. After a native build, also run
 `python3 tools/verify-third-party-licenses.py --app build/Release/MemoWeaver.app`.
 
 `./tools/license-audit/reproduce.sh` optionally downloads the frozen dependency

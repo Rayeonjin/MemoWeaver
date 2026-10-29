@@ -36,7 +36,7 @@ struct AISmoke {
             print("[AI test] semantic ranking sanity check: \(related > unrelated ? "PASS" : "CHECK manually")")
             print("[AI test] tags + embedding test completed in \(String(format: "%.2f", Date().timeIntervalSince(started)))s")
             guard CommandLine.arguments.contains("--chat") else {
-                print("[AI test] Chat skipped; run ./test-ai.sh --chat to test one synthetic grounded question")
+                print("[AI test] Chat skipped; run ./scripts/tests/test-ai.sh --chat to test one synthetic grounded question")
                 return
             }
             guard let chosen = tags.first(where: { $0.name == "qwen3.5:4b" }) ??

@@ -43,18 +43,18 @@ AI response state uses a generation token to ignore canceled prior requests.
 
 Completed suites:
 
-- `test-review-stability.sh`
-- `test-v0.9.64-schedule.sh`
-- `test-v0.9.64-pointer-symbols.sh`
-- `test-v0.9.64-toolkit.sh`
-- `test-v0.9.64-live-preview.sh`
-- `test-v0.9.64-optimization.sh`
-- `test-v0.9.60-brand-data.sh`
-- `test-v0.9.59-ratio-cycle.sh`
-- `test-v0.9.60-editor-hotpath.sh`
-- `test-side-preview.sh`
-- `test-v0.9.51-notebooks.sh`
-- `test-v0.9.27-pinned-paste-ui.sh`
+- `scripts/tests/test-review-stability.sh`
+- `scripts/tests/test-v0.9.64-schedule.sh`
+- `scripts/tests/test-v0.9.64-pointer-symbols.sh`
+- `scripts/tests/test-v0.9.64-toolkit.sh`
+- `scripts/tests/test-v0.9.64-live-preview.sh`
+- `scripts/tests/test-v0.9.64-optimization.sh`
+- `scripts/tests/test-v0.9.60-brand-data.sh`
+- `scripts/tests/test-v0.9.59-ratio-cycle.sh`
+- `scripts/tests/test-v0.9.60-editor-hotpath.sh`
+- `scripts/tests/test-side-preview.sh`
+- `scripts/tests/test-v0.9.51-notebooks.sh`
+- `scripts/tests/test-v0.9.27-pinned-paste-ui.sh`
 
 The added stability suite checks duplicate notes/types/books/sources/events,
 transaction rollback, a source count mismatch, JSON/schedule roundtrip,
@@ -74,7 +74,7 @@ Latest actual run: `PERF: notebookIDs 100 reads, rawJSON=6631509 bytes, 0.308036
 
 Human GUI acceptance, Korean IME, notification delivery/permissions, live Ollama
 stop/restart and production-size memory profiling were not performed. See
-`../MAC_ACCEPTANCE_UNRELEASED.md`. Native compile/smoke success does not certify
+`releases/MAC_ACCEPTANCE_UNRELEASED.md`. Native compile/smoke success does not certify
 these behaviors. Full third-party diagram licensing audit remains pending.
 
 ## Evidence and rollback
