@@ -1,0 +1,20 @@
+MemoWeaver (the MemoWeaver macOS note application)
+
+This project contains original software developed for MemoWeaver.
+A redistribution of portions of this project's original code must preserve
+applicable attribution notices under Section 4 of the Apache License 2.0.
+
+Suggested attribution text:
+"This software incorporates portions of MemoWeaver, the open-source macOS
+note application (Apache License 2.0)."
+
+Original project source: the MemoWeaver repository in which this NOTICE appears.
+The source repository URL should be added by the project owner after first
+publication, before inviting downstream redistribution.
+
+The name "MemoWeaver", its Korean rendering, and the distinctive project
+logo/identity are not licensed as third-party product marks by Apache 2.0.
+Factual, non-confusing attribution to MemoWeaver is permitted.
+
+Individual libraries and their licensing terms remain governed by their
+respective licenses; see THIRD_PARTY_NOTICES.md and the dependency audit.

@@ -1,0 +1,14 @@
+*.swift text eol=lf
+*.sh text eol=lf
+*.md text eol=lf
+*.plist text eol=lf
+*.json text eol=lf
+*.js text eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.zip binary
+*.tar.gz binary
+WorkOSMac/Resources/official-diagrams.js -diff
+WorkOSMac/Resources/katex-mathml.js -diff

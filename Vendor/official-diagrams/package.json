@@ -1,0 +1,14 @@
+{
+  "name": "memoryhome-official-diagrams-local-bundle",
+  "private": true,
+  "version": "0.9.7",
+  "type": "module",
+  "dependencies": {
+    "mermaid": "12.2.0",
+    "markmap-lib": "0.18.12",
+    "markmap-view": "0.18.12"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  }
+}
