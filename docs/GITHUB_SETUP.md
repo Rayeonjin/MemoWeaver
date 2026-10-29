@@ -2,6 +2,9 @@
 
 Repository: https://github.com/Rayeonjin/MemoWeaver (PUBLIC, owner-authorized anonymous source access).
 Local Git root: the `PUBLIC_REPOSITORY/MemoWeaver` folder of the transfer.
+Transferred from the original personal repository to the `Rayeonjin` organization
+on 2026-10-29 at the owner's request; commit history and tags are retained.
+
 Default branch: `main`. The root transfer folder and `PRIVATE_KEEP_OFF_GITHUB`
 are outside Git. Build results, app bundles, user databases, attachments,
 backup archives and credentials are excluded from source tracking.
