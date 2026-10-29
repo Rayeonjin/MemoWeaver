@@ -16,8 +16,8 @@ not mark those items complete.
 ## Legal gates: read BEFORE public uploading
 
 [ ] Confirm rights to relicense the project's original Swift and JS glue code.
-[ ] Decide and publish the exact author/copyright-holder credit, if wanted.
-[ ] Approve Apache License 2.0 plus the supplied NOTICE as the binding grant.
+[x] Owner selected `Copyright (c) 2026 Rayeonjin`, matching Catoshi.
+[x] Owner retained the existing Apache License 2.0 direction; NOTICE identifies Rayeonjin.
 [ ] Approve TRADEMARKS.md and reserve the brand/logo separately, understanding
     a policy file alone does not replace registration or guarantee exclusivity.
 [ ] Audit ALL third-party JavaScript dependencies in the bundled renderer.
