@@ -100,7 +100,7 @@ if [[ -s "$OFFICIAL_JS" ]] && grep -Fq 'MemoryHomeOfficialDiagrams' "$OFFICIAL_J
   echo '[MemoWeaver] Local official Mermaid + Markmap engines bundled.'
 else
   echo '[MemoWeaver] Official diagram bundle unavailable; original offline SVG fallback enabled.'
-  echo '[MemoWeaver] Optional ONE-TIME setup: ./prepare-official-renderers.sh'
+  echo '[MemoWeaver] Optional ONE-TIME setup: ./scripts/renderers/prepare-official-renderers.sh'
 fi
 # Distribute the notices with the app, not only with the source archive.
 # Original legal files, source-availability statements and audit limitations

@@ -13,6 +13,7 @@ run_tests() {
   # Earlier scripts assert old global toolbar groups and historical bundle
   # versions. This release verifies the native zoned toolbar and fixed source paths.
   local test
+  local test_directory="$ROOT/scripts/tests"
   local -a tests=(
     test-third-party-licenses.sh
     test-review-stability.sh
@@ -29,12 +30,12 @@ run_tests() {
     test-v0.9.27-pinned-paste-ui.sh
   )
   for test in "${tests[@]}"; do
-    [[ -x "$ROOT/$test" ]] || {
+    [[ -x "$test_directory/$test" ]] || {
       printf '[MemoWeaver] Missing or non-executable QA script: %s\n' "$test" >&2
       return 1
     }
     printf '[MemoWeaver] Testing: %s\n' "$test"
-    "$ROOT/$test" || return $?
+    "$test_directory/$test" || return $?
   done
   printf '[MemoWeaver] Source/Foundation/AppKit smoke tests passed.\n'
 }

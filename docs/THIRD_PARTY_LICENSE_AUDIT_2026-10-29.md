@@ -133,19 +133,19 @@ A separate strict codesign verification also PASSED. The full local log is
 
 Completed suites:
 
-- `test-third-party-licenses.sh`
-- `test-review-stability.sh`
-- `test-v0.9.64-schedule.sh`
-- `test-v0.9.64-pointer-symbols.sh`
-- `test-v0.9.64-toolkit.sh`
-- `test-v0.9.64-live-preview.sh`
-- `test-v0.9.64-optimization.sh`
-- `test-v0.9.60-brand-data.sh`
-- `test-v0.9.59-ratio-cycle.sh`
-- `test-v0.9.60-editor-hotpath.sh`
-- `test-side-preview.sh`
-- `test-v0.9.51-notebooks.sh`
-- `test-v0.9.27-pinned-paste-ui.sh`
+- `scripts/tests/test-third-party-licenses.sh`
+- `scripts/tests/test-review-stability.sh`
+- `scripts/tests/test-v0.9.64-schedule.sh`
+- `scripts/tests/test-v0.9.64-pointer-symbols.sh`
+- `scripts/tests/test-v0.9.64-toolkit.sh`
+- `scripts/tests/test-v0.9.64-live-preview.sh`
+- `scripts/tests/test-v0.9.64-optimization.sh`
+- `scripts/tests/test-v0.9.60-brand-data.sh`
+- `scripts/tests/test-v0.9.59-ratio-cycle.sh`
+- `scripts/tests/test-v0.9.60-editor-hotpath.sh`
+- `scripts/tests/test-side-preview.sh`
+- `scripts/tests/test-v0.9.51-notebooks.sh`
+- `scripts/tests/test-v0.9.27-pinned-paste-ui.sh`
 
 Human GUI, notifications, and real Korean IME were not run for this notice-only
 packaging/export change. No app installation or live database access occurs.
@@ -153,7 +153,7 @@ packaging/export change. No app installation or live database access occurs.
 ## Reproduction and rollback
 
 - `python3 tools/verify-third-party-licenses.py`: offline audit integrity gate.
-- `./test-third-party-licenses.sh`: offline integrity plus Swift export test.
+- `./scripts/tests/test-third-party-licenses.sh`: offline integrity plus Swift export test.
 - `./tools/license-audit/reproduce.sh`: optional networked investigation-only
   rebuild; npm lifecycle scripts are disabled and installed assets are untouched.
 - `./install-v0.9.64.sh --verify`: all current QA suites and native app build.

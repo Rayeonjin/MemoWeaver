@@ -3,7 +3,7 @@
 **Original source baseline:** v0.9.64 / Build 97 (2026-10-28). First GitHub
 source-control handoff: 2026-10-29. The original transfer was byte-identical to
 its source ZIP. The current checkout includes an unreleased stability update
-on 2026-10-29; see `../CHANGELOG_UNRELEASED.md` and
+on 2026-10-29; see `releases/CHANGELOG_UNRELEASED.md` and
 `STABILITY_REVIEW_2026-10-29.md`. Version/build remain unchanged until an actual
 release is prepared. The original manifests and private source ZIP are retained.
 
@@ -36,6 +36,27 @@ as non-executable JSON. The new offline license/export regression is part of
 All 13 installer QA suites, full native app compile/link/sign, strict signature
 verification and exact packaged legal-file comparisons passed. See
 `THIRD_PARTY_LICENSE_AUDIT_2026-10-29.md` for evidence and limits.
+
+## Repository layout update — 2026-10-30
+
+Root test scripts moved to `scripts/tests/`; developer renderer tools moved to
+`scripts/renderers/` and clipboard diagnosis to `scripts/diagnostics/`. Versioned
+release notes and acceptance documents are under `docs/releases/`. README stays
+at the repository root, with quick links and a directory map. `docs/README.md`
+and `scripts/README.md` index the relocated material.
+
+`./build.sh`, `./install.sh`, `./install-v0.9.64.sh --verify` and the backup
+entrypoint remain at the root. Test scripts resolve the repository root from
+their new location. App source, legal asset bytes and private-folder boundaries
+are unchanged. Original baseline hash manifests intentionally retain the old
+paths because they describe the original tag, not the reorganized checkout.
+
+Validation: all 116 relocated shell scripts passed syntax checks; all 127
+relocations and executable paths were verified; 182 previously valid Markdown
+link targets were preserved. All 13 current installer suites, native app
+compile/link/sign and packaged legal-resource comparisons passed in the new
+layout. The generated log is `build/Logs/repository-layout-verify.log`.
+No manual GUI behavior was changed or newly certified.
 
 ## What this product is
 
