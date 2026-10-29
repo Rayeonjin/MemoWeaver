@@ -5,11 +5,13 @@ build without signing into GitHub. Only the owner's home computer should push.
 
 ## Current setup (2026-10-29)
 
-`https://github.com/feelbest/MemoWeaver` is the private development repository.
+`https://github.com/feelbest/MemoWeaver` is the public source repository, opened
+by the owner's explicit request for anonymous downloads on 2026-10-29.
 The original v0.9.64 QA source is preserved in the first commit/tag; reviewed
 stability fixes are a subsequent commit. Do not recreate this repository.
 Use `docs/GITHUB_SETUP.md` for the current clone and weekly update commands.
-The public-upload checklist below applies before changing visibility to public.
+The checklist below records outstanding review items; public visibility does
+not mark those items complete.
 
 ## Legal gates: read BEFORE public uploading
 

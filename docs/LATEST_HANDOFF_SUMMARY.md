@@ -9,8 +9,10 @@ release is prepared. The original manifests and private source ZIP are retained.
 
 Git was initialized on 2026-10-29 after the stability work. The original source
 is preserved as `v0.9.64-qa`; stability and GitHub setup are separate commits.
-The remote is `https://github.com/feelbest/MemoWeaver.git`, private by the owner's
-choice. See `GITHUB_SETUP.md`. No app installation was performed.
+The remote is `https://github.com/feelbest/MemoWeaver.git`. The owner subsequently
+authorized PUBLIC visibility on 2026-10-29 to download sources at work without
+GitHub login. See `GITHUB_SETUP.md`. License inventory and manual GUI acceptance
+remain pending. No app installation was performed.
 
 ## What this product is
 

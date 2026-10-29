@@ -14,6 +14,13 @@
 | Brand name / logo | Policy draft only | Confirm creator permissions and optional trademark clearance/filing |
 | Public binary release | Not planned | Do not distribute .app as notarized or supported official binary |
 
+## Public source access decision
+
+On 2026-10-29 the owner explicitly requested public source visibility for
+anonymous downloads from the work computer. No binary release was created.
+The dependency-license inventory remains open; public availability does not
+certify that inventory, ownership review or manual GUI acceptance.
+
 ## Important active license blocker
 
 `Vendor/official-diagrams/package.json` pins top-level Mermaid/Markmap but

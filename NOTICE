@@ -9,8 +9,8 @@ Suggested attribution text:
 note application (Apache License 2.0)."
 
 Original project source: https://github.com/feelbest/MemoWeaver
-This repository is currently private; public redistribution readiness is
-tracked separately in docs/KNOWN_RISKS_RELEASE_GATES.md.
+This repository is publicly readable. The pending dependency license inventory
+and release readiness are tracked in docs/KNOWN_RISKS_RELEASE_GATES.md.
 
 The name "MemoWeaver", its Korean rendering, and the distinctive project
 logo/identity are not licensed as third-party product marks by Apache 2.0.
