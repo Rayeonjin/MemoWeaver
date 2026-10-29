@@ -10,7 +10,7 @@
 | JSON restore | Source/SQLite test, latest-format preflight fix | Isolated user profile, test-only data, backup roundtrip |
 | Data/attachments | Protected stable source | Real image paste/drop/export, database/attachment recovery |
 | Official Mermaid/Markmap JS bundle | Bundled offline | Verify version provenance, locked dependencies, SBOM and license copies |
-| Source licensing | Apache-2.0 proposal included | Owner adopts and verifies rights; NOTICE contains intended attribution |
+| Source licensing | Apache-2.0 retained; owner selected Copyright (c) 2026 Rayeonjin | NOTICE/COPYRIGHT identify the project holder; upstream rights and dependency inventory remain separate |
 | Brand name / logo | Policy draft only | Confirm creator permissions and optional trademark clearance/filing |
 | Public binary release | Not planned | Do not distribute .app as notarized or supported official binary |
 

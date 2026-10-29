@@ -14,6 +14,12 @@ authorized PUBLIC visibility on 2026-10-29 to download sources at work without
 GitHub login. See `GITHUB_SETUP.md`. License inventory and manual GUI acceptance
 remain pending. No app installation was performed.
 
+On 2026-10-29 the owner selected the same copyright-holder attribution as
+Catoshi: `Copyright (c) 2026 Rayeonjin`. MemoWeaver retains Apache License 2.0;
+Catoshi's separate community license was not adopted. `COPYRIGHT.md` clarifies
+scope and third-party exceptions. The build now includes the project's LICENSE,
+NOTICE, COPYRIGHT and brand policy documents alongside third-party notices.
+
 ## What this product is
 
 A native, local-first Mac note app with natural Markdown authoring and optional

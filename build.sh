@@ -107,6 +107,12 @@ fi
 # the binary redistribution-ready before the full license inventory is done.
 [[ -s "$ROOT/THIRD_PARTY_NOTICES.md" ]] || fail "Third-party notices missing."
 cp "$ROOT/THIRD_PARTY_NOTICES.md" "$STAGED_APP/Contents/Resources/THIRD_PARTY_NOTICES.md"
+# Carry the project's actual license and attribution into every compiled app.
+# Source permissions and brand permissions remain separate documents.
+for legal_file in LICENSE NOTICE COPYRIGHT.md TRADEMARKS.md BRAND_ASSETS.md; do
+  [[ -s "$ROOT/$legal_file" ]] || fail "Required legal notice missing: $legal_file"
+  cp "$ROOT/$legal_file" "$STAGED_APP/Contents/Resources/$legal_file"
+done
 # Build the user-selected mosaic memory icon with built-in macOS tools.
 # This runs only during compilation; the installed app does not need sips/iconutil.
 ICON_PNG="$SOURCE_DIR/Resources/MemoWeaverIcon.png"

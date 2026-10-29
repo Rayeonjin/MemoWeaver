@@ -69,7 +69,9 @@ computer used to push changes.
 
 ## Use, attribution and brand
 
-For project-owned original code, the intended license is **Apache License 2.0**
+Copyright (c) 2026 **Rayeonjin**. See [COPYRIGHT.md](COPYRIGHT.md).
+
+Project-owned original code is licensed under **Apache License 2.0**
 (see `LICENSE`). Other authors' and dependencies' rights remain governed by
 separate licenses. Redistributions must retain the applicable copyright and
 license notices and the attribution in `NOTICE` where required. A derivative
@@ -80,10 +82,9 @@ acknowledge its origin in MemoWeaver.
 See `TRADEMARKS.md` and `BRAND_ASSETS.md`. This is a project policy, not a claim
 that the name has already been registered as a trademark.
 
-Before first publication, the project owner should confirm ownership rights,
-select the definitive public author/holder credit, update the repository URL
-and complete third-party compliance checks. See
-`docs/FIRST_PUBLISH_HOME.md`.
+The project copyright-holder attribution and canonical repository are recorded
+above. Rights provenance review and the full third-party compliance inventory
+remain separate checks; see `docs/FIRST_PUBLISH_HOME.md`.
 
 ## Development
 
