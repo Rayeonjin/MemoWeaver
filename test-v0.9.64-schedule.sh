@@ -2,6 +2,7 @@
 # MemoWeaver v0.9.64 schedule and safe-restore verification on disposable SQLite.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+source "$ROOT/tools/qa-swift-env.sh"
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/memoweaver-schedule-63.XXXXXXXX")"
 trap 'rm -rf -- "$TMP"' EXIT
 SQL_FLAGS=()
@@ -17,10 +18,10 @@ FILES=(Models.swift Storage.swift NotebookMembershipCore.swift NotesListFilter.s
   MemoWeaverScheduleBackupPreflight.swift LegacyNoteTextConverter.swift MemoryTimelineCore.swift)
 SOURCES=()
 for file in "${FILES[@]}"; do SOURCES+=("$ROOT/WorkOSMac/$file"); done
-swiftc -swift-version 5 "${SQL_FLAGS[@]}" -Onone -j 1 -lsqlite3 \
+swiftc -swift-version 5 ${SQL_FLAGS[@]+"${SQL_FLAGS[@]}"} -Onone -j 1 -lsqlite3 \
   "${SOURCES[@]}" "$ROOT/Tests/PlannerSmoke.swift" -o "$TMP/planner-existing"
 "$TMP/planner-existing"
-swiftc -swift-version 5 "${SQL_FLAGS[@]}" -Onone -j 1 -lsqlite3 \
+swiftc -swift-version 5 ${SQL_FLAGS[@]+"${SQL_FLAGS[@]}"} -Onone -j 1 -lsqlite3 \
   "${SOURCES[@]}" "$ROOT/Tests/ScheduleReleaseV0963Smoke.swift" -o "$TMP/planner-release"
 "$TMP/planner-release"
 python3 - "$ROOT" <<'PY'
@@ -46,8 +47,8 @@ assert (root/'THIRD_PARTY_NOTICES.md').exists()
 plist=plistlib.loads((w/'Info.plist').read_bytes())
 assert (plist['CFBundleShortVersionString'],plist['CFBundleVersion'])==('0.9.64','97')
 assert plist['CFBundleIdentifier']=='com.local.workos.notes'
-for row in (root/'QA/v0.9.60-core-source.sha256').read_text().splitlines():
+for row in (root/'QA/review-stability-core-source.sha256').read_text().splitlines():
  digest, name=row.split('  ',1)
  assert hashlib.sha256((root/name).read_bytes()).hexdigest()==digest,name + ' changed'
-print('PASS v0.9.64 static notification/UI wiring, release checks and protected core source hashes')
+print('PASS v0.9.64 static notification/UI wiring, release checks and reviewed core source hashes')
 PY

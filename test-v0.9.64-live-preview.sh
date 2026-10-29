@@ -2,6 +2,7 @@
 # Offline safety/behavior QA for immediate template events and WebKit shell reuse.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+source "$ROOT/tools/qa-swift-env.sh"
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/memoweaver-v57-preview.XXXXXXXX")"
 trap 'rm -rf "$TMP"' EXIT
 SWIFTC="$(command -v swiftc)"

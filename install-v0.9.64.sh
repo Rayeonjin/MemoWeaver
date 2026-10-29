@@ -1,5 +1,5 @@
 #!/bin/bash
-# MemoWeaver v0.9.64 Build 96: native zoned unified toolbar build/install launcher.
+# MemoWeaver v0.9.64 Build 97: native zoned unified toolbar build/install launcher.
 # Safe verification: static/native smoke and full CLT build before optional install.
 # Preserves com.local.workos.notes and ~/Library/Application Support/WorkOS/.
 set -euo pipefail
@@ -14,6 +14,7 @@ run_tests() {
   # versions. This release verifies the native zoned toolbar and fixed source paths.
   local test
   local -a tests=(
+    test-review-stability.sh
     test-v0.9.64-schedule.sh
     test-v0.9.64-pointer-symbols.sh
     test-v0.9.64-toolkit.sh

@@ -2,7 +2,7 @@
 
 | Area | Current status | Required proof |
 |---|---|---|
-| Full macOS CLT build | NOT VERIFIED in this environment | `./install-v0.9.64.sh --verify` on real macOS 14+ |
+| Full macOS CLT build | PASS for unreleased 2026-10-29 development changes, arm64/macOS 14 target | All 12 suites + native compile/link/ad-hoc sign verified; see STABILITY_REVIEW_2026-10-29.md |
 | Real GUI / Korean IME | NOT VERIFIED here | Manual native click, composition, undo, selection, split reopen tests |
 | Math symbol mouse UI | Source QA only | Check category hover/click, insertion caret/undo and narrow width |
 | Slash palette mouse use | Source QA only | Click on a command while editor retains correct caret/source |

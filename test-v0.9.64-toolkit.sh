@@ -2,6 +2,7 @@
 # v0.9.64: offline source insertion + actual Markdown render smoke.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+source "$ROOT/tools/qa-swift-env.sh"
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/memoweaver-toolkit-61.XXXXXXXX")"
 trap 'rm -rf -- "$TMP"' EXIT
 swiftc -frontend -parse -swift-version 5 "$ROOT"/WorkOSMac/*.swift
@@ -52,9 +53,9 @@ assert 'static let hoverDelay: TimeInterval = 0.13' in passive
 plist=plistlib.loads((w/'Info.plist').read_bytes())
 assert (plist['CFBundleShortVersionString'],plist['CFBundleVersion']) == ('0.9.64','97')
 assert plist['CFBundleIdentifier']=='com.local.workos.notes', 'existing settings identity must not change'
-for row in (r/'QA/v0.9.60-core-source.sha256').read_text().splitlines():
+for row in (r/'QA/review-stability-core-source.sha256').read_text().splitlines():
  digest,name = row.split('  ',1)
  assert hashlib.sha256((r/name).read_bytes()).hexdigest()==digest, name + ' changed'
 print('PASS v0.9.64: compact editor toolbar, attached table picker, tooltip exact layout and click-through')
-print('PASS v0.9.64: storage/model/attachments/virtual indexes/window geometry hash-unchanged')
+print('PASS v0.9.64: reviewed core snapshot hashes match')
 PY

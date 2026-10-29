@@ -31,6 +31,7 @@ enum MemoWeaverScheduleBackupPreflight {
 extension LocalDatabase {
     // Call from the restore UI rather than the tolerant add-only import path.
     func replaceAllWithVerifiedBrowserBackup(_ data: Data) throws -> (notes: Int, archives: Int) {
+        guard data.count < Self.maxJSONBackupBytes else { throw Failure.backupTooLarge }
         guard let raw = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               MemoWeaverScheduleBackupPreflight.acceptsApp(raw),
               MemoWeaverScheduleBackupPreflight.preservesSchedules(raw) else {

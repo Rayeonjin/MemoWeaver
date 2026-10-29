@@ -122,6 +122,8 @@ final class WorkOSModel: ObservableObject {
     var virtualAnalysisTask: Task<Void, Never>?
     var relationInferenceTask: Task<Void, Never>?
     private var answerTask: Task<Void, Never>?
+    private var answerGeneration = UUID()
+    private var backupPreflightBusy = false
 
     init() {
         do {
@@ -539,7 +541,7 @@ final class WorkOSModel: ObservableObject {
         guard picker.runModal() == .OK, let file = picker.url else { return }
         do {
             guard let database else { return }
-            let data = try Data(contentsOf: file)
+            let data = try LocalDatabase.readBackupData(from: file)
             let added = try database.importBrowserBackup(data)
             try refresh()
             try bootstrapMemory()
@@ -551,46 +553,53 @@ final class WorkOSModel: ObservableObject {
     }
 
     func restoreBackupDialog() {
-        guard let database else { return }
+        guard let database, !backupPreflightBusy else { return }
         let picker = NSOpenPanel()
         picker.allowedContentTypes = [.json]
         picker.allowsMultipleSelection = false
         picker.message = "전체 복원: 현재 기록을 선택한 JSON 백업 시점으로 교체합니다. 먼저 자동 SQLite 스냅샷을 만듭니다."
         guard picker.runModal() == .OK, let file = picker.url else { return }
-        do {
-            let data = try Data(contentsOf: file, options: .mappedIfSafe)
-            guard let raw = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  MemoWeaverScheduleBackupPreflight.acceptsApp(raw),
-                  MemoWeaverScheduleBackupPreflight.preservesSchedules(raw),
-                  raw["schema"] as? Int == 1,
-                  let incoming = raw["notes"] as? [[String: Any]],
-                  let archives = raw["sources"] as? [[String: Any]] else {
-                throw LocalDatabase.Failure.badBackup
-            }
-            let warning = NSAlert()
-            warning.alertStyle = .critical
-            warning.messageText = "모든 기록을 백업 시점으로 복원하시겠습니까?"
-            warning.informativeText = "현재 메모 \(notes.count)개와 자료 \(self.archives.count)개를 교체합니다. 선택한 JSON에는 메모 \(incoming.count)개, TXT \(archives.count)개가 있습니다. 시작 전 SQLite 복구 스냅샷을 만들고 실패 시 변경을 롤백합니다. 현재 편집 내용이 저장되어 있는지 확인하세요."
-            let incomingScheduleCount = (raw["scheduleItems"] as? [[String: Any]])?.count ?? 0
-            warning.informativeText += "\n\n일정도 함께 교체됩니다. 현재 \(scheduleItems.count)건 → 백업 \(incomingScheduleCount)건. 구형 백업에 일정 정보가 없으면 일정은 0건으로 복원됩니다."
-            warning.addButton(withTitle: "취소")
-            warning.addButton(withTitle: "전체 복원 실행")
-            guard warning.runModal() == .alertSecondButtonReturn else { return }
-            let restored = try database.replaceAllWithVerifiedBrowserBackup(data)
-            // Never write old on-screen drafts into the newly restored database.
-            dataGeneration = UUID()
-            virtualSourceSignatureCache.removeAll()
-            UserDefaults.standard.set(UUID().uuidString, forKey: "memoweaver.storage.recoveryEpoch")
-            selectedNoteID = nil
-            try refresh(keepSelection: false)
-            try bootstrapMemory()
-            resetNoteFilters()
-            selectedPage = .all
-            requestBackgroundCorpusIndex()
-            rescheduleReminders()
-            statusMessage = "전체 복원 완료"
-            alertText = "전체 복원을 마쳤습니다. 메모 \(restored.notes)개, TXT 자료 \(restored.archives)개. 복원 직전 SQLite 스냅샷은 설정의 백업 폴더에서 확인할 수 있습니다."
+        backupPreflightBusy = true
+        Task { @MainActor in
+            defer { backupPreflightBusy = false }
+            do {
+                let (data, incomingCount, archiveCount, incomingScheduleCount) = try await Task.detached(priority: .userInitiated) {
+                    let data = try LocalDatabase.readBackupData(from: file)
+                    guard let raw = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                          MemoWeaverScheduleBackupPreflight.acceptsApp(raw),
+                          MemoWeaverScheduleBackupPreflight.preservesSchedules(raw),
+                          raw["schema"] as? Int == 1,
+                          let incoming = raw["notes"] as? [[String: Any]],
+                          let archives = raw["sources"] as? [[String: Any]] else {
+                        throw LocalDatabase.Failure.badBackup
+                    }
+                    try LocalDatabase.validateReplacementCollections(raw)
+                    return (data, incoming.count, archives.count, (raw["scheduleItems"] as? [[String: Any]])?.count ?? 0)
+                }.value
+                let warning = NSAlert()
+                warning.alertStyle = .critical
+                warning.messageText = "모든 기록을 백업 시점으로 복원하시겠습니까?"
+                warning.informativeText = "현재 메모 \(notes.count)개와 자료 \(self.archives.count)개를 교체합니다. 선택한 JSON에는 메모 \(incomingCount)개, TXT \(archiveCount)개가 있습니다. 시작 전 SQLite 복구 스냅샷을 만들고 실패 시 변경을 롤백합니다. 현재 편집 내용이 저장되어 있는지 확인하세요."
+                warning.informativeText += "\n\n일정도 함께 교체됩니다. 현재 \(scheduleItems.count)건 → 백업 \(incomingScheduleCount)건. 구형 백업에 일정 정보가 없으면 일정은 0건으로 복원됩니다."
+                warning.addButton(withTitle: "취소")
+                warning.addButton(withTitle: "전체 복원 실행")
+                guard warning.runModal() == .alertSecondButtonReturn else { return }
+                let restored = try database.replaceAllWithVerifiedBrowserBackup(data)
+                // Never write old on-screen drafts into the newly restored database.
+                dataGeneration = UUID()
+                virtualSourceSignatureCache.removeAll()
+                UserDefaults.standard.set(UUID().uuidString, forKey: "memoweaver.storage.recoveryEpoch")
+                selectedNoteID = nil
+                try refresh(keepSelection: false)
+                try bootstrapMemory()
+                resetNoteFilters()
+                selectedPage = .all
+                requestBackgroundCorpusIndex()
+                rescheduleReminders()
+                statusMessage = "전체 복원 완료"
+                alertText = "전체 복원을 마쳤습니다. 메모 \(restored.notes)개, TXT 자료 \(restored.archives)개. 복원 직전 SQLite 스냅샷은 설정의 백업 폴더에서 확인할 수 있습니다."
         } catch { show(error) }
+        }
     }
 
     func exportBackupDialog() {
@@ -641,25 +650,35 @@ final class WorkOSModel: ObservableObject {
         aiResponse = ""
         aiError = ""
         aiBusy = true
+        let generation = UUID()
+        answerGeneration = generation
         answerTask = Task {
-            defer { aiBusy = false }
+            defer {
+                if answerGeneration == generation { aiBusy = false; answerTask = nil }
+            }
             do {
                 let sources = await hybridMemorySources(for: question)
-                guard !Task.isCancelled else { return }
+                guard !Task.isCancelled, answerGeneration == generation else { return }
                 aiSources = sources
                 guard !sources.isEmpty else {
                     aiError = "관련 기록을 찾지 못했습니다. 새 자료를 색인하거나 질문의 핵심 단어를 바꿔 보세요."
                     return
                 }
                 let answer = try await ollama.answer(model: aiModelName, question: question, sources: sources)
-                if !Task.isCancelled { aiResponse = answer }
+                if !Task.isCancelled, answerGeneration == generation { aiResponse = answer }
             } catch is CancellationError {
-                aiError = "응답을 중단했습니다."
-            } catch { aiError = error.localizedDescription }
+                if answerGeneration == generation { aiError = "응답을 중단했습니다." }
+            } catch {
+                if answerGeneration == generation { aiError = error.localizedDescription }
+            }
         }
     }
 
-    func stopAI() { answerTask?.cancel(); answerTask = nil; aiBusy = false }
+    func stopAI() {
+        answerGeneration = UUID()
+        answerTask?.cancel(); answerTask = nil; aiBusy = false
+        aiError = "응답을 중단했습니다."
+    }
 
     func openSource(_ source: MemorySource) {
         let entity = source.id.hasPrefix("virtual:") ? source.id :

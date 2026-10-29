@@ -137,7 +137,9 @@ enum MemoryEngine {
             // Recent saved revisions are searchable, without replacing the current note.
             // Cap the number so an old heavily edited note cannot dominate indexing.
             for revision in note.revisions.suffix(4) {
-                let body = HTMLText.plain(WorkOSJSON.string(revision, "body"))
+                let source = WorkOSJSON.string(revision, "body")
+                let body = WorkOSJSON.string(revision, "bodyFormat") == "markdown"
+                    ? source : HTMLText.plain(source)
                 guard !body.isEmpty else { continue }
                 let at = WorkOSJSON.string(revision, "at")
                 let originalID = WorkOSJSON.string(revision, "id", default: MemoryEngine.fingerprint(at + body))
