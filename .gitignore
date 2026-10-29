@@ -1,0 +1,49 @@
+# MemoWeaver public source repository: never commit user notes or generated builds.
+/build/
+/DerivedData/
+/dist/
+/releases/
+/release-artifacts/
+*.app/
+*.dSYM/
+*.log
+*.swp
+*.swo
+*.xcuserstate
+.DS_Store
+**/.DS_Store
+# Local note data, attachments and backups are never part of the repository.
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.sqlite3-*
+*.db
+*.db-*
+**/Attachments/
+/WorkOS/
+/UserData/
+/LocalData/
+/Backups/
+/MemoWeaver Backups/
+*.tar.gz
+*.tgz
+*.zip
+# Credentials, signing identities and configuration.
+.env
+.env.*
+!.env.example
+*.p8
+*.p12
+*.pem
+*.mobileprovision
+*.provisionprofile
+*.key
+id_rsa
+id_ed25519
+# Optional Node dependencies used only to rebuild bundled JS.
+node_modules/
+Vendor/official-diagrams/node_modules/
+# These pre-bundled offline renderer resources MUST remain tracked:
+# WorkOSMac/Resources/official-diagrams.js
+# WorkOSMac/Resources/katex-mathml.js
+# WorkOSMac/Resources/MemoWeaverIcon.png
