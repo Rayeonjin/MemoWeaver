@@ -4,9 +4,11 @@
 > connections between ideas. **Current baseline: v0.9.64 / Build 97 (QA candidate).**
 
 The development repository is [Rayeonjin/MemoWeaver](https://github.com/Rayeonjin/MemoWeaver)
-and is currently **private**. Public release is pending the documented licensing
-and native GUI acceptance gates. The unreleased stability changes passed the
-native build and current automated checks; see
+and is **public** for anonymous source downloads, as requested by the owner.
+[Download the latest source ZIP without signing in](https://github.com/Rayeonjin/MemoWeaver/archive/refs/heads/main.zip).
+The complete third-party license inventory and manual GUI acceptance remain
+pending; source availability is not a compliance or production-release sign-off.
+The unreleased stability changes passed the native build and current automated checks; see
 [validation evidence](docs/STABILITY_REVIEW_2026-10-29.md).
 
 This is the source repository for MemoWeaver. It is also used for weekly
