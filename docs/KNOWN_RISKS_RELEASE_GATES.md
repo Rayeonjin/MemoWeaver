@@ -9,7 +9,7 @@
 | Reminder delivery | SQLite/date calculations tested | Notification permissions, actual alert and click-through on Mac |
 | JSON restore | Source/SQLite test, latest-format preflight fix | Isolated user profile, test-only data, backup roundtrip |
 | Data/attachments | Protected stable source | Real image paste/drop/export, database/attachment recovery |
-| Official Mermaid/Markmap JS bundle | Bundled offline | Verify version provenance, locked dependencies, SBOM and license copies |
+| Official Mermaid/Markmap JS bundle | Retained unchanged; locked audit reconstruction and 4,233 library statements verified | Original legal files, source access and evidence limits: THIRD_PARTY_LICENSE_AUDIT_2026-10-29.md |
 | Source licensing | Apache-2.0 retained; owner selected Copyright (c) 2026 Rayeonjin | NOTICE/COPYRIGHT identify the project holder; upstream rights and dependency inventory remain separate |
 | Brand name / logo | Policy draft only | Confirm creator permissions and optional trademark clearance/filing |
 | Public binary release | Not planned | Do not distribute .app as notarized or supported official binary |
@@ -21,19 +21,27 @@ anonymous downloads from the work computer. No binary release was created.
 The dependency-license inventory remains open; public availability does not
 certify that inventory, ownership review or manual GUI acceptance.
 
-## Important active license blocker
+## Dependency license audit (2026-10-29)
 
-`Vendor/official-diagrams/package.json` pins top-level Mermaid/Markmap but
-no `package-lock.json`/build metafile is included. The local 5.6 MB JavaScript
-bundle contains DOMPurify, Lodash, regenerator-runtime and other transitive
-code. Its current `THIRD_PARTY_NOTICES.md` covers only a subset of actual
-bundled libraries. The bundled tool is not proven reproducible.
+Original legal files, 171 npm package/version records (including conservative
+closure/type/tool coverage), eight upstream ELK Java source/build dependency
+records, EPL source-availability information and integrity checks are now
+preserved under `THIRD_PARTY_LICENSES/`. DOMPurify uses the Apache-2.0 option.
+ELK remains EPL-2.0; EMF GWT remains EPL-1.0. This does not relicense those
+components as project-owned Apache code.
 
-Before public distribution, reconstruct the exact dependency tree if possible,
-regenerate a locked SBOM/`--metafile`, check all source and binary licenses,
-and include needed notices in both the source and any redistributed app.
-Do NOT silently replace the known-working diagram bundle until Mac visual
-regression has been performed.
+A frozen `npm ci --ignore-scripts` reconstruction matches all 4,233 retained
+library statements by lexical-scope-aware AST comparison. Only the final local
+bridge differs and is excluded. No renderer JS asset was replaced.
+
+The missing original producer build receipt is not recreated or falsely
+claimed. Source-map/declared-closure packages are conservative notice coverage;
+exact embedded helper versions and the original upstream GWT build are not
+independently proven. FastDom/boolbase declarations are preserved where their
+npm archives omit standalone license files. Read
+`THIRD_PARTY_LICENSE_AUDIT_2026-10-29.md` for the complete scope and limitations.
+Automated integrity/source/packaging checks are engineering evidence, not a
+legal warranty or native GUI acceptance.
 
 ## Deferred issues
 
@@ -42,5 +50,6 @@ regression has been performed.
 - No project-owned cloud backend or external credentials should be required.
 - App/username data paths with legacy `WorkOS` tokens are intentional and
   must not be renamed without separately tested migration.
-- Future published build/installer should carry LICENSE and complete notices,
-  not only `THIRD_PARTY_NOTICES.md`.
+- Builds now carry project legal documents and the Licenses/ directory;
+  standalone HTML includes consolidated legal texts and source access in
+  non-executable JSON. Do not remove these when redistributing.

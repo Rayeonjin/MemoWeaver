@@ -20,9 +20,9 @@ not mark those items complete.
 [x] Owner retained the existing Apache License 2.0 direction; NOTICE identifies Rayeonjin.
 [ ] Approve TRADEMARKS.md and reserve the brand/logo separately, understanding
     a policy file alone does not replace registration or guarantee exclusivity.
-[ ] Audit ALL third-party JavaScript dependencies in the bundled renderer.
-    Current `THIRD_PARTY_NOTICES.md` is NOT a complete dependency license file;
-    no transitive lockfile/metafile currently establishes final compliance.
+[x] Collect current bundled-runtime evidence, conservative dependency closure,
+    original license/notice files and EPL source access. See the 2026-10-29 audit.
+    This evidence does not constitute an original build receipt or legal warranty.
 [ ] Replace any provisional original project URL with the actual GitHub URL.
 [ ] Check for private data, credentials, screenshots and proprietary assets.
 [ ] Check whether any non-owner contributed code requires permission/credits.

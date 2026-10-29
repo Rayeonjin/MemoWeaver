@@ -10,8 +10,9 @@ Suggested attribution text:
 note application (Apache License 2.0)."
 
 Original project source: https://github.com/Rayeonjin/MemoWeaver
-This repository is publicly readable. The pending dependency license inventory
-and release readiness are tracked in docs/KNOWN_RISKS_RELEASE_GATES.md.
+This repository is publicly readable. Dependency license inventory, source
+availability and verification limits are documented in THIRD_PARTY_NOTICES.md
+and docs/THIRD_PARTY_LICENSE_AUDIT_2026-10-29.md.
 
 The name "MemoWeaver", its Korean rendering, and the distinctive project
 logo/identity are not licensed as third-party product marks by Apache 2.0.

@@ -12,3 +12,6 @@
 *.tar.gz binary
 WorkOSMac/Resources/official-diagrams.js -diff
 WorkOSMac/Resources/katex-mathml.js -diff
+# Preserve upstream legal documents byte-for-byte (including original CRLF and
+# whitespace); integrity checks cover these copies instead of reformatting them.
+THIRD_PARTY_LICENSES/** -text -whitespace

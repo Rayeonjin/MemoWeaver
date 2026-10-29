@@ -14,6 +14,7 @@ run_tests() {
   # versions. This release verifies the native zoned toolbar and fixed source paths.
   local test
   local -a tests=(
+    test-third-party-licenses.sh
     test-review-stability.sh
     test-v0.9.64-schedule.sh
     test-v0.9.64-pointer-symbols.sh

@@ -49,13 +49,36 @@ enum WorkOSOfficialDiagramRuntime {
     // Exported HTML is standalone, with no CDN links or companion folder.
     // Inline the *known local* bundle for exports only. WKWebView preview uses
     // a user script, avoiding megabytes of HTML on every editor keystroke.
-    static func embedForStandaloneExport(_ html: String) -> String {
-        guard html.contains("data-workos-diagram="), let script = source else { return html }
-        let safeScript = script.replacingOccurrences(of: "</script", with: "<\\/script", options: .caseInsensitive)
-        guard let range = html.range(of: "</body>", options: [.backwards, .caseInsensitive]) else { return html }
+    private static let thirdPartyLicenseText: String = {
+        guard let resources = Bundle.main.resourceURL else { return "" }
+        let file = resources.appendingPathComponent("Licenses/ALL_LICENSES.txt")
+        return (try? String(contentsOf: file, encoding: .utf8)) ?? ""
+    }()
+
+    // Non-executable JSON preserves the exact copyright and source-offer text.
+    // Escape every '<' to avoid both closing-tag and HTML script-comment states.
+    static func embedLicenseNotices(in html: String, notices: String) -> String {
+        guard !notices.isEmpty,
+              let data = try? JSONSerialization.data(withJSONObject: ["notices": notices]),
+              let range = html.range(of: "</body>", options: [.backwards, .caseInsensitive]) else { return html }
+        let json = String(decoding: data, as: UTF8.self)
+            .replacingOccurrences(of: "<", with: "\\u003C")
+        let block = "<script type='application/json' id='memoweaver-third-party-licenses'>" + json + "</script>"
         var result = html
-        result.replaceSubrange(range, with: "<script>\(safeScript)</script></body>")
+        result.replaceSubrange(range, with: block + "</body>")
         return result
+    }
+
+    static func embedForStandaloneExport(_ html: String) -> String {
+        var result = html
+        if html.contains("data-workos-diagram="), let script = source,
+           let range = result.range(of: "</body>", options: [.backwards, .caseInsensitive]) {
+            let safeScript = script.replacingOccurrences(of: "</script", with: "<\\/script", options: .caseInsensitive)
+            result.replaceSubrange(range, with: "<script>\(safeScript)</script></body>")
+        }
+        // Only standalone exports call this path; live typing previews do not
+        // carry the large inventory or perform additional file reads.
+        return embedLicenseNotices(in: result, notices: thirdPartyLicenseText)
     }
 }
 

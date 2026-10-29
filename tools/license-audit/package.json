@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@babel/parser": "7.29.11",
+    "@babel/traverse": "7.29.10"
+  },
+  "private": true
+}

@@ -6,8 +6,10 @@
 The development repository is [Rayeonjin/MemoWeaver](https://github.com/Rayeonjin/MemoWeaver)
 and is **public** for anonymous source downloads, as requested by the owner.
 [Download the latest source ZIP without signing in](https://github.com/Rayeonjin/MemoWeaver/archive/refs/heads/main.zip).
-The complete third-party license inventory and manual GUI acceptance remain
-pending; source availability is not a compliance or production-release sign-off.
+Third-party notices, EPL source access and the retained-asset audit are recorded
+in [the license audit](docs/THIRD_PARTY_LICENSE_AUDIT_2026-10-29.md).
+Manual GUI acceptance remains pending; source availability is not a compliance
+warranty or production-release sign-off.
 The unreleased stability changes passed the native build and current automated checks; see
 [validation evidence](docs/STABILITY_REVIEW_2026-10-29.md).
 
@@ -63,9 +65,10 @@ computer used to push changes.
 - Existing app identifier `com.local.workos.notes` and data directory
   `~/Library/Application Support/WorkOS/` are intentionally preserved for
   compatibility. Do not rename these as cosmetic cleanup.
-- The prebuilt JavaScript diagram bundle has a **pending complete transitive
-  dependency license inventory**. Review `docs/KNOWN_RISKS_RELEASE_GATES.md`
-  before treating the source or any compiled binaries as a cleared release.
+- The prebuilt JavaScript diagram bundle is retained unchanged. Original legal
+  texts, a locked audit reconstruction, AST comparison and EPL source access
+  are documented in `docs/THIRD_PARTY_LICENSE_AUDIT_2026-10-29.md`. Read its
+  evidence limits before treating source or binaries as a cleared release.
 
 ## Use, attribution and brand
 
@@ -83,8 +86,8 @@ See `TRADEMARKS.md` and `BRAND_ASSETS.md`. This is a project policy, not a claim
 that the name has already been registered as a trademark.
 
 The project copyright-holder attribution and canonical repository are recorded
-above. Rights provenance review and the full third-party compliance inventory
-remain separate checks; see `docs/FIRST_PUBLISH_HOME.md`.
+above. Rights provenance and legal-release review remain separate from the engineering
+license inventory; see `docs/FIRST_PUBLISH_HOME.md` and the license audit.
 
 ## Development
 
