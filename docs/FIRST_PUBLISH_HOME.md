@@ -3,7 +3,15 @@
 This repository is intended to be PUBLIC so a second computer can download and
 build without signing into GitHub. Only the owner's home computer should push.
 
-## Legal gates: read BEFORE uploading
+## Current setup (2026-10-29)
+
+`https://github.com/feelbest/MemoWeaver` is the private development repository.
+The original v0.9.64 QA source is preserved in the first commit/tag; reviewed
+stability fixes are a subsequent commit. Do not recreate this repository.
+Use `docs/GITHUB_SETUP.md` for the current clone and weekly update commands.
+The public-upload checklist below applies before changing visibility to public.
+
+## Legal gates: read BEFORE public uploading
 
 [ ] Confirm rights to relicense the project's original Swift and JS glue code.
 [ ] Decide and publish the exact author/copyright-holder credit, if wanted.

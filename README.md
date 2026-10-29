@@ -3,6 +3,12 @@
 > Local-first macOS notes, Markdown when helpful, and optional AI-assisted
 > connections between ideas. **Current baseline: v0.9.64 / Build 97 (QA candidate).**
 
+The development repository is [feelbest/MemoWeaver](https://github.com/feelbest/MemoWeaver)
+and is currently **private**. Public release is pending the documented licensing
+and native GUI acceptance gates. The unreleased stability changes passed the
+native build and current automated checks; see
+[validation evidence](docs/STABILITY_REVIEW_2026-10-29.md).
+
 This is the source repository for MemoWeaver. It is also used for weekly
 version control and development with Codex. It is **not** a public, notarized
 `.app` distribution; the current source is not yet certified by native macOS

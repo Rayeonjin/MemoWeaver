@@ -7,8 +7,10 @@ on 2026-10-29; see `../CHANGELOG_UNRELEASED.md` and
 `STABILITY_REVIEW_2026-10-29.md`. Version/build remain unchanged until an actual
 release is prepared. The original manifests and private source ZIP are retained.
 
-The transfer folder has no `.git` directory. No branch, commit, push or app
-installation was performed during this update.
+Git was initialized on 2026-10-29 after the stability work. The original source
+is preserved as `v0.9.64-qa`; stability and GitHub setup are separate commits.
+The remote is `https://github.com/feelbest/MemoWeaver.git`, private by the owner's
+choice. See `GITHUB_SETUP.md`. No app installation was performed.
 
 ## What this product is
 
