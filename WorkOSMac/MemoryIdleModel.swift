@@ -7,7 +7,7 @@ import Foundation
 @MainActor
 extension WorkOSModel {
     var preferredBackgroundMode: MemoryIdlePolicy.Mode {
-        let value = UserDefaults.standard.string(forKey: MemoryIdlePolicy.defaultsKey)
+        let value = preferences.string(forKey: MemoryIdlePolicy.defaultsKey)
         return MemoryIdlePolicy.Mode(rawValue: value ?? "automatic") ?? .automatic
     }
 
@@ -52,8 +52,8 @@ extension WorkOSModel {
 
     // Local IDs only; never serialize note content or credentials in a queue.
     private func persistBackgroundQueues() {
-        UserDefaults.standard.set(backgroundNoteQueue.sorted(), forKey: "workos.ai.pendingNoteIDs")
-        UserDefaults.standard.set(backgroundRelationQueue.sorted(), forKey: "workos.ai.pendingRelationIDs")
+        preferences.set(backgroundNoteQueue.sorted(), forKey: "workos.ai.pendingNoteIDs")
+        preferences.set(backgroundRelationQueue.sorted(), forKey: "workos.ai.pendingRelationIDs")
     }
 
     private func restoreBackgroundQueuesOnce() {
@@ -63,8 +63,8 @@ extension WorkOSModel {
         var validEntities = Set(current.map { "note:" + $0 })
         validEntities.formUnion(virtualMemories.map { "virtual:" + $0.id })
         validEntities.formUnion(archives.map { "archive:" + $0.id })
-        let noteIDs = UserDefaults.standard.stringArray(forKey: "workos.ai.pendingNoteIDs") ?? []
-        let relationIDs = UserDefaults.standard.stringArray(forKey: "workos.ai.pendingRelationIDs") ?? []
+        let noteIDs = preferences.stringArray(forKey: "workos.ai.pendingNoteIDs") ?? []
+        let relationIDs = preferences.stringArray(forKey: "workos.ai.pendingRelationIDs") ?? []
         backgroundNoteQueue.formUnion(noteIDs.filter { current.contains($0) })
         // v0.9.12 saved raw note IDs. Migrate them to typed entity IDs.
         let restored = relationIDs.map { $0.contains(":") ? $0 : "note:" + $0 }

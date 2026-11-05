@@ -14,10 +14,10 @@ and previous Mac acceptance findings. Define a narrow change with a rollback
 path. Make changes only on the branch. Avoid introducing more features just
 because nearby code is visible.
 
-Check current test script named for the updated version. For the initial base:
+Check current test script named for the updated version. For the current candidate:
 
 ```bash
-./install-v0.9.64.sh --verify
+./install-v0.9.65.sh --verify
 ./tools/public-source-preflight.sh
 ```
 
@@ -27,7 +27,7 @@ Check current test script named for the updated version. For the initial base:
 # Quit MemoWeaver first, and preserve the archive.
 ./backup-before-real-use.sh
 # Only when real native GUI and data tests have passed:
-./install-v0.9.64.sh
+./install-v0.9.65.sh
 ```
 
 After testing a subsequent weekly release, update `Info.plist`, installer
@@ -55,7 +55,7 @@ For first use, download the public source ZIP on GitHub or:
 ```bash
 git clone https://github.com/ACCOUNT/MemoWeaver.git
 cd MemoWeaver
-./install-v0.9.64.sh --verify
+./install-v0.9.65.sh --verify
 ```
 
 Replace `ACCOUNT` with the actual public repository owner. Subsequently:

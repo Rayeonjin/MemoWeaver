@@ -90,7 +90,7 @@ extension WorkOSModel {
 
     func setMemoryThreshold(_ value: Double) {
         memoryThreshold = value
-        UserDefaults.standard.set(value, forKey: "workos.memory.threshold")
+        preferences.set(value, forKey: "workos.memory.threshold")
         regenerateMemoryGraphIfVisible()
     }
 

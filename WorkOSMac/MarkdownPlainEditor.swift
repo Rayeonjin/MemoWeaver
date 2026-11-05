@@ -5,6 +5,8 @@ import SwiftUI
 // Markdown edits only plain Unicode characters. No HTML writer, live Markdown
 // substitutions, slash-command interpreter, or text-storage reconstruction.
 final class WorkOSMarkdownTextView: NSTextView {
+    let wikiCompletion = MemoWeaverWikiCompletion()
+    var openWikiLink: ((String) -> Void)?
     weak var slashCoordinator: MarkdownPlainEditor.Coordinator?
     // Synchronous, failure-aware attachment save owned by the active note.
     // This callback is invoked only for explicit ⌘V image paste.
@@ -196,7 +198,19 @@ final class WorkOSMarkdownTextView: NSTextView {
         case .link: return .systemTeal
         }
     }
+    override func mouseDown(with event: NSEvent) {
+        if event.modifierFlags.contains(.command), !hasMarkedText() {
+            let offset = characterIndexForInsertion(at: convert(event.locationInWindow, from: nil))
+            if let reference = MemoWeaverWikiLinks.references(in: string).first(where: { NSLocationInRange(offset, $0.range) }) {
+                openWikiLink?(reference.target)
+                return
+            }
+        }
+        super.mouseDown(with: event)
+    }
+
     override func keyDown(with event: NSEvent) {
+        if !hasMarkedText(), wikiCompletion.handle(event, in: self) { return }
         if !hasMarkedText(), slashCoordinator?.handleSlashKey(event, in: self) == true { return }
         // Never intercept keystrokes while the Korean IME is composing text.
         // Tab indents the logical source line, not the caret's character offset.
@@ -446,6 +460,8 @@ struct MarkdownPlainEditor: NSViewRepresentable {
     let focusLine: Int
     let focusRequestID: UUID
     let restoreCaretOffset: Int?
+    let wikiCandidates: (String) -> [MemoWeaverWikiCandidate]
+    let onOpenWikiLink: (String) -> Void
     let onImagePaste: (Data) -> String?
     let onImageImportError: (String) -> Void
     let onChange: (String) -> Void
@@ -485,6 +501,8 @@ struct MarkdownPlainEditor: NSViewRepresentable {
         editor.font = NSFont.monospacedSystemFont(ofSize: CGFloat(fontSize), weight: .regular)
         editor.textColor = .labelColor
         editor.syntaxColorsEnabled = syntaxColorsEnabled
+        editor.wikiCompletion.candidates = wikiCandidates
+        editor.openWikiLink = onOpenWikiLink
         editor.pastePNGIntoNote = onImagePaste
         editor.reportImageImportError = onImageImportError
         editor.registerForDraggedTypes([.fileURL, .png, .tiff,
@@ -568,6 +586,8 @@ struct MarkdownPlainEditor: NSViewRepresentable {
         // Switching the syntax-color safety option only affects temporary
         // layout attributes, not saved Markdown or the undo history.
         (editor as? WorkOSMarkdownTextView)?.syntaxColorsEnabled = syntaxColorsEnabled
+        (editor as? WorkOSMarkdownTextView)?.wikiCompletion.candidates = wikiCandidates
+        (editor as? WorkOSMarkdownTextView)?.openWikiLink = onOpenWikiLink
         (editor as? WorkOSMarkdownTextView)?.pastePNGIntoNote = onImagePaste
         (editor as? WorkOSMarkdownTextView)?.reportImageImportError = onImageImportError
         let targetFont = NSFont.monospacedSystemFont(ofSize: CGFloat(fontSize), weight: .regular)
@@ -582,9 +602,13 @@ struct MarkdownPlainEditor: NSViewRepresentable {
             editor.subviews.compactMap { $0 as? WorkOSLineNumberCanvas }
                 .forEach { $0.invalidateVisibleLines() }
         }
-        if focusLine > 0 && context.coordinator.lastFocusRequestID != focusRequestID {
+        if autoFocus && context.coordinator.lastFocusRequestID != focusRequestID {
             context.coordinator.lastFocusRequestID = focusRequestID
-            jumpToSourceLine(focusLine, in: editor)
+            if focusLine > 0 { jumpToSourceLine(focusLine, in: editor) }
+            DispatchQueue.main.async { [weak editor] in
+                guard let editor, editor.window?.isKeyWindow == true else { return }
+                editor.window?.makeFirstResponder(editor)
+            }
         }
         if let insertRequest, context.coordinator.lastRequestID != insertRequest.id {
             context.coordinator.lastRequestID = insertRequest.id
@@ -942,14 +966,20 @@ struct MarkdownPlainEditor: NSViewRepresentable {
             publishEditedTextIfNeeded(in: editor)
             updateContext(for: editor)
             updateCaretLine(for: editor)
-            if let source = editor as? WorkOSMarkdownTextView { updateSlash(in: source) }
+            if let source = editor as? WorkOSMarkdownTextView {
+                source.wikiCompletion.update(in: source, allowed: lastContext == .normal)
+                updateSlash(in: source)
+            }
         }
         func textViewDidChangeSelection(_ notification: Notification) {
             guard let editor = notification.object as? NSTextView else { return }
             (editor as? WorkOSMarkdownTextView)?.caretDidMove()
             updateContext(for: editor)
             updateCaretLine(for: editor)
-            if let source = editor as? WorkOSMarkdownTextView { updateSlash(in: source) }
+            if let source = editor as? WorkOSMarkdownTextView {
+                source.wikiCompletion.update(in: source, allowed: lastContext == .normal)
+                updateSlash(in: source)
+            }
         }
         private func updateCaretLine(for editor: NSTextView) {
             let offset = min(editor.selectedRange().location, (editor.string as NSString).length)

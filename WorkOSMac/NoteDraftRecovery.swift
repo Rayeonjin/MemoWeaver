@@ -35,12 +35,14 @@ struct MemoWeaverRecoveryDraft: Codable {
 
 actor MemoWeaverDraftRecoveryStore {
     static let shared = MemoWeaverDraftRecoveryStore()
+    private let directoryOverride: URL?
+    init(directoryOverride: URL? = nil) { self.directoryOverride = directoryOverride }
 
     // Synchronous last-resort write for an SQLite autosave failure or window
     // teardown. The app may terminate before another detached Task can start.
     // A newer journal wins; do not replace it with an older queued write.
-    nonisolated static func emergencyWrite(_ draft: MemoWeaverRecoveryDraft) throws {
-        guard let url = fileLocation(draft.noteID) else { return }
+    nonisolated static func emergencyWrite(_ draft: MemoWeaverRecoveryDraft, directoryOverride: URL? = nil) throws {
+        guard let url = fileLocation(draft.noteID, directoryOverride: directoryOverride) else { return }
         try FileManager.default.createDirectory(at: url.deletingLastPathComponent(),
                                                 withIntermediateDirectories: true)
         if let previousData = try? Data(contentsOf: url),
@@ -51,22 +53,22 @@ actor MemoWeaverDraftRecoveryStore {
         try data.write(to: url, options: .atomic)
     }
 
-    nonisolated private static func fileLocation(_ id: String) -> URL? {
+    nonisolated private static func fileLocation(_ id: String, directoryOverride: URL? = nil) -> URL? {
         // A note ID is never permitted to escape the recovery directory.
         guard !id.isEmpty,
               id.allSatisfy({ $0.isLetter || $0.isNumber || $0 == "-" || $0 == "_" }) else {
             return nil
         }
-        let directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        let storage = directoryOverride ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("WorkOS", isDirectory: true)
-            .appendingPathComponent("RecoveryDrafts", isDirectory: true)
+        let directory = storage.appendingPathComponent("RecoveryDrafts", isDirectory: true)
         return directory.appendingPathComponent(id + ".json", isDirectory: false)
     }
 
-    private func fileURL(_ id: String) -> URL? { Self.fileLocation(id) }
+    private func fileURL(_ id: String) -> URL? { Self.fileLocation(id, directoryOverride: directoryOverride) }
 
     func write(_ draft: MemoWeaverRecoveryDraft) throws {
-        try Self.emergencyWrite(draft)
+        try Self.emergencyWrite(draft, directoryOverride: directoryOverride)
     }
 
     func read(noteID: String) -> MemoWeaverRecoveryDraft? {

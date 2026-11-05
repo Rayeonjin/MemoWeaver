@@ -50,6 +50,61 @@ final class LocalDatabase {
 
     deinit { if let handle { sqlite3_close_v2(handle) } }
 
+    func createWelcomeNoteIfNeeded() throws {
+        let done = try query("SELECT value FROM metadata WHERE key='welcome_v1'") { field($0, 0) }.first != nil
+        guard !done else { return }
+        try transaction {
+            let count = try query("SELECT COUNT(*) FROM notes") { Int(sqlite3_column_int($0, 0)) }.first ?? 0
+            let archiveCount = try query("SELECT COUNT(*) FROM archives") { Int(sqlite3_column_int($0, 0)) }.first ?? 0
+            if count == 0 && archiveCount == 0 {
+                let note = WorkNote.make(markdown: true)
+                var raw = WorkOSJSON.dictionary(note.rawJSON)
+                raw["title"] = "MemoWeaver에 오신 것을 환영합니다"
+                raw["body"] = """
+                # 첫 메모를 시작해 보세요
+
+                MemoWeaver는 내 Mac에 기록을 보관하는 메모 앱입니다. 이 안내도 자유롭게 수정하거나 삭제할 수 있습니다.
+
+                - **새 메모**: ⌘N을 누르고 바로 입력하세요. 변경 내용은 자동 저장됩니다.
+                - **분류**: 노트북과 메모 종류로 정리하세요. 한 메모를 여러 노트북에 넣을 수 있습니다.
+                - **연결**: 본문에 `[[`를 입력하고 기존 메모를 선택하세요. 연결 보조창에서 역방향 링크도 볼 수 있습니다.
+                - **검색**: ⌘K로 메모를 찾으세요.
+                - **미리보기**: 보조창에서 Markdown·표·수식을 확인하세요. `/`를 입력하면 삽입 메뉴가 열립니다.
+                - **이미지**: 편집창에 이미지를 붙여넣거나 끌어 놓으세요.
+                - **화면 비율**: 편집창과 보조창 사이 경계를 드래그하세요. 하단 비율 버튼으로도 조절할 수 있습니다.
+                - **백업**: 설정에서 전체 JSON 백업을 만들어 다른 곳에 보관하세요.
+
+                AI 기능은 선택 사항입니다. AI를 연결하지 않아도 작성·검색·메모 연결을 사용할 수 있습니다.
+                """
+                try insertNote(WorkNote.from(raw), replace: false)
+            }
+            try execute("INSERT OR REPLACE INTO metadata(key,value) VALUES ('welcome_v1','1')")
+        }
+    }
+
+    // Repair only the formerly truncated derived chunks. Original archive text
+    // and chunk IDs/line pointers stay intact; stale embeddings are discarded.
+    @discardableResult
+    func repairTruncatedArchiveChunks() throws -> Int {
+        var repaired = 0
+        let rows: [(Int, String, Int, Int)] = try query("SELECT id,archive_id,from_line,to_line FROM chunks WHERE length(content)=3500") {
+            (Int(sqlite3_column_int64($0, 0)), field($0, 1), Int(sqlite3_column_int($0, 2)), Int(sqlite3_column_int($0, 3)))
+        }
+        var sources: [String: [String]] = [:]
+        for (chunkID, archiveID, from, to) in rows {
+            if sources[archiveID] == nil { sources[archiveID] = VirtualMemoryCore.lines(try archiveText(id: archiveID)) }
+            guard let lines = sources[archiveID], from >= 1, to >= from, to <= lines.count else { continue }
+            let text = lines[(from-1)..<to].joined(separator: "\n")
+            guard text.count > 3500 else { continue }
+            try transaction {
+                try execute("UPDATE chunks SET content=? WHERE id=?", [.text(text), .integer(chunkID)])
+                try execute("DELETE FROM memory_index WHERE item_key=?", [.text("archive:" + String(chunkID))])
+            }
+            repaired += 1
+        }
+        return repaired
+    }
+
     private func setup() throws {
         let schema = [
             "CREATE TABLE IF NOT EXISTS notes (id TEXT PRIMARY KEY, title TEXT NOT NULL, body_plain TEXT NOT NULL, type_id TEXT NOT NULL, book_id TEXT NOT NULL, note_date TEXT NOT NULL, updated_at TEXT NOT NULL, deleted_at TEXT NOT NULL, raw_json TEXT NOT NULL)",
@@ -384,7 +439,13 @@ final class LocalDatabase {
             WorkOSJSON.string(last ?? [:], "body") != bodyHTML ||
             WorkOSJSON.string(last ?? [:], "title") != title ||
             WorkOSJSON.string(last ?? [:], "typeId") != typeID ||
-            WorkOSJSON.string(last ?? [:], "bookId") != primaryBookID
+            WorkOSJSON.string(last ?? [:], "bookId") != primaryBookID ||
+            NotebookMembershipCore.from(last ?? [:]) != memberships ||
+            WorkOSJSON.string(last ?? [:], "noteDate") != noteDate ||
+            WorkOSJSON.string(last ?? [:], "status") != status ||
+            WorkOSJSON.string(last ?? [:], "sourceUrl") != sourceURL ||
+            WorkOSJSON.bool(last ?? [:], "pinned") != pinned ||
+            WorkOSJSON.bool(last ?? [:], "archived") != archived
         let elapsedSinceCheckpoint: TimeInterval = {
             guard let lastString = last?["at"] as? String else { return .infinity }
             let f = ISO8601DateFormatter()
@@ -396,10 +457,20 @@ final class LocalDatabase {
                 "id": UUID().uuidString, "at": now, "title": title, "body": bodyHTML,
                 "bodyFormat": (migrating || old.isMarkdown) ? "markdown" : "html",
                 "typeId": typeID, "bookId": primaryBookID, "notebookIds": memberships, "noteDate": noteDate,
-                "status": status, "sourceUrl": sourceURL, "workosBlocks": WorkBlock.encode(old.workosBlocks),
+                "status": status, "sourceUrl": sourceURL, "pinned": pinned, "archived": archived, "workosBlocks": WorkBlock.encode(old.workosBlocks),
                 "action": last == nil ? "최초 작성" : (checkpoint ? "편집 세션 종료" : "자동 체크포인트")
             ])
             raw["revisions"] = revisions
+        }
+        if bodyHTML != old.bodyHTML || (raw["wikiLinkTargets"] == nil && bodyHTML.contains("[[")) {
+            let oldBindings = raw["wikiLinkTargets"] as? [String: String] ?? [:]
+            var bindings: [String: String] = [:]
+            for reference in MemoWeaverWikiLinks.references(in: bodyHTML) {
+                if let bound = oldBindings[reference.target] { bindings[reference.target] = bound; continue }
+                let matches = try query("SELECT id FROM notes WHERE (title=? OR id=?) AND deleted_at=''", [.text(reference.target), .text(reference.target)]) { field($0, 0) }
+                if matches.count == 1 { bindings[reference.target] = matches[0] }
+            }
+            raw["wikiLinkTargets"] = bindings
         }
         let result = WorkNote.from(raw)
         try insertNote(result, replace: true)
@@ -500,27 +571,28 @@ final class LocalDatabase {
         // Keep physical-line numbering consistent with virtual pointers and
         // the read-only excerpt view for CRLF text from older VS Code files.
         let lines = VirtualMemoryCore.lines(content)
+        var prepared: [(String, Int, Int)] = []
+        var start = 0
+        while start < lines.count {
+            var end = start
+            var charCount = 0
+            while end < lines.count && end - start < 48 {
+                let next = lines[end].count + 1
+                if end > start && charCount + next > 2300 { break }
+                charCount += next; end += 1
+            }
+            prepared.append((lines[start..<end].joined(separator: "\n"), start + 1, end))
+            if end >= lines.count { break }
+            start = max(start + 1, end - 5)
+        }
         try transaction {
             try execute("INSERT INTO archives (id,name,text_content,line_count,added_at) VALUES (?,?,?,?,?)", [
                 .text(id), .text(name), .text(content), .integer(lines.count), .text(addedAt)
             ])
-            var start = 0
-            while start < lines.count {
-                var end = start
-                var charCount = 0
-                while end < lines.count && end - start < 48 {
-                    let next = lines[end].count + 1
-                    if end > start && charCount + next > 2300 { break }
-                    charCount += next
-                    end += 1
-                }
-                let excerpt = lines[start..<end].joined(separator: "\n")
+            for (excerpt, from, to) in prepared {
                 try execute("INSERT INTO chunks (archive_id,title,content,from_line,to_line) VALUES (?,?,?,?,?)", [
-                    .text(id), .text(name), .text(String(excerpt.prefix(3500))),
-                    .integer(start + 1), .integer(end)
+                    .text(id), .text(name), .text(excerpt), .integer(from), .integer(to)
                 ])
-                if end >= lines.count { break }
-                start = max(start + 1, end - 5)
             }
         }
         return true
@@ -570,6 +642,7 @@ final class LocalDatabase {
                 for url in addedAssets { try? FileManager.default.removeItem(at: url) }
             }
         }
+        try MemoWeaverAttachments.validateReferences(in: notes, storageDirectory: directory)
         // One atomic import, including every archive and user-confirmed link.
         // Nested transactions become SAVEPOINTs and participate in outer rollback.
         var newNotes = 0
@@ -757,6 +830,7 @@ final class LocalDatabase {
                 try execute("DELETE FROM " + table)
             }
             imported = try importBrowserBackup(data)
+            try execute("INSERT OR REPLACE INTO metadata(key,value) VALUES ('welcome_v1','1')")
             guard imported.notes == items.count,
                   imported.archives == (raw["sources"] as? [[String: Any]] ?? []).count else {
                 throw Failure.badBackup
@@ -812,6 +886,7 @@ final class LocalDatabase {
         }
         // Base64 is included only in user-requested JSON exports. Auto SQLite
         // snapshots use adjacent attachment companions instead of growing DB.
+        try MemoWeaverAttachments.validateReferences(in: notes, storageDirectory: directory)
         let attachments = try MemoWeaverAttachments.backupEntries(in: directory)
         var snapshot: [String: Any] = [
             "memoryRelationReviews": reviews,

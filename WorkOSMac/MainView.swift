@@ -9,10 +9,10 @@ final class MemoWeaverLayoutCommitRequest {
 }
 
 enum MemoWeaverLayoutSwitchSafety {
-    static func prepare() -> Bool {
+    static func prepare(editor candidate: NSTextView? = nil) -> Bool {
         // A Korean IME marked-text sequence is not a committed text change.
         // Do not recreate NSTextView while it is still composing.
-        if let editor = NSApp.keyWindow?.firstResponder as? NSTextView,
+        if let editor = candidate ?? (NSApp.keyWindow?.firstResponder as? NSTextView),
            editor.hasMarkedText() { return false }
         let request = MemoWeaverLayoutCommitRequest()
         NotificationCenter.default.post(name: .memoWeaverBeforeLayoutChange, object: request)
@@ -60,7 +60,21 @@ struct WorkOSMainView: View {
         } message: {
             Text(model.alertText ?? "")
         }
+        .onReceive(NotificationCenter.default.publisher(for: .memoWeaverOpenWikiLink)) { notice in
+            if let target = notice.userInfo?["target"] as? String { model.openWikiLink(target) }
+        }
         .task {
+            let directory = model.database?.directory
+            if let directory {
+                let result = await Task.detached(priority: .utility) { () -> (Int, String?) in
+                    do { return (try LocalDatabase(directoryOverride: directory).repairTruncatedArchiveChunks(), nil) }
+                    catch { return (0, error.localizedDescription) }
+                }.value
+                if result.0 > 0 {
+                    do { model.chunks = try model.database?.archiveChunks() ?? [] } catch { model.show(error) }
+                }
+                if let issue = result.1 { model.statusMessage = "검색 색인 점검 필요: " + issue }
+            }
             // Backup maintenance only. Do not ping Ollama or start embeddings on launch.
             while !Task.isCancelled {
                 do { try await Task.sleep(nanoseconds: 3_600_000_000_000) }
@@ -122,14 +136,14 @@ struct WorkOSMainView: View {
             // embeddings happen until the idle policy permits work.
             model.requestBackgroundCorpusIndex()
             // A clicked notification can launch a new WorkOS process.
-            if let id = UserDefaults.standard.string(forKey: "workos.reminder.pendingOpenID") {
-                UserDefaults.standard.removeObject(forKey: "workos.reminder.pendingOpenID")
+            if let id = model.preferences.string(forKey: "workos.reminder.pendingOpenID") {
+                model.preferences.removeObject(forKey: "workos.reminder.pendingOpenID")
                 model.openSchedule(id)
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .workosReminderOpened)) { notice in
             if let id = notice.userInfo?["itemID"] as? String {
-                UserDefaults.standard.removeObject(forKey: "workos.reminder.pendingOpenID")
+                model.preferences.removeObject(forKey: "workos.reminder.pendingOpenID")
                 model.openSchedule(id)
             }
         }
@@ -144,7 +158,7 @@ struct WorkOSMainView: View {
         .onChange(of: model.selectedNoteID) { _, nextID in
             if let nextID, model.selectedPage.isActiveNotesPage,
                model.notes.contains(where: { $0.id == nextID && $0.deletedAt.isEmpty }) {
-                UserDefaults.standard.set(nextID, forKey: "memoweaver.notes.lastOpenedID")
+                model.preferences.set(nextID, forKey: "memoweaver.notes.lastOpenedID")
             }
             livePreviewCaretLine = 1
             // Never undo the user's explicit close (or open) on note selection.
@@ -155,7 +169,11 @@ struct WorkOSMainView: View {
             // the note ID prevents showing a previous note's HTML while switching.
         }
         .onChange(of: model.selectedPage) { newPage in
-            if !isNotePage { focusModeEnabled = false }
+            if !isNotePage {
+                _ = MemoWeaverLayoutSwitchSafety.prepare()
+                NSApp.keyWindow?.makeFirstResponder(nil)
+                focusModeEnabled = false
+            }
             // A navigation tap must not discard the user's notebook/type filters.
             if newPage == .memory { model.regenerateMemoryGraph() }
             // These screens are explicit user requests. Ollama is not called on app launch.
@@ -171,6 +189,7 @@ struct WorkOSMainView: View {
                 // Trash is a deliberate navigation action, not a list filter.
                 model.selectedNoteID = model.filteredNotes.first?.id
             } else if isNotePage {
+                model.noteFocusRequestID = UUID()
                 model.selectVisibleNoteAfterFiltering()
             }
         }
@@ -262,6 +281,11 @@ struct WorkOSMainView: View {
         // Only a deliberate visit to the notes/trash route reveals the list.
         // Window resizing and switching to other pages never toggle it.
         if page == .all || page == .trash { noteListVisible = true }
+        guard MemoWeaverLayoutSwitchSafety.prepare() else {
+            model.alertText = "입력 조합 또는 저장이 끝난 뒤 화면을 전환해 주세요."
+            return
+        }
+        NSApp.keyWindow?.makeFirstResponder(nil)
         model.selectedPage = page
     }
 
@@ -316,6 +340,17 @@ struct WorkOSMainView: View {
 
     @ViewBuilder
     private var detail: some View {
+        ZStack {
+            notesWorkspace
+                .opacity(isNotePage ? 1 : 0)
+                .allowsHitTesting(isNotePage)
+                .accessibilityHidden(!isNotePage)
+            if !isNotePage { otherPage }
+        }
+    }
+
+    @ViewBuilder
+    private var otherPage: some View {
         switch model.selectedPage {
         case .archives: ArchiveScreen()
         case .today: WorkOSDailyJournalScreen()
@@ -324,7 +359,7 @@ struct WorkOSMainView: View {
         case .assistant: AssistantScreen()
         case .memory: MemoryMapScreen()
         case .settings: SettingsScreen()
-        default: notesWorkspace
+        default: EmptyView()
         }
     }
 
@@ -344,7 +379,7 @@ struct WorkOSMainView: View {
     }
 
     private var sidePaneVisible: Bool {
-        guard isNotePage, let note = model.currentNote else { return false }
+        guard let note = model.currentNote else { return false }
         if model.selectedPage == .trash && note.deletedAt.isEmpty { return false }
         return NoteSidePaneRules.isVisibleForLayout(
             preference: paneVisibilityPreference, compactNavigation: true,
@@ -410,7 +445,7 @@ struct WorkOSMainView: View {
                 listPaneVisible: effectiveListVisible,
                 auxiliaryPaneVisible: effectiveRightPaneVisible,
                 focusMode: focusModeEnabled,
-                previewActive: effectiveRightPaneVisible && rightPaneTab == .preview,
+                previewActive: isNotePage && effectiveRightPaneVisible && rightPaneTab == .preview,
                 previewHTML: Binding(
                     get: { livePreviewNoteID == note.id ? livePreviewHTML : "" },
                     set: { html in

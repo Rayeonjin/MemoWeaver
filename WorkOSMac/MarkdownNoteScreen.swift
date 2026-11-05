@@ -164,10 +164,12 @@ struct MarkdownNoteEditorScreen: View {
             Divider()
             MarkdownPlainEditor(initialText: draft,
                                 insertRequest: insertRequest,
-                                fontSize: fontSize, syntaxColorsEnabled: syntaxColorsEnabled, autoFocus: true,
+                                fontSize: fontSize, syntaxColorsEnabled: syntaxColorsEnabled, autoFocus: model.selectedPage.isActiveNotesPage || model.selectedPage == .trash,
                                 focusLine: model.noteFocusNoteID == note.id ? model.noteFocusLine : 0,
                                 focusRequestID: model.noteFocusRequestID,
                                 restoreCaretOffset: model.editorCaretOffsets[note.id],
+                                wikiCandidates: { model.wikiCandidates($0, excluding: note.id) },
+                                onOpenWikiLink: { model.openWikiLink($0, sourceID: note.id) },
                                 onImagePaste: { png in model.storePastedPNG(png, for: note.id) },
                                 onImageImportError: { message in model.alertText = "붙여넣기 실패: " + message }) { value in
                 guard draft != value else { return }
@@ -206,7 +208,7 @@ struct MarkdownNoteEditorScreen: View {
             mountGeneration = model.dataGeneration
             refreshPreview()
             Task { @MainActor in
-                guard let previous = await MemoWeaverDraftRecoveryStore.shared.read(noteID: note.id),
+                guard let previous = await model.draftRecovery.read(noteID: note.id),
                       previous.storageEpoch == currentStorageEpoch,
                       previous.capturedAt > note.updatedAt,
                       !previous.hasSameContent(as: recoverySnapshot()) else { return }
@@ -258,7 +260,7 @@ struct MarkdownNoteEditorScreen: View {
         .onChange(of: noteDay) { _, _ in scheduleSave(); schedulePreview() }
         .onChange(of: noteStatus) { _, _ in scheduleSave(); schedulePreview() }
         .onChange(of: sourceURL) { _, _ in scheduleSave() }
-        .onChange(of: pinned) { _, _ in scheduleSave() }
+        .onChange(of: pinned) { _, _ in scheduleSave(); flush(checkpoint: false) }
         .onReceive(model.$checkpointSignal.dropFirst()) { _ in flush(checkpoint: true) }
         // Before compact/legacy shell switching, commit the current local draft
         // synchronously so the replacement editor reads fresh model content.
@@ -329,7 +331,7 @@ struct MarkdownNoteEditorScreen: View {
     }
 
     private var currentStorageEpoch: String {
-        UserDefaults.standard.string(forKey: "memoweaver.storage.recoveryEpoch") ?? "original"
+        model.preferences.string(forKey: "memoweaver.storage.recoveryEpoch") ?? "original"
     }
 
     private func recoverySnapshot() -> MemoWeaverRecoveryDraft {
@@ -349,7 +351,7 @@ struct MarkdownNoteEditorScreen: View {
             guard isDirty, !Task.isCancelled else { pendingRecoveryWrite = nil; return }
             let revision = editedRevision
             let snapshot = recoverySnapshot()
-            do { try await MemoWeaverDraftRecoveryStore.shared.write(snapshot) }
+            do { try await model.draftRecovery.write(snapshot) }
             catch { model.statusMessage = "임시 작성본 저장 실패: " + error.localizedDescription }
             pendingRecoveryWrite = nil
             // Periodic snapshots even during continuous typing (not trailing-only debounce).
@@ -382,7 +384,7 @@ struct MarkdownNoteEditorScreen: View {
             }
             Button("버리기") {
                 recoveryDraft = nil
-                Task { await MemoWeaverDraftRecoveryStore.shared.remove(noteID: note.id) }
+                Task { await model.draftRecovery.remove(noteID: note.id) }
             }
         }
         .padding(8)
@@ -423,7 +425,7 @@ struct MarkdownNoteEditorScreen: View {
             bodyEdited = false
             pendingRecoveryWrite?.cancel()
             pendingRecoveryWrite = nil
-            Task { await MemoWeaverDraftRecoveryStore.shared.remove(noteID: note.id) }
+            Task { await model.draftRecovery.remove(noteID: note.id) }
             saveLabel = migrating || note.isMarkdown ? "모든 변경사항 저장됨" : "기존 HTML 원본 유지됨"
         } else {
             saveLabel = "저장 실패"
@@ -431,7 +433,7 @@ struct MarkdownNoteEditorScreen: View {
             // persist the most recent local draft before returning control.
             pendingRecoveryWrite?.cancel()
             do {
-                try MemoWeaverDraftRecoveryStore.emergencyWrite(recoverySnapshot())
+                try MemoWeaverDraftRecoveryStore.emergencyWrite(recoverySnapshot(), directoryOverride: model.database?.directory)
                 model.statusMessage = "메모 저장 실패 · 작성본을 복구 파일에 보관했습니다"
             } catch {
                 model.alertText = "메모와 임시 작성본 모두 저장하지 못했습니다. 내용을 복사해 다른 위치에 보관하세요. 원인: " + error.localizedDescription

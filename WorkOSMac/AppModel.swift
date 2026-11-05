@@ -21,6 +21,7 @@ enum WorkspacePage: Hashable {
 @MainActor
 final class WorkOSModel: ObservableObject {
     @Published var notes: [WorkNote] = []
+    @Published var wikiBacklinks: [String: [MemoWeaverBacklink]] = [:]
     @Published var types: [WorkCategory] = []
     @Published var books: [WorkCategory] = []
     @Published var archives: [WorkArchive] = []
@@ -74,7 +75,7 @@ final class WorkOSModel: ObservableObject {
     @Published var isIndexingMemory = false
     @Published var memoryIndexStatus = "아직 의미 색인을 생성하지 않았습니다."
     @Published var memoryIndexProgress = 0.0
-    @Published var memoryThreshold = UserDefaults.standard.object(forKey: "workos.memory.threshold") as? Double ?? 0.64
+    @Published var memoryThreshold = 0.64
     @Published var memoryVectors: [MemoryVector] = []
     @Published var confirmedMemoryLinks: [MemoryLink] = []
     @Published var inferredMemoryRelations: [MemoryInferredRelation] = []
@@ -114,6 +115,9 @@ final class WorkOSModel: ObservableObject {
         activeRelationCache = nil
     }
 
+    let preferences: UserDefaults
+    let draftRecovery: MemoWeaverDraftRecoveryStore
+    let isIsolated: Bool
     let referenceReader = MemoryReferenceWindowCoordinator()
     var database: LocalDatabase?
     let ollama = OllamaService()
@@ -124,11 +128,17 @@ final class WorkOSModel: ObservableObject {
     private var answerTask: Task<Void, Never>?
     private var answerGeneration = UUID()
     private var backupPreflightBusy = false
+    @Published var archiveImportBusy = false
 
-    init() {
+    init(directoryOverride: URL? = nil, seedWelcome: Bool = true, preferences: UserDefaults = .standard) {
+        self.preferences = preferences
+        isIsolated = directoryOverride != nil
+        draftRecovery = directoryOverride.map { MemoWeaverDraftRecoveryStore(directoryOverride: $0) } ?? .shared
+        memoryThreshold = preferences.object(forKey: "workos.memory.threshold") as? Double ?? 0.64
         do {
-            let db = try LocalDatabase()
+            let db = try LocalDatabase(directoryOverride: directoryOverride)
             database = db
+            if seedWelcome { try db.createWelcomeNoteIfNeeded() }
             storagePath = db.databaseURL.path
             var backupIssue: String?
             var recoveryIssue: String?
@@ -144,12 +154,12 @@ final class WorkOSModel: ObservableObject {
                 catch { backupIssue = error.localizedDescription }
             }
             try refresh(keepSelection: false)
-            if let lastID = UserDefaults.standard.string(forKey: "memoweaver.notes.lastOpenedID"),
+            if let lastID = preferences.string(forKey: "memoweaver.notes.lastOpenedID"),
                notes.contains(where: { $0.id == lastID && $0.deletedAt.isEmpty }) {
                 selectedNoteID = lastID
             }
             try bootstrapMemory()
-            checkReminderPermission()
+            if directoryOverride == nil { checkReminderPermission() }
             if let backupIssue {
                 statusMessage = "SQLite 저장 가능 · 자동 백업 점검 필요"
                 alertText = "메모 저장소는 열렸지만 자동 백업에 실패했습니다. JSON 수동 백업을 권장합니다.\n\n" + backupIssue
@@ -171,6 +181,7 @@ final class WorkOSModel: ObservableObject {
         guard let database else { return }
         let prior = keepSelection ? selectedNoteID : nil
         notes = try database.notes()
+        rebuildWikiLinks()
         types = try database.categories(kind: "type")
         books = try database.categories(kind: "book")
         archives = try database.archives()
@@ -246,7 +257,7 @@ final class WorkOSModel: ObservableObject {
     }
 
     func backupNow() {
-        guard let database else { return }
+        guard MemoWeaverLayoutSwitchSafety.prepare(), let database else { return }
         do {
             let snapshot = try database.snapshotBackupIfNeeded(force: true)
             backupStatus = snapshot.lastPathComponent
@@ -297,6 +308,7 @@ final class WorkOSModel: ObservableObject {
     }
 
     func checkReminderPermission() {
+        guard !isIsolated else { return }
         WorkOSReminderService.shared.queryPermission { [weak self] label, granted in
             guard let self else { return }
             self.notificationStatus = label
@@ -305,6 +317,7 @@ final class WorkOSModel: ObservableObject {
     }
 
     func requestReminderPermission() {
+        guard !isIsolated else { return }
         WorkOSReminderService.shared.requestPermission { [weak self] status in
             guard let self else { return }
             self.notificationStatus = status
@@ -313,8 +326,9 @@ final class WorkOSModel: ObservableObject {
     }
 
     func rescheduleReminders() {
+        guard !isIsolated else { return }
         WorkOSReminderService.shared.synchronize(items: scheduleItems,
-            revealDetails: UserDefaults.standard.bool(forKey: "workos.notifications.revealDetails"))
+            revealDetails: preferences.bool(forKey: "workos.notifications.revealDetails"))
     }
 
     // One action in every screen: creates an ordinary note with an immediately editable body.
@@ -343,18 +357,18 @@ final class WorkOSModel: ObservableObject {
                 resetNoteFilters()
                 selectedPage = .all
             } else if let previous = previousNote,
-                      (UserDefaults.standard.string(forKey: "memoweaver.rightPane.visibility") ?? "automatic") == "automatic" {
+                      (preferences.string(forKey: "memoweaver.rightPane.visibility") ?? "automatic") == "automatic" {
                 // A brand-new note inherits the previous note's *effective*
                 // pane visibility, rather than re-triggering automatic preview.
                 // An explicit open/closed preference and the native split
                 // width are already shared across note selection unchanged.
-                let rawTab = UserDefaults.standard.string(forKey: "memoweaver.rightPane.activeTab") ?? "preview"
+                let rawTab = preferences.string(forKey: "memoweaver.rightPane.activeTab") ?? "preview"
                 let tab = NoteSidePaneTab(rawValue: rawTab) ?? .preview
                 let wasOpen = NoteSidePaneRules.isVisibleForLayout(
                     preference: "automatic", compactNavigation: true, tab: tab,
                     bodyHTML: previous.bodyHTML, blocks: previous.workosBlocks,
                     isMarkdown: previous.isMarkdown)
-                UserDefaults.standard.set(wasOpen ? "open" : "closed",
+                preferences.set(wasOpen ? "open" : "closed",
                                           forKey: "memoweaver.rightPane.visibility")
             }
             selectedNoteID = note.id
@@ -394,8 +408,10 @@ final class WorkOSModel: ObservableObject {
                 convertLegacyBodyToMarkdown: convertLegacyBodyToMarkdown,
                 notebookIDs: notebookIDs)
             if let index = notes.firstIndex(where: { $0.id == saved.id }) { notes[index] = saved }
+            if saved.title != old.title { rebuildWikiLinks() }
+            else if saved.bodyHTML != old.bodyHTML { updateWikiLinks(saved) }
             statusMessage = "저장됨 · \(WorkOSDate.display(WorkOSDate.now()))"
-            if saved.updatedAt != old.updatedAt {
+            if saved.bodyHTML != old.bodyHTML || saved.title != old.title || saved.deletedAt != old.deletedAt {
                 invalidateVirtualSourceAfterEdit(kind: "note", id: saved.id)
                 invalidateMemoryDisplayCaches()
                 queueLiveMemoryIndex(noteID: saved.id)
@@ -474,21 +490,37 @@ final class WorkOSModel: ObservableObject {
     }
 
     func importArchives(_ urls: [URL]) {
-        guard let database else { return }
-        var imported = 0
-        var errors: [String] = []
-        for url in urls {
-            do {
-                let raw = try Data(contentsOf: url, options: .mappedIfSafe)
-                let decoded = try ArchiveDecoder.read(raw)
-                if try database.addArchive(name: url.lastPathComponent, content: decoded.text) { imported += 1 }
-            } catch { errors.append("\(url.lastPathComponent): \(error.localizedDescription)") }
-        }
-        do { try refresh() } catch { show(error) }
-        if imported > 0 { requestBackgroundCorpusIndex() }
-        statusMessage = "텍스트 자료 \(imported)개 가져옴"
-        if !errors.isEmpty {
-            alertText = "\(imported)개 가져옴. 실패한 파일:\n" + errors.prefix(8).joined(separator: "\n")
+        guard let database, !archiveImportBusy, !backupPreflightBusy else { return }
+        archiveImportBusy = true
+        let directory = database.directory
+        let generation = dataGeneration
+        statusMessage = "텍스트 자료 가져오는 중…"
+        Task { @MainActor in
+            defer { archiveImportBusy = false }
+            let result = await Task.detached(priority: .userInitiated) { () -> (Int, [String]) in
+                var imported = 0
+                var errors: [String] = []
+                do {
+                    // This connection belongs exclusively to the worker. Never
+                    // send the MainActor's SQLite connection across executors.
+                    let worker = try LocalDatabase(directoryOverride: directory)
+                    for url in urls {
+                        do {
+                            let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
+                            guard size <= 100 * 1024 * 1024 else { throw ArchiveDecoder.DecodeFailure.tooLarge }
+                            let raw = try Data(contentsOf: url, options: .mappedIfSafe)
+                            let decoded = try ArchiveDecoder.read(raw)
+                            if try worker.addArchive(name: url.lastPathComponent, content: decoded.text) { imported += 1 }
+                        } catch { errors.append("\(url.lastPathComponent): \(error.localizedDescription)") }
+                    }
+                } catch { errors.append(error.localizedDescription) }
+                return (imported, errors)
+            }.value
+            guard generation == dataGeneration else { return }
+            do { archives = try database.archives(); chunks = try database.archiveChunks() } catch { show(error) }
+            if result.0 > 0 { requestBackgroundCorpusIndex() }
+            statusMessage = "텍스트 자료 \(result.0)개 가져옴"
+            if !result.1.isEmpty { alertText = "\(result.0)개 가져옴. 실패한 파일:\n" + result.1.prefix(8).joined(separator: "\n") }
         }
     }
 
@@ -553,7 +585,10 @@ final class WorkOSModel: ObservableObject {
     }
 
     func restoreBackupDialog() {
-        guard let database, !backupPreflightBusy else { return }
+        guard let database, !backupPreflightBusy, !archiveImportBusy else {
+            alertText = "가져오기 또는 복원이 끝난 뒤 다시 시도해 주세요."
+            return
+        }
         let picker = NSOpenPanel()
         picker.allowedContentTypes = [.json]
         picker.allowsMultipleSelection = false
@@ -588,7 +623,7 @@ final class WorkOSModel: ObservableObject {
                 // Never write old on-screen drafts into the newly restored database.
                 dataGeneration = UUID()
                 virtualSourceSignatureCache.removeAll()
-                UserDefaults.standard.set(UUID().uuidString, forKey: "memoweaver.storage.recoveryEpoch")
+                preferences.set(UUID().uuidString, forKey: "memoweaver.storage.recoveryEpoch")
                 selectedNoteID = nil
                 try refresh(keepSelection: false)
                 try bootstrapMemory()
@@ -603,7 +638,7 @@ final class WorkOSModel: ObservableObject {
     }
 
     func exportBackupDialog() {
-        guard let database else { return }
+        guard MemoWeaverLayoutSwitchSafety.prepare(), let database else { return }
         let picker = NSSavePanel()
         picker.allowedContentTypes = [.json]
         picker.nameFieldStringValue = "MemoWeaver_\(WorkOSDate.day())_backup.json"
