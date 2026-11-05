@@ -178,6 +178,8 @@ struct WorkNote: Identifiable, Hashable {
         return note
     }
 
+    var wikiLinkTargets: [String: String] { decodedPayload["wikiLinkTargets"] as? [String: String] ?? [:] }
+
     var notebookIDs: [String] {
         NotebookMembershipCore.from(decodedPayload)
     }
@@ -268,5 +270,87 @@ enum HTMLText {
             text = text.replacingOccurrences(of: from, with: to)
         }
         return text.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
+
+// Wiki links remain plain Markdown. A saved title-to-ID binding preserves a
+// manually typed [[title]] through renames; picker links carry an explicit ID.
+struct MemoWeaverWikiCandidate: Identifiable, Hashable {
+    let id: String
+    let title: String
+}
+struct MemoWeaverWikiReference {
+    let target: String
+    let label: String
+    let range: NSRange
+    let line: Int
+    let context: String
+}
+enum MemoWeaverWikiLinks {
+    private static let expression = try! NSRegularExpression(pattern: #"(?<!\\)\[\[([^\[\]\n]{1,500})\]\]"#)
+    static func references(in text: String) -> [MemoWeaverWikiReference] {
+        guard text.contains("[[") else { return [] }
+        var result: [MemoWeaverWikiReference] = []
+        var fence: Character?
+        var fenceCount = 0
+        var offset = 0
+        for (index, line) in text.components(separatedBy: "\n").enumerated() {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            let character = trimmed.first
+            let run = trimmed.prefix { $0 == character }.count
+            if let character, (character == "`" || character == "~"), run >= 3 {
+                if fence == nil { fence = character; fenceCount = run }
+                else if fence == character && run >= fenceCount && trimmed.dropFirst(run).trimmingCharacters(in: .whitespaces).isEmpty { fence = nil }
+                offset += (line as NSString).length + 1
+                continue
+            }
+            defer { offset += (line as NSString).length + 1 }
+            guard fence == nil else { continue }
+            let ns = line as NSString
+            // Mask inline code with equal-length spaces to preserve UTF-16 ranges.
+            var masked = line
+            if let codes = try? NSRegularExpression(pattern: #"(`+).*?\1"#) {
+                for match in codes.matches(in: line, range: NSRange(location: 0, length: ns.length)).reversed() {
+                    if let range = Range(match.range, in: masked) { masked.replaceSubrange(range, with: String(repeating: " ", count: match.range.length)) }
+                }
+            }
+            for match in expression.matches(in: masked, range: NSRange(location: 0, length: (masked as NSString).length)) {
+                let content = ns.substring(with: match.range(at: 1))
+                let parts = content.split(separator: "|", maxSplits: 1, omittingEmptySubsequences: false).map(String.init)
+                let target = parts[0].trimmingCharacters(in: .whitespaces)
+                guard !target.isEmpty else { continue }
+                result.append(.init(target: target, label: parts.count == 2 ? parts[1] : target,
+                    range: NSRange(location: offset + match.range.location, length: match.range.length),
+                    line: index + 1, context: String(line.prefix(240))))
+            }
+        }
+        return result
+    }
+    static func bindings(_ note: WorkNote) -> [String: String] {
+        note.wikiLinkTargets
+    }
+    static func resolve(_ target: String, bindings: [String: String], candidates: [MemoWeaverWikiCandidate]) -> String? {
+        if candidates.contains(where: { $0.id == target }) { return target }
+        if let id = bindings[target] { return candidates.contains(where: { $0.id == id }) ? id : nil }
+        let matches = candidates.filter { $0.title == target }
+        return matches.count == 1 ? matches[0].id : nil
+    }
+    // Read-only exports/reference readers cannot depend on the active editor's
+    // identity when opening a renamed title link. Expand saved bindings only
+    // in the rendered copy, leaving the authored Markdown untouched.
+    static func previewSource(_ note: WorkNote) -> String {
+        var text = note.bodyHTML
+        let bound = note.wikiLinkTargets
+        for reference in references(in: text).reversed() {
+            guard let id = bound[reference.target], let range = Range(reference.range, in: text) else { continue }
+            text.replaceSubrange(range, with: source(.init(id: id, title: reference.label)))
+        }
+        return text
+    }
+    static func source(_ candidate: MemoWeaverWikiCandidate) -> String {
+        let title = candidate.title.replacingOccurrences(of: "[", with: "(")
+            .replacingOccurrences(of: "]", with: ")").replacingOccurrences(of: "|", with: "·")
+            .replacingOccurrences(of: "\n", with: " ")
+        return "[[\(candidate.id)|\(title)]]"
     }
 }

@@ -214,6 +214,15 @@ enum MarkdownPreviewCore {
             hasMath = true
             return "<span class='formula-inline' data-tex='\(esc(expr))'>\(esc(expr))</span>"
         }
+        text = protect(text, regex: #"(?<!\\)\[\[([^\[\]\n]{1,500})\]\]"#) { content in
+            let parts = content.split(separator: "|", maxSplits: 1, omittingEmptySubsequences: false).map(String.init)
+            let target = parts[0].trimmingCharacters(in: .whitespaces)
+            let label = parts.count == 2 ? parts[1] : target
+            var url = URLComponents()
+            url.scheme = "memoweaver-note"; url.host = "open"
+            url.queryItems = [URLQueryItem(name: "target", value: target)]
+            return "<a class='md-link' href='\(esc(url.string ?? ""))'>\(esc(label))</a>"
+        }
         text = esc(text)
         text = replace(text, pattern: #"\*\*([^*\n]+)\*\*"#, template: "<strong>$1</strong>")
         text = replace(text, pattern: #"~~([^~\n]+)~~"#, template: "<del>$1</del>")

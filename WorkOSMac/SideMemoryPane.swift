@@ -52,6 +52,7 @@ struct SideMemoryPane: View {
             })
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
+                MemoWeaverWikiLinksSection(noteID: noteID)
                 HStack(alignment: .center) {
                     Label("현재 메모의 기억", systemImage: "brain.head.profile")
                         .font(.subheadline.bold())

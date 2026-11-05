@@ -170,6 +170,39 @@ enum MemoWeaverAttachments {
         }
     }
 
+    static func validateReferences(in notes: [[String: Any]], storageDirectory: URL) throws {
+        var paths = Set<String>()
+        let imageReference = try! NSRegularExpression(pattern: #"(?<!\\)!\[[^\]\n]*\]\((attachments/[0-9a-f-]{36}\.png)\)"#)
+        func visit(_ value: Any) {
+            if let text = value as? String {
+                var fence: Character?
+                var fenceLength = 0
+                for line in text.components(separatedBy: "\n") {
+                    let trimmed = line.trimmingCharacters(in: .whitespaces)
+                    let first = trimmed.first
+                    let run = trimmed.prefix { $0 == first }.count
+                    if let first, (first == "`" || first == "~"), run >= 3 {
+                        if fence == nil { fence = first; fenceLength = run }
+                        else if fence == first && run >= fenceLength && trimmed.dropFirst(run).trimmingCharacters(in: .whitespaces).isEmpty { fence = nil }
+                        continue
+                    }
+                    guard fence == nil else { continue }
+                    let visible = line.replacingOccurrences(of: #"(`+).*?\1"#, with: "", options: .regularExpression)
+                    // Literal examples of a path are not attachments. Match the
+                    // image syntax actually understood by the preview renderer.
+                    let ns = visible as NSString
+                    for match in imageReference.matches(in: visible, range: NSRange(location: 0, length: ns.length)) {
+                        paths.insert(ns.substring(with: match.range(at: 1)))
+                    }
+                }
+            }
+            else if let rows = value as? [Any] { rows.forEach(visit) }
+            else if let object = value as? [String: Any] { object.values.forEach(visit) }
+        }
+        notes.forEach { visit($0) }
+        for path in paths.sorted() where read(path, in: storageDirectory) == nil { throw Problem.missingAsset(path) }
+    }
+
     static func backupEntries(in storageDirectory: URL) throws -> [[String: String]] {
         let path = folder(in: storageDirectory)
         let fm = FileManager.default

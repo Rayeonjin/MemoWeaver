@@ -1,7 +1,9 @@
 # MemoWeaver
 
 > Local-first macOS notes, Markdown when helpful, and optional AI-assisted
-> connections between ideas. **Current baseline: v0.9.64 / Build 97 (QA candidate).**
+> connections between ideas. **Current version: v0.9.65 / Build 98 (QA candidate).**
+
+**이번 업데이트:** 메모·설정 전환 시 편집기 유지, 즉시 고정, 첫 실행 안내 메모, 드래그 중 비율 표시, `[[메모 연결]]`과 역방향 링크. [변경 사항](docs/releases/CHANGELOG_v0.9.65.md)
 
 **바로가기:** [설치·빌드](#build-from-source-macos-14) · [문서 안내](docs/README.md) · [최신 변경 사항](docs/releases/CHANGELOG_UNRELEASED.md) · [테스트 안내](scripts/README.md) · [라이선스 고지](THIRD_PARTY_NOTICES.md)
 
@@ -12,7 +14,7 @@ Third-party notices, EPL source access and the retained-asset audit are recorded
 in [the license audit](docs/THIRD_PARTY_LICENSE_AUDIT_2026-10-29.md).
 Manual GUI acceptance remains pending; source availability is not a compliance
 warranty or production-release sign-off.
-The unreleased stability changes passed the native build and current automated checks; see
+The earlier stability changes passed the native build and automated checks; see
 [validation evidence](docs/STABILITY_REVIEW_2026-10-29.md).
 
 This is the source repository for MemoWeaver. It is also used for weekly
@@ -42,15 +44,15 @@ xcode-select --install
 Download a ZIP from GitHub or clone this repository. From the project root:
 
 ```bash
-chmod +x build.sh install-v0.9.64.sh backup-before-real-use.sh
-./install-v0.9.64.sh --verify   # tests + native build; DOES NOT install
+chmod +x build.sh install-v0.9.65.sh backup-before-real-use.sh
+./install-v0.9.65.sh --verify   # tests + native build; DOES NOT install
 ```
 
 The output is `build/Release/MemoWeaver.app`. Before installing any update to
 an existing installation, quit MemoWeaver, run `./backup-before-real-use.sh`,
 and keep the verified archive separate. Only after completing the relevant
-`docs/releases/MAC_ACCEPTANCE_v0.9.64.md` and `docs/releases/MAC_ACCEPTANCE_v0.9.63.md` checks should an
-owner elect to run `./install-v0.9.64.sh` (which changes the installed app).
+`docs/releases/MAC_ACCEPTANCE_v0.9.65.md` checks should an
+owner elect to run `./install-v0.9.65.sh` (which changes the installed app).
 
 A user working on a read-only computer may anonymously download or `git pull`
 from this public repository. GitHub credentials are needed only on the home
@@ -121,4 +123,4 @@ MemoWeaver/
 ```
 
 최상위에는 README와 빌드·설치·라이선스 진입점을 유지합니다.
-기존 `./install-v0.9.64.sh --verify` 명령은 그대로 사용할 수 있습니다.
+기존 `./install-v0.9.65.sh --verify` 명령은 그대로 사용할 수 있습니다.

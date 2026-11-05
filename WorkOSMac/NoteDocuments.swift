@@ -163,7 +163,7 @@ enum NoteDocuments {
         if note.isMarkdown {
             return WorkOSOfficialDiagramRuntime.embedForStandaloneExport(
                 markdownPreviewHTML(title: note.title, noteDate: note.noteDate,
-                                    status: note.status, markdown: note.bodyHTML))
+                                    status: note.status, markdown: MemoWeaverWikiLinks.previewSource(note)))
         }
         return WorkOSOfficialDiagramRuntime.embedForStandaloneExport(
             livePreviewHTML(title: note.visibleTitle, noteDate: note.noteDate, status: note.status,

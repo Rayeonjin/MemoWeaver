@@ -1,3 +1,12 @@
+## Current update — v0.9.65 / Build 98 (2026-11-05)
+
+Desktop usability, four review fixes and manual wiki links/backlinks are now
+implemented. Read [release notes](releases/CHANGELOG_v0.9.65.md) and
+[validation evidence](USABILITY_UPDATE_2026-11-05.md) before using this candidate.
+Current gate: `./install-v0.9.65.sh --verify`. Real IME/GUI acceptance is pending.
+Mobile/QR work was explicitly deferred. No schema change or app installation.
+The history below documents the earlier v0.9.64 baseline.
+
 # MemoWeaver / latest developer handoff
 
 **Original source baseline:** v0.9.64 / Build 97 (2026-10-28). First GitHub

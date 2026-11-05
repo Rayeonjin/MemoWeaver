@@ -282,6 +282,11 @@ struct WorkOSHTMLPreview: NSViewRepresentable {
         }
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
                      decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+            if navigationAction.navigationType == .linkActivated,
+               let url = navigationAction.request.url, url.scheme == "memoweaver-note",
+               let target = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.first(where: { $0.name == "target" })?.value {
+                NotificationCenter.default.post(name: .memoWeaverOpenWikiLink, object: nil, userInfo: ["target": target])
+            }
             decisionHandler(navigationAction.navigationType == .linkActivated ? .cancel : .allow)
         }
     }

@@ -5,6 +5,7 @@ import Foundation
 // Guard focus transitions against uncommitted Korean IME marked text and
 // failed disk saves. Focus never rewrites note content.
 extension Notification.Name {
+    static let memoWeaverOpenWikiLink = Notification.Name("MemoWeaverOpenWikiLink")
     static let memoWeaverBeforeLayoutChange = Notification.Name("MemoWeaverBeforeLayoutChange")
     static let memoWeaverOpenQuickSearch = Notification.Name("MemoWeaverOpenQuickSearch")
     static let memoWeaverToggleFocusMode = Notification.Name("MemoWeaverToggleFocusMode")

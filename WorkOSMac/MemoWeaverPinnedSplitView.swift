@@ -138,6 +138,7 @@ struct MemoWeaverPinnedSplitView<ListPane: View, EditorPane: View, RightPane: Vi
         private enum DragTarget { case list, right }
         private var trackedDivider: DragTarget?
         private var pendingDragEnd: DispatchWorkItem?
+        private let ratioOverlay = NSTextField(labelWithString: "")
 
         // Invariant: arrangedSubviews is exactly [list? , editor, right?],
         // matching the visible columns AND the dividers AppKit draws.
@@ -209,6 +210,7 @@ struct MemoWeaverPinnedSplitView<ListPane: View, EditorPane: View, RightPane: Vi
             pendingDragEnd = nil
             trackedDivider = nil
             savingUserDrag = false
+            ratioOverlay.isHidden = true
         }
 
         // Called when the actual window resizes. The two saved outer widths
@@ -320,6 +322,19 @@ struct MemoWeaverPinnedSplitView<ListPane: View, EditorPane: View, RightPane: Vi
                   let split = notification.object as? NSSplitView,
                   !split.inLiveResize else { return }
             savingUserDrag = true
+            if rightVisible, let editor = editorHost, let right = rightHost,
+               let percent = MemoWeaverPinnedPaneLayout.editorPercent(editorWidth: editor.frame.width, rightWidth: right.frame.width) {
+                ratioOverlay.stringValue = "편집 \(percent) : \(100-percent) 보조"
+                ratioOverlay.font = .monospacedDigitSystemFont(ofSize: 12, weight: .medium)
+                ratioOverlay.textColor = .labelColor
+                ratioOverlay.backgroundColor = .windowBackgroundColor
+                ratioOverlay.drawsBackground = true
+                ratioOverlay.alignment = .center
+                ratioOverlay.frame = NSRect(x: max(0, editor.bounds.width - 154),
+                    y: editor.isFlipped ? 12 : max(0, editor.bounds.height - 38), width: 144, height: 24)
+                if ratioOverlay.superview !== editor { editor.addSubview(ratioOverlay) }
+                ratioOverlay.isHidden = false
+            }
             scheduleDragEnd()
         }
 
@@ -335,6 +350,7 @@ struct MemoWeaverPinnedSplitView<ListPane: View, EditorPane: View, RightPane: Vi
                 let completedDivider = self.trackedDivider
                 self.trackedDivider = nil
                 self.savingUserDrag = false
+                self.ratioOverlay.isHidden = true
                 // Update the footer from the final released divider position;
                 // never invalidate SwiftUI on each mouse-move during drag.
                 if let split = self.editorHost?.superview as? NSSplitView {

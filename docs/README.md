@@ -1,3 +1,5 @@
+현재 버전: **v0.9.65 / Build 98** · [변경 사항](releases/CHANGELOG_v0.9.65.md) · [검증 결과](USABILITY_UPDATE_2026-11-05.md) · [수동 수용 검사](releases/MAC_ACCEPTANCE_v0.9.65.md)
+
 # 문서 안내
 
 - [프로젝트 소개와 설치·빌드](../README.md)

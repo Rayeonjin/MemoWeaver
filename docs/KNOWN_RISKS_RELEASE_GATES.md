@@ -1,3 +1,11 @@
+# Current release gate — v0.9.65 / Build 98 (2026-11-05)
+
+Current checks and limits are in [the usability update](USABILITY_UPDATE_2026-11-05.md).
+Use `./install-v0.9.65.sh --verify`. This is a QA candidate, not a stable-release
+certification. Real Korean IME, mouse-driven acceptance and notification delivery
+remain manual gates in [the checklist](releases/MAC_ACCEPTANCE_v0.9.65.md).
+Mobile/QR work is deferred. The tables below preserve the previous baseline.
+
 # Known risks and release gates (2026-10-29)
 
 | Area | Current status | Required proof |
