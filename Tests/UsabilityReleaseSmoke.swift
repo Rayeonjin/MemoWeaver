@@ -35,6 +35,23 @@ import SQLite3
         let renamed = try save(target, "바뀐 제목", "본문")
         check(MemoWeaverWikiLinks.resolve("대상 메모", bindings: MemoWeaverWikiLinks.bindings(source), candidates: [.init(id: renamed.id, title: renamed.title)]) == renamed.id, "rename retains typed-title link")
         check(MemoWeaverWikiLinks.previewSource(source).contains("[[\(target.id)|대상 메모]]"), "read-only preview retains bound ID")
+        // Saved bindings win even when another imported note's ID equals the old title.
+        let collision: [MemoWeaverWikiCandidate] = [.init(id: "대상 메모", title: "다른 메모"), .init(id: target.id, title: renamed.title)]
+        check(MemoWeaverWikiLinks.resolve("대상 메모", bindings: source.wikiLinkTargets, candidates: collision) == target.id, "bound title wins ID collision")
+        check(MemoWeaverWikiLinks.resolve("대상 메모", bindings: source.wikiLinkTargets, candidates: [collision[0]]) == nil, "deleted bound target never redirects")
+        check(MemoWeaverWikiLinks.resolve(target.id, bindings: [:], candidates: collision) == target.id, "unbound explicit ID still opens")
+        check(MemoWeaverWikiLinks.resolve("중복", bindings: [:], candidates: [.init(id: "a", title: "중복"), .init(id: "b", title: "중복")]) == nil, "duplicate title not guessed")
+        let mathSamples = ["$[[대상 메모]]$", "$$[[대상 메모]]$$", "$$\n[[대상 메모]]\n$$", "$$\n[[대상 메모]]", "```math\n[[대상 메모]]\n```"]
+        for sample in mathSamples {
+            check(MemoWeaverWikiLinks.references(in: sample).isEmpty, "math must not become backlinks: " + sample)
+            check(!MarkdownPreviewCore.render(sample).html.contains("memoweaver-note:"), "math preview agrees with backlinks")
+        }
+        let mixed = "한글🌍 $[[수식]]$ 와 [[실제]]\r\n$$\r\n```\r\n[[수식]]\r\n$$\r\n다음 [[끝]]"
+        let mixedRefs = MemoWeaverWikiLinks.references(in: mixed)
+        check(mixedRefs.map(\.target) == ["실제", "끝"] && mixedRefs.map(\.line) == [1, 6], "math/code delimiters and CRLF preserve source line numbers")
+        for reference in mixedRefs { check((mixed as NSString).substring(with: reference.range) == "[[" + reference.target + "]]", "Unicode ranges remain exact") }
+        check(MemoWeaverWikiLinks.references(in: #"\$5 [[실제]]"#).count == 1, "escaped dollar is ordinary prose")
+        print("PASS: bound-ID collision/deleted target/duplicate title and inline/display/fenced/unclosed math with exact Unicode source ranges")
         let before = source.revisions.count
         let metadata = try save(source, source.title, source.bodyHTML, status: "완료", date: "2026-12-31", notebooks: ["book-one", "book-two"])
         check(metadata.revisions.count == before + 1, "metadata checkpoint captured")

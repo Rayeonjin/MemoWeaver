@@ -6,6 +6,19 @@ import SwiftUI
 // substitutions, slash-command interpreter, or text-storage reconstruction.
 final class WorkOSMarkdownTextView: NSTextView {
     let wikiCompletion = MemoWeaverWikiCompletion()
+    private var navigationObserver: NSObjectProtocol?
+    var isNavigationActive = true {
+        didSet { if !isNavigationActive { deactivateForNavigation() } }
+    }
+    deinit { if let navigationObserver { NotificationCenter.default.removeObserver(navigationObserver) } }
+
+    func deactivateForNavigation() {
+        wikiCompletion.close()
+        slashCoordinator?.dismissCompletion()
+        // The popover may be the key window. Release the responder on this
+        // editor's actual window, never on whichever window happens to be key.
+        if !hasMarkedText(), window?.firstResponder === self { window?.makeFirstResponder(nil) }
+    }
     var openWikiLink: ((String) -> Void)?
     weak var slashCoordinator: MarkdownPlainEditor.Coordinator?
     // Synchronous, failure-aware attachment save owned by the active note.
@@ -37,7 +50,13 @@ final class WorkOSMarkdownTextView: NSTextView {
 
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+        if navigationObserver == nil {
+            navigationObserver = NotificationCenter.default.addObserver(forName: .memoWeaverDeactivateEditor, object: nil, queue: .main) { [weak self] _ in
+                self?.deactivateForNavigation()
+            }
+        }
         if window != nil { setNeedsDisplay(visibleRect) }
+        else { deactivateForNavigation() }
     }
 
     override func drawBackground(in rect: NSRect) {
@@ -501,6 +520,7 @@ struct MarkdownPlainEditor: NSViewRepresentable {
         editor.font = NSFont.monospacedSystemFont(ofSize: CGFloat(fontSize), weight: .regular)
         editor.textColor = .labelColor
         editor.syntaxColorsEnabled = syntaxColorsEnabled
+        editor.isNavigationActive = autoFocus
         editor.wikiCompletion.candidates = wikiCandidates
         editor.openWikiLink = onOpenWikiLink
         editor.pastePNGIntoNote = onImagePaste
@@ -569,7 +589,7 @@ struct MarkdownPlainEditor: NSViewRepresentable {
         editor.scheduleSyntaxRefresh()
         if autoFocus {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) {
-                if let window = scroll.window { window.makeFirstResponder(editor) }
+                if editor.isNavigationActive, let window = scroll.window { window.makeFirstResponder(editor) }
             }
         }
         return scroll
@@ -586,6 +606,7 @@ struct MarkdownPlainEditor: NSViewRepresentable {
         // Switching the syntax-color safety option only affects temporary
         // layout attributes, not saved Markdown or the undo history.
         (editor as? WorkOSMarkdownTextView)?.syntaxColorsEnabled = syntaxColorsEnabled
+        (editor as? WorkOSMarkdownTextView)?.isNavigationActive = autoFocus
         (editor as? WorkOSMarkdownTextView)?.wikiCompletion.candidates = wikiCandidates
         (editor as? WorkOSMarkdownTextView)?.openWikiLink = onOpenWikiLink
         (editor as? WorkOSMarkdownTextView)?.pastePNGIntoNote = onImagePaste
@@ -606,7 +627,7 @@ struct MarkdownPlainEditor: NSViewRepresentable {
             context.coordinator.lastFocusRequestID = focusRequestID
             if focusLine > 0 { jumpToSourceLine(focusLine, in: editor) }
             DispatchQueue.main.async { [weak editor] in
-                guard let editor, editor.window?.isKeyWindow == true else { return }
+                guard let editor = editor as? WorkOSMarkdownTextView, editor.isNavigationActive, editor.window?.isKeyWindow == true else { return }
                 editor.window?.makeFirstResponder(editor)
             }
         }
@@ -652,7 +673,9 @@ struct MarkdownPlainEditor: NSViewRepresentable {
                 // Toolbar/menu actions can temporarily steal first responder.
                 // Restore the editor BEFORE publishing the final block
                 // context, so the first insertion activates its tools.
-                editor.window?.makeFirstResponder(editor)
+                if (editor as? WorkOSMarkdownTextView)?.isNavigationActive != false {
+                    editor.window?.makeFirstResponder(editor)
+                }
                 coordinator.forceRefreshContext(in: editor)
             }
         }
@@ -742,6 +765,8 @@ struct MarkdownPlainEditor: NSViewRepresentable {
             }
         }
 
+        func dismissCompletion() { closeSlash() }
+
         private func closeSlash() {
             if let slashMouseDownMonitor {
                 NSEvent.removeMonitor(slashMouseDownMonitor)
@@ -806,7 +831,9 @@ struct MarkdownPlainEditor: NSViewRepresentable {
             // slash popover is still closing. Commit in the next main turn.
             DispatchQueue.main.async { [weak self, weak editor] in
                 guard let self, let editor else { return }
-                editor.window?.makeFirstResponder(editor)
+                if (editor as? WorkOSMarkdownTextView)?.isNavigationActive != false {
+                    editor.window?.makeFirstResponder(editor)
+                }
                 self.forceRefreshContext(in: editor)
             }
         }
@@ -888,7 +915,7 @@ struct MarkdownPlainEditor: NSViewRepresentable {
                 object: nil, queue: .main
             ) { [weak self] _ in self?.closeSlash() }
             DispatchQueue.main.async { [weak editor] in
-                guard let editor else { return }
+                guard let editor, editor.isNavigationActive else { return }
                 editor.window?.makeFirstResponder(editor)
             }
         }

@@ -1,3 +1,10 @@
+# Current release gate — v0.9.66 / Build 99 (2026-11-08)
+
+Three wiki/navigation fixes and their evidence are recorded in
+[the stability update](WIKI_STABILITY_2026-11-08.md).
+Use `./install-v0.9.66.sh --verify`. Real input-method/mouse/notification acceptance
+remains pending. This is a QA candidate. Earlier evidence is preserved below.
+
 # Current release gate — v0.9.65 / Build 98 (2026-11-05)
 
 Current checks and limits are in [the usability update](USABILITY_UPDATE_2026-11-05.md).

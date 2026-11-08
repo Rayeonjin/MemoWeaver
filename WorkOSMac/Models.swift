@@ -288,29 +288,43 @@ struct MemoWeaverWikiReference {
 }
 enum MemoWeaverWikiLinks {
     private static let expression = try! NSRegularExpression(pattern: #"(?<!\\)\[\[([^\[\]\n]{1,500})\]\]"#)
+    private static let inlineCode = try! NSRegularExpression(pattern: #"(`+).*?\1"#)
+    private static let inlineMath = try! NSRegularExpression(pattern: #"(?<!\\)\$([^$\n]+)\$"#)
     static func references(in text: String) -> [MemoWeaverWikiReference] {
         guard text.contains("[[") else { return [] }
         var result: [MemoWeaverWikiReference] = []
         var fence: Character?
         var fenceCount = 0
+        var displayMath = false
         var offset = 0
         for (index, line) in text.components(separatedBy: "\n").enumerated() {
-            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            defer { offset += (line as NSString).length + 1 }
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if displayMath {
+                if trimmed == "$$" { displayMath = false }
+                continue
+            }
             let character = trimmed.first
             let run = trimmed.prefix { $0 == character }.count
             if let character, (character == "`" || character == "~"), run >= 3 {
                 if fence == nil { fence = character; fenceCount = run }
-                else if fence == character && run >= fenceCount && trimmed.dropFirst(run).trimmingCharacters(in: .whitespaces).isEmpty { fence = nil }
-                offset += (line as NSString).length + 1
+                else if fence == character && run >= fenceCount && trimmed.dropFirst(run).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { fence = nil }
                 continue
             }
-            defer { offset += (line as NSString).length + 1 }
             guard fence == nil else { continue }
+            // Match the preview's display-math blocks, including an unclosed
+            // block (which is displayed as math through the end of the note).
+            if trimmed.hasPrefix("$$") {
+                displayMath = trimmed == "$$"
+                continue
+            }
             let ns = line as NSString
-            // Mask inline code with equal-length spaces to preserve UTF-16 ranges.
+            // Protect code before math, as the preview does. Equal UTF-16
+            // length keeps original link ranges and source-line jumps intact.
             var masked = line
-            if let codes = try? NSRegularExpression(pattern: #"(`+).*?\1"#) {
-                for match in codes.matches(in: line, range: NSRange(location: 0, length: ns.length)).reversed() {
+            for protected in [inlineCode, inlineMath] {
+                let value = masked as NSString
+                for match in protected.matches(in: masked, range: NSRange(location: 0, length: value.length)).reversed() {
                     if let range = Range(match.range, in: masked) { masked.replaceSubrange(range, with: String(repeating: " ", count: match.range.length)) }
                 }
             }
@@ -330,8 +344,10 @@ enum MemoWeaverWikiLinks {
         note.wikiLinkTargets
     }
     static func resolve(_ target: String, bindings: [String: String], candidates: [MemoWeaverWikiCandidate]) -> String? {
-        if candidates.contains(where: { $0.id == target }) { return target }
+        // A bound title must never be reinterpreted as another note's ID.
+        // If the bound note is unavailable, keep the link unresolved.
         if let id = bindings[target] { return candidates.contains(where: { $0.id == id }) ? id : nil }
+        if candidates.contains(where: { $0.id == target }) { return target }
         let matches = candidates.filter { $0.title == target }
         return matches.count == 1 ? matches[0].id : nil
     }

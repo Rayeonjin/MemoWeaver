@@ -64,6 +64,27 @@ import SwiftUI
         precondition(model.notes.first { $0.id == source.id }?.pinned == true, "pin waits for one-second autosave")
         precondition(model.wikiBacklinks[target.id]?.contains { $0.sourceID == source.id } == true, "backlink not updated after save")
         print("PASS: native wiki completion/Enter, stable ID insertion, immediate pin and backlink")
+        // A direct menu/programmatic route must close completion, release the
+        // actual editor window's responder and prevent a late Enter from editing it.
+        window.makeKeyAndOrderFront(nil); window.makeFirstResponder(editor)
+        editor.insertText("\n[[대", replacementRange: editor.selectedRange()); editor.didChangeText(); pump()
+        precondition(editor.wikiCompletion.isPresented, "navigation test did not open completion")
+        let beforeNavigation = editor.string
+        model.selectedPage = .settings; pump()
+        precondition(!editor.wikiCompletion.isPresented, "wiki popover survived Settings navigation")
+        precondition(!editor.isNavigationActive && window.firstResponder !== editor, "hidden editor kept input focus")
+        if let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: window.windowNumber, context: nil, characters: "\r", charactersIgnoringModifiers: "\r", isARepeat: false, keyCode: 36) {
+            precondition(!editor.wikiCompletion.handle(event, in: editor), "hidden completion accepted late Enter")
+        }
+        precondition(editor.string == beforeNavigation, "navigation changed the authored source")
+        model.selectedPage = .all; pump()
+        precondition(editor.isNavigationActive && findEditor(host) === editor, "return recreated or disabled editor")
+        window.makeFirstResponder(editor)
+        editor.insertText("상", replacementRange: editor.selectedRange()); editor.didChangeText(); pump()
+        precondition(editor.wikiCompletion.isPresented, "completion did not resume after returning")
+        editor.deactivateForNavigation()
+        precondition(!editor.wikiCompletion.isPresented, "explicit navigation did not dismiss completion")
+        print("PASS: completion closes across Settings, actual editor responder released, late Enter rejected, source/undo and return preserved")
         window.makeFirstResponder(editor)
         editor.setMarkedText("조합", selectedRange: NSRange(location: 1, length: 0), replacementRange: editor.selectedRange())
         precondition(editor.hasMarkedText(), "test did not establish marked text")

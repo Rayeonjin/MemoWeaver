@@ -1,3 +1,12 @@
+## Current update — v0.9.66 / Build 99 (2026-11-08)
+
+Three stability-review findings were addressed: completion lifecycle/focus on
+navigation, bound target priority and math backlink exclusion. Read
+[release notes](releases/CHANGELOG_v0.9.66.md) and
+[validation](WIKI_STABILITY_2026-11-08.md). Current gate is
+`./install-v0.9.66.sh --verify`; no schema migration or app installation.
+The history below records the earlier 0.9.65 update and baseline.
+
 ## Current update — v0.9.65 / Build 98 (2026-11-05)
 
 Desktop usability, four review fixes and manual wiki links/backlinks are now

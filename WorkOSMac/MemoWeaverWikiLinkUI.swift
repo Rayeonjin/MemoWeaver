@@ -110,13 +110,14 @@ final class MemoWeaverWikiCompletion {
         if let monitor { NSEvent.removeMonitor(monitor) }
         if let resignObserver { NotificationCenter.default.removeObserver(resignObserver) }
     }
+    var isPresented: Bool { popup?.isShown == true }
     func close() {
         popup?.close(); popup = nil; host = nil
         if let resignObserver { NotificationCenter.default.removeObserver(resignObserver); self.resignObserver = nil }
         if let monitor { NSEvent.removeMonitor(monitor); self.monitor = nil }
     }
     func update(in editor: WorkOSMarkdownTextView, allowed: Bool) {
-        guard allowed, !editor.hasMarkedText(), editor.selectedRange().length == 0,
+        guard allowed, editor.isNavigationActive, !editor.hasMarkedText(), editor.selectedRange().length == 0,
               editor.window?.firstResponder === editor else { close(); return }
         let ns = editor.string as NSString
         let caret = min(editor.selectedRange().location, ns.length)
@@ -163,7 +164,7 @@ final class MemoWeaverWikiCompletion {
         popup?.contentSize = NSSize(width: 330, height: CGFloat(48 + items.count * 32))
     }
     func handle(_ event: NSEvent, in editor: WorkOSMarkdownTextView) -> Bool {
-        guard popup?.isShown == true else { return false }
+        guard editor.isNavigationActive, popup?.isShown == true else { return false }
         switch event.keyCode {
         case 53: suppressedOffset = editor.selectedRange().location; close(); return true
         case 125: selected = min(items.count - 1, selected + 1); render(editor); return true
@@ -175,7 +176,7 @@ final class MemoWeaverWikiCompletion {
         }
     }
     private func insert(_ item: MemoWeaverWikiCandidate, in editor: WorkOSMarkdownTextView) {
-        guard !editor.hasMarkedText(), NSMaxRange(replacement) <= (editor.string as NSString).length else { close(); return }
+        guard editor.isNavigationActive, popup?.isShown == true, !editor.hasMarkedText(), NSMaxRange(replacement) <= (editor.string as NSString).length else { close(); return }
         var range = replacement
         if (editor.string as NSString).substring(from: NSMaxRange(range)).hasPrefix("]]") { range.length += 2 }
         let text = MemoWeaverWikiLinks.source(item)

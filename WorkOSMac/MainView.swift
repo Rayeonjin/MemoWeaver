@@ -12,7 +12,7 @@ enum MemoWeaverLayoutSwitchSafety {
     static func prepare(editor candidate: NSTextView? = nil) -> Bool {
         // A Korean IME marked-text sequence is not a committed text change.
         // Do not recreate NSTextView while it is still composing.
-        if let editor = candidate ?? (NSApp.keyWindow?.firstResponder as? NSTextView),
+        if let editor = candidate ?? (NSApp.keyWindow?.firstResponder as? NSTextView) ?? (NSApp.mainWindow?.firstResponder as? NSTextView),
            editor.hasMarkedText() { return false }
         let request = MemoWeaverLayoutCommitRequest()
         NotificationCenter.default.post(name: .memoWeaverBeforeLayoutChange, object: request)
@@ -171,7 +171,7 @@ struct WorkOSMainView: View {
         .onChange(of: model.selectedPage) { newPage in
             if !isNotePage {
                 _ = MemoWeaverLayoutSwitchSafety.prepare()
-                NSApp.keyWindow?.makeFirstResponder(nil)
+                NotificationCenter.default.post(name: .memoWeaverDeactivateEditor, object: nil)
                 focusModeEnabled = false
             }
             // A navigation tap must not discard the user's notebook/type filters.
@@ -285,7 +285,7 @@ struct WorkOSMainView: View {
             model.alertText = "입력 조합 또는 저장이 끝난 뒤 화면을 전환해 주세요."
             return
         }
-        NSApp.keyWindow?.makeFirstResponder(nil)
+        NotificationCenter.default.post(name: .memoWeaverDeactivateEditor, object: nil)
         model.selectedPage = page
     }
 
