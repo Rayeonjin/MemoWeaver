@@ -1,3 +1,10 @@
+# Current release gate — v0.9.67 / Build 100 (2026-11-12)
+
+Manual update-check behavior, network boundaries and validation:
+[update-check evidence](UPDATE_CHECK_2026-11-12.md).
+Use `./install-v0.9.67.sh --verify`. Human IME/notification acceptance remains
+pending; this is a QA candidate. Previous evidence is retained below.
+
 # Current release gate — v0.9.66 / Build 99 (2026-11-08)
 
 Three wiki/navigation fixes and their evidence are recorded in

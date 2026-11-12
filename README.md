@@ -1,9 +1,9 @@
 # MemoWeaver
 
 > Local-first macOS notes, Markdown when helpful, and optional AI-assisted
-> connections between ideas. **Current version: v0.9.66 / Build 99 (QA candidate).**
+> connections between ideas. **Current version: v0.9.67 / Build 100 (QA candidate).**
 
-**이번 업데이트:** 화면 전환 시 연결 팝업·입력 초점 정리, 기존 연결 대상 우선 처리, 수식의 역방향 링크 오인식 수정. [변경 사항](docs/releases/CHANGELOG_v0.9.66.md)
+**이번 업데이트:** 설정 → 앱 정보에서 수동 업데이트 확인. 버튼을 누를 때만 GitHub 공개 릴리스·버전 태그를 비교하며, 새 버전 안내와 소스 ZIP 링크를 제공합니다. [변경 사항](docs/releases/CHANGELOG_v0.9.67.md)
 
 **바로가기:** [설치·빌드](#build-from-source-macos-14) · [문서 안내](docs/README.md) · [최신 변경 사항](docs/releases/CHANGELOG_UNRELEASED.md) · [테스트 안내](scripts/README.md) · [라이선스 고지](THIRD_PARTY_NOTICES.md)
 
@@ -44,15 +44,15 @@ xcode-select --install
 Download a ZIP from GitHub or clone this repository. From the project root:
 
 ```bash
-chmod +x build.sh install-v0.9.66.sh backup-before-real-use.sh
-./install-v0.9.66.sh --verify   # tests + native build; DOES NOT install
+chmod +x build.sh install-v0.9.67.sh backup-before-real-use.sh
+./install-v0.9.67.sh --verify   # tests + native build; DOES NOT install
 ```
 
 The output is `build/Release/MemoWeaver.app`. Before installing any update to
 an existing installation, quit MemoWeaver, run `./backup-before-real-use.sh`,
 and keep the verified archive separate. Only after completing the relevant
-`docs/releases/MAC_ACCEPTANCE_v0.9.66.md` checks should an
-owner elect to run `./install-v0.9.66.sh` (which changes the installed app).
+`docs/releases/MAC_ACCEPTANCE_v0.9.67.md` checks should an
+owner elect to run `./install-v0.9.67.sh` (which changes the installed app).
 
 A user working on a read-only computer may anonymously download or `git pull`
 from this public repository. GitHub credentials are needed only on the home
@@ -123,4 +123,4 @@ MemoWeaver/
 ```
 
 최상위에는 README와 빌드·설치·라이선스 진입점을 유지합니다.
-기존 `./install-v0.9.66.sh --verify` 명령은 그대로 사용할 수 있습니다.
+기존 `./install-v0.9.67.sh --verify` 명령은 그대로 사용할 수 있습니다.

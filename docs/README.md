@@ -1,3 +1,5 @@
+현재 버전: **v0.9.67 / Build 100** · [변경 사항](releases/CHANGELOG_v0.9.67.md) · [검증 결과](UPDATE_CHECK_2026-11-12.md) · [수동 수용 검사](releases/MAC_ACCEPTANCE_v0.9.67.md)
+
 현재 버전: **v0.9.66 / Build 99** · [변경 사항](releases/CHANGELOG_v0.9.66.md) · [검증 결과](WIKI_STABILITY_2026-11-08.md) · [수동 수용 검사](releases/MAC_ACCEPTANCE_v0.9.66.md)
 
 현재 버전: **v0.9.65 / Build 98** · [변경 사항](releases/CHANGELOG_v0.9.65.md) · [검증 결과](USABILITY_UPDATE_2026-11-05.md) · [수동 수용 검사](releases/MAC_ACCEPTANCE_v0.9.65.md)

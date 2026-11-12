@@ -1,3 +1,16 @@
+## Current update — v0.9.67 / Build 100 (2026-11-12)
+
+Manual GitHub update checking is available in Settings → App information.
+Read [release notes](releases/CHANGELOG_v0.9.67.md) and
+[validation](UPDATE_CHECK_2026-11-12.md). Current gate:
+`./install-v0.9.67.sh --verify`. Publish a matching version tag and keep the
+bundle MemoWeaverReleaseTag synchronized. No automatic checks/install or schema
+change. All eight verification groups and full macOS build passed. Installed
+Build 100, verified actual manual-check/rate-limit UI, signature/legal copies
+and unchanged existing note hashes/counts. Live successful comparison is limited
+by the network's exhausted anonymous GitHub quota. Earlier acceptance/history is
+preserved below.
+
 ## Current update — v0.9.66 / Build 99 (2026-11-08)
 
 Three stability-review findings were addressed: completion lifecycle/focus on

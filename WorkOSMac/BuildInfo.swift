@@ -7,5 +7,8 @@ enum WorkOSBuildInfo {
     static var build: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "-"
     }
+    static var updateVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "MemoWeaverReleaseTag") as? String ?? version
+    }
     static var display: String { "v\(version) · 빌드 \(build)" }
 }

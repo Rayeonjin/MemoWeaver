@@ -1540,6 +1540,10 @@ private struct SettingsScreen: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading).padding(10)
                     }
+                GroupBox("업데이트") {
+                    MemoWeaverUpdateCheckView()
+                        .frame(maxWidth: .infinity, alignment: .leading).padding(10)
+                }
                 Text("MemoWeaver는 기록을 우선합니다. 메모와 첨부파일은 로컬에 보관되고, AI 기능은 선택적으로 사용할 수 있습니다.")
                     .font(.caption).foregroundStyle(.secondary)
             }
