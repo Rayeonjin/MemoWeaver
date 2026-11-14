@@ -7,13 +7,16 @@ struct MemoryMapScreen: View {
     @State private var linkingFrom = ""
     @State private var searchQuery = ""
     @State private var mapMode = "focus"
+    @State private var selectedEdgeID = ""
+    @State private var manualKind = "related"
+    @State private var manualMemo = ""
 
     private var selected: MemoryGraphNode? {
-        model.memoryGraph.nodes.first { $0.id == selectedNodeID }
+        model.memoryGraph.nodes.first { $0.id == effectiveSelectedID }
     }
     private var confirmed: MemoryLink? {
-        guard !linkingFrom.isEmpty, !selectedNodeID.isEmpty else { return nil }
-        return model.confirmedMemoryLinks.first { $0.id == MemoryLink(linkingFrom, selectedNodeID).id }
+        guard !linkingFrom.isEmpty, !effectiveSelectedID.isEmpty else { return nil }
+        return model.confirmedMemoryLinks.first { $0.id == MemoryLink(linkingFrom, effectiveSelectedID).id }
     }
 
     private var effectiveSelectedID: String {
@@ -40,7 +43,7 @@ struct MemoryMapScreen: View {
             HStack(spacing: 15) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("기억 지도").font(.title2.bold())
-                    Text("노드: 메모·과거 자료 / 회색 점선: 의미 유사성 / 청록 점선: 근거 기반 AI 관계 / 실선: 직접 확정")
+                    Text("업무 관계로 연결된 기록 · 청록 점선: 원문 인용을 확인한 AI 추론 / 실선: 사용자 직접 연결")
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
@@ -48,12 +51,12 @@ struct MemoryMapScreen: View {
                     Label("새로고침", systemImage: "arrow.clockwise")
                 }
                 Button {
-                    if model.isIndexingMemory { model.stopMemoryIndex() }
-                    else { model.startMemoryIndex() }
+                    if model.isInferringMemory { model.stopRelationAnalysis() }
+                    else { model.startRelationAnalysis(centerID: effectiveSelectedID) }
                 } label: {
-                    Label(model.isIndexingMemory ? "색인 중단" : "의미 색인 실행", systemImage: "brain")
+                    Label(model.isInferringMemory ? "관계 분석 중단" : "선택 기록의 업무 관계 분석", systemImage: "brain")
                 }
-                .disabled(!model.embeddingAvailable && !model.isIndexingMemory)
+                .disabled(!model.isInferringMemory && (effectiveSelectedID.isEmpty || model.isIndexingMemory))
             }
             HStack(spacing: 9) {
                 TextField("오래된 메모를 지도에서 찾기 (제목·본문 키워드)", text: $searchQuery)
@@ -63,13 +66,6 @@ struct MemoryMapScreen: View {
                     .controlSize(.small)
             }
             HStack(spacing: 10) {
-                Text("의미 연결 기준").font(.caption)
-                Slider(value: Binding(get: { model.memoryThreshold },
-                    set: { model.setMemoryThreshold($0) }), in: 0.45...0.88, step: 0.02)
-                    .frame(width: 180)
-                Text("\(Int(model.memoryThreshold * 100))%")
-                    .font(.caption.monospacedDigit())
-                Divider().frame(height: 18)
                 Text("표시 \(model.memoryGraph.nodes.count)개 · 관계 \(model.memoryGraph.edges.count)개 · 색인 \(model.memoryGraph.indexedEntities)개 기록")
                     .font(.caption).foregroundStyle(.secondary)
                 Spacer()
@@ -103,21 +99,24 @@ struct MemoryMapScreen: View {
                     .controlSize(.small)
                 }
             }
-            if model.isIndexingMemory {
-                ProgressView(value: model.memoryIndexProgress)
-                    .progressViewStyle(.linear)
+            if model.isInferringMemory {
+                ProgressView(value: model.inferenceProgress).progressViewStyle(.linear)
             }
-            Text(model.memoryIndexStatus)
+            Text(model.inferenceStatus)
                 .font(.caption2).foregroundStyle(.secondary)
                 .lineLimit(2)
+            Text("표현이 비슷하다는 이유만으로 연결하지 않습니다. 관계 이름을 선택하면 설명과 양쪽 원문 인용을 확인할 수 있습니다.")
+                .font(.caption).foregroundStyle(.secondary)
             Divider()
             if model.memoryGraph.nodes.isEmpty {
                 ContentUnavailableView("표시할 메모가 없습니다", systemImage: "point.3.connected.trianglepath.dotted",
-                    description: Text("노트를 만들고 AI 기억 분석을 사용하면 관련 기록들이 연결됩니다."))
+                    description: Text("메모를 작성한 뒤 기록을 선택하고 업무 관계 분석을 실행하세요."))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 MemoryGraphCanvas(data: visibleGraph, selectedID: effectiveSelectedID,
-                                  linkingFrom: linkingFrom) { selectedNodeID = $0 }
+                    linkingFrom: linkingFrom, onSelect: {
+                        selectedNodeID = $0; selectedEdgeID = ""
+                    }, onSelectEdge: { selectedEdgeID = $0 })
             }
             Divider()
             if let selected {
@@ -134,8 +133,9 @@ struct MemoryMapScreen: View {
                     } else if selected.id != linkingFrom {
                         if confirmed == nil {
                             Button("이 둘 연결 확정") {
-                                model.addConfirmedMemoryLink(linkingFrom, selected.id)
-                                linkingFrom = ""
+                                model.addConfirmedMemoryLink(linkingFrom, selected.id,
+                                    relationKind: manualKind, memo: manualMemo)
+                                linkingFrom = ""; manualMemo = ""
                             }
                         } else {
                             Button("확정 연결 해제", role: .destructive) {
@@ -146,21 +146,19 @@ struct MemoryMapScreen: View {
                     }
                 }
                 .padding(.vertical, 4)
-                let inferred = model.sideInferredRelations(centerID: selected.id)
-                if !inferred.isEmpty {
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text("원문으로 확인한 AI 업무 관계").font(.caption.bold())
-                        ForEach(inferred.prefix(3)) { relation in
-                            let other = relation.fromID == selected.id ? relation.toID : relation.fromID
-                            Button("\(relation.typeLabel) · \(model.memoryTitle(other))") {
-                                model.openMemoryEntity(other)
-                            }.font(.caption).buttonStyle(.link)
-                        }
+                if !linkingFrom.isEmpty {
+                    HStack {
+                        Picker("업무 관계", selection: $manualKind) {
+                            ForEach(ReferencePanelCore.manualKinds) { kind in Text(kind.label).tag(kind.code) }
+                        }.frame(width: 230)
+                        TextField("연결 이유 · 직접 확인한 업무 맥락", text: $manualMemo)
+                            .textFieldStyle(.roundedBorder)
                     }
-                    .padding(.vertical, 4)
                 }
+                MemoryMapRelationsPanel(graph: visibleGraph, centerID: selected.id,
+                                        selectedEdgeID: $selectedEdgeID)
             } else {
-                Text("노드를 클릭하면 원문을 열거나 두 노트의 연결을 확정할 수 있습니다. 클러스터는 유사도 관계의 연결 성분입니다.")
+                Text("노드를 선택해 업무 관계를 분석하거나, 직접 연결한 이유를 남길 수 있습니다.")
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
@@ -178,6 +176,7 @@ struct MemoryGraphCanvas: View {
     let selectedID: String
     let linkingFrom: String
     let onSelect: (String) -> Void
+    var onSelectEdge: (String) -> Void = { _ in }
 
     private let nodeWidth: CGFloat = 148
     private let nodeHeight: CGFloat = 56
@@ -249,6 +248,20 @@ struct MemoryGraphCanvas: View {
                             (hasInference ? Color.teal.opacity(0.95) : .secondary.opacity(0.57))), style: style)
                     }
                 }
+                ForEach(data.edges) { edge in
+                    if let a = geometry.coordinates[edge.first], let b = geometry.coordinates[edge.second] {
+                        Button { onSelectEdge(edge.id) } label: {
+                            Text(edge.confirmed ? ReferencePanelCore.manualLabel(edge.manualKind) : edge.inferredType)
+                                .font(.caption2.weight(.medium))
+                                .padding(.horizontal, 6).padding(.vertical, 3)
+                                .background(.regularMaterial, in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("memory.relation." + edge.id)
+                        .help("업무 관계와 원문 근거 확인")
+                        .position(x: (a.x + b.x) / 2, y: (a.y + b.y) / 2)
+                    }
+                }
                 ForEach(data.nodes) { node in
                     let selected = node.id == selectedID
                     Button { onSelect(node.id) } label: {
@@ -309,7 +322,7 @@ struct MemoryAssistPanel: View {
             }
             if neighbors.isEmpty {
                 Text(model.memoryVectors.isEmpty ? "색인이 아직 없습니다. Ollama 연결 후 '색인 갱신'을 눌러 주세요." :
-                    "현재 기준에서 의미상 가까운 기록이 없습니다. 기억 지도에서 유사도 기준을 조절할 수 있습니다.")
+                    "현재 검색 기준에서 의미상 가까운 기록이 없습니다. 의미 검색 결과는 업무 관계를 뜻하지 않습니다.")
                     .font(.caption2).foregroundStyle(.secondary)
             }
             ForEach(neighbors.prefix(5)) { neighbor in

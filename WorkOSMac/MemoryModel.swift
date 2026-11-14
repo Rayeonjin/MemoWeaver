@@ -224,6 +224,18 @@ extension WorkOSModel {
         }
     }
 
+    // Open the original at the verified quote's line when possible. Virtual
+    // evidenceDocument offsets already refer to its parent source.
+    func openMemoryEvidence(_ entityID: String, quote: String) {
+        guard !quote.isEmpty, let document = try? database?.evidenceDocument(entityID: entityID),
+              let range = document.text.range(of: quote) else { return }
+        let preceding = document.text[..<range.lowerBound]
+        let offset = preceding.reduce(0) { $1 == "\n" ? $0 + 1 : $0 }
+        let start = max(1, document.fromLine) + offset
+        let end = start + quote.filter { $0 == "\n" }.count
+        openReferenceEntity(entityID, fromLine: start, toLine: end)
+    }
+
     func addConfirmedMemoryLink(_ first: String, _ second: String,
                                 relationKind: String = "related", memo: String = "",
                                 replaceExisting: Bool = false) {

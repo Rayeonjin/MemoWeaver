@@ -77,6 +77,9 @@ struct MemoryGraphEdge: Identifiable {
     let strength: Double
     let confirmed: Bool
     var inferredType: String = ""
+    var inference: MemoryInferredRelation? = nil
+    var manualKind: String = "related"
+    var manualMemo: String = ""
     var id: String { min(first, second) + "|" + max(first, second) }
 }
 
@@ -295,56 +298,32 @@ enum MemoryEngine {
                 kind: "virtual", subtitle: "가상 메모 · 원문 \(segment.lineLabel)"))
         }
         let ids = Set(nodes.map(\.id))
-        var grouped: [String: [[Double]]] = [:]
-        for vector in vectors where ids.contains(vector.entityID) {
-            grouped[vector.entityID, default: []].append(vector.values)
-        }
-        // For a huge TXT file, the map samples chunks across the file; focused search
-        // continues to use all indexed chunks, including lines near the file's end.
-        for (entity, all) in grouped where all.count > 12 {
-            grouped[entity] = (0..<12).map { i in
-                all[min(all.count - 1, i * (all.count - 1) / 11)]
-            }
-        }
-        var options: [MemoryGraphEdge] = []
-        // Compare each entity pair using its best matching pair of chunks.
-        let active = nodes.map(\.id).filter { grouped[$0] != nil }
-        if active.count > 1 {
-            for i in 0..<(active.count - 1) {
-                for j in (i + 1)..<active.count {
-                    let a = active[i], b = active[j]
-                    var best = -1.0
-                    for av in grouped[a] ?? [] {
-                        for bv in grouped[b] ?? [] { best = max(best, cosine(av, bv)) }
-                    }
-                    if best >= threshold {
-                        options.append(MemoryGraphEdge(first: a, second: b, strength: best, confirmed: false))
-                    }
-                }
-            }
-        }
-        options.sort { $0.strength > $1.strength }
-        var degree: [String: Int] = [:]
+        // Embeddings propose candidates for analysis, never map relationships.
+        // The caller supplies only current, source-validated AI relations.
+        // Keep threshold in the API for existing search callers; it no longer
+        // affects map edges. No pairwise vector comparisons on the drawing path.
         var edges: [MemoryGraphEdge] = []
-        for option in options where edges.count < maxNodes * 2 {
-            if degree[option.first, default: 0] >= 3 || degree[option.second, default: 0] >= 3 { continue }
-            edges.append(option)
-            degree[option.first, default: 0] += 1
-            degree[option.second, default: 0] += 1
-        }
-        // Grounded AI relations replace similarity edges, but never user-confirmed links.
-        let confirmedIDs = Set(confirmed.map(\.id))
+        var verified: [String: MemoryInferredRelation] = [:]
         for relation in inferred where relation.hasRelationship &&
-            ids.contains(relation.fromID) && ids.contains(relation.toID) &&
-            !confirmedIDs.contains(relation.id) {
-            edges.removeAll { $0.id == relation.id }
-            edges.append(MemoryGraphEdge(first: relation.fromID, second: relation.toID,
-                strength: 0.99, confirmed: false, inferredType: relation.typeLabel))
+            relation.fromID != relation.toID &&
+            MemoryRelationCore.relationLabels[relation.relationType] != nil &&
+            !relation.fromQuote.isEmpty && !relation.toQuote.isEmpty &&
+            ids.contains(relation.fromID) && ids.contains(relation.toID) {
+            verified[relation.id] = relation
         }
-        for link in confirmed where ids.contains(link.first) && ids.contains(link.second) {
-            edges.removeAll { $0.id == link.id }
+        let confirmedIDs = Set(confirmed.map(\.id))
+        for relation in verified.values.sorted(by: { $0.id < $1.id }) where !confirmedIDs.contains(relation.id) {
+            edges.append(MemoryGraphEdge(first: relation.fromID, second: relation.toID,
+                strength: 0.99, confirmed: false, inferredType: relation.typeLabel,
+                inference: relation))
+        }
+        for link in confirmed where link.first != link.second &&
+            ids.contains(link.first) && ids.contains(link.second) {
+            // Human confirmation does not erase the independent AI evidence.
+            let evidence = verified[link.id]
             edges.append(MemoryGraphEdge(first: link.first, second: link.second,
-                strength: 1, confirmed: true))
+                strength: 1, confirmed: true, inferredType: evidence?.typeLabel ?? "",
+                inference: evidence, manualKind: link.relationKind, manualMemo: link.memo))
         }
         // Connected components act as explainable, deterministic visual clusters.
         var parents: [String: String] = Dictionary(uniqueKeysWithValues: ids.map { ($0, $0) })

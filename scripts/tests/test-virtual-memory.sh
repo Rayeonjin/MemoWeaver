@@ -2,6 +2,7 @@
 # v0.9.9: compile real Swift core + SQLite; synthetic notes only.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
+source "$ROOT/tools/qa-swift-env.sh"
 TMP="$(mktemp -d /tmp/memoryhome-virtual.XXXXXXXX)"
 trap 'rm -rf -- "$TMP"' EXIT
 PLATFORM=()

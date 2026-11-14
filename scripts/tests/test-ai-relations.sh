@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
+source "$ROOT/tools/qa-swift-env.sh"
 TMP="$(mktemp -d /tmp/memoweaver-relations.XXXXXXXX)"
 trap 'rm -rf -- "$TMP"' EXIT
 PLATFORM=()
@@ -15,7 +16,7 @@ else
   printf 'module SQLite3 [system] { header "/usr/include/sqlite3.h" link "sqlite3" export * }\n' > "$TMP/SQLite3/module.modulemap"
   PLATFORM=(-I "$TMP")
 fi
-SOURCES=(Models.swift QuickCaptureCore.swift WorkBlocks.swift MemoryCore.swift MemoryRelationCore.swift MemoryTimelineCore.swift VirtualMemoryCore.swift
+SOURCES=(Models.swift NotebookMembershipCore.swift QuickCaptureCore.swift WorkBlocks.swift MemoryCore.swift MemoryRelationCore.swift MemoryTimelineCore.swift VirtualMemoryCore.swift
   PlannerCore.swift Storage.swift MemoWeaverAttachments.swift ArchiveDecoder.swift SearchEngine.swift TemplateCore.swift
   NotesListFilter.swift MarkdownSyntaxCore.swift MarkdownCore.swift OfficialDiagramRuntime.swift
   NoteDocuments.swift LegacyNoteTextConverter.swift OllamaService.swift)

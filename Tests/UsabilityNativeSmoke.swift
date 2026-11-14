@@ -128,6 +128,7 @@ import SwiftUI
             if let png = bitmap.representation(using: .png, properties: [:]) { try png.write(to: URL(fileURLWithPath: output)) }
         }
         print("PASS: light/dark, 2 window widths, all 4 pane visibility states retain editor and positive native frames")
+        try BusinessMapNativeChecks.run(model: model, window: window, host: host)
         window.orderOut(nil)
         print("PASS: marked-text navigation guard; all data isolated in temporary database")
     }

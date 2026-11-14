@@ -1,3 +1,16 @@
+## Current update — v0.9.68 / Build 101 (2026-11-14)
+
+Memory map edges now represent source-checked AI business relationships or explicit
+human links. Embedding similarity remains candidate discovery only, never a map
+edge. Relationship labels open details with both quotes, direction, review and
+read-only originals. Human reason/type and independent AI evidence coexist.
+See [validation](BUSINESS_MEMORY_MAP_2026-11-14.md) and
+[release notes](releases/CHANGELOG_v0.9.68.md). Current gate:
+`./install-v0.9.68.sh --verify`: all eleven groups and full native build passed.
+Strict signature/legal copies passed. Separate QA click-through timed out;
+installation awaits normal termination of an unresponsive build-directory app
+process. Live Ollama unavailable. No schema migration or note rewriting.
+
 ## Current update — v0.9.67 / Build 100 (2026-11-12)
 
 Manual GitHub update checking is available in Settings → App information.

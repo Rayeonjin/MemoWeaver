@@ -73,8 +73,8 @@ struct VirtualMemorySmoke {
             virtualMemories: distinct, vectors: demoVectors, confirmed: [],
             threshold: 0.8, maxNodes: 25)
         check(graph.nodes.contains(where: { $0.kind == "virtual" }), "memory map contains virtual nodes")
-        check(graph.edges.contains(where: { $0.first.hasPrefix("virtual:") && $0.second.hasPrefix("virtual:") }),
-              "memory map connects virtual entities by embedding similarity")
+        check(graph.edges.isEmpty,
+              "embedding similarity alone never connects virtual memories")
         if let firstItem = indexItems.first {
             try db.saveMemoryVector(item: firstItem, model: "bge-m3", vector: [1.0, 0.0])
             check(try db.memoryVectors().contains(where: { $0.id == firstItem.id }), "virtual embeddings persist")

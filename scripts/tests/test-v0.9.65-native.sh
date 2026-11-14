@@ -10,5 +10,5 @@ for file in "$ROOT"/WorkOSMac/*.swift; do
 done
 swiftc -swift-version 5 -Onone -j 1 -parse-as-library -lsqlite3 \
   -framework AppKit -framework SwiftUI -framework WebKit -framework PDFKit -framework UserNotifications \
-  "${SOURCES[@]}" "$ROOT/Tests/UsabilityNativeSmoke.swift" -o "$TMP/native" > "$ROOT/build/Logs/native-0965-compiler.log" 2>&1
+  "${SOURCES[@]}" "$ROOT/Tests/UsabilityNativeSmoke.swift" "$ROOT/Tests/BusinessMapNativeChecks.swift" -o "$TMP/native" > "$ROOT/build/Logs/native-0965-compiler.log" 2>&1
 "$TMP/native"

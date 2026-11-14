@@ -1,3 +1,11 @@
+# Current release gate — v0.9.68 / Build 101 (2026-11-14)
+
+Business relationship map behavior and actual validation are recorded in
+[the update evidence](BUSINESS_MEMORY_MAP_2026-11-14.md). Use
+`./install-v0.9.68.sh --verify`. AI interpretation is not proof of a business
+relationship; both current-source quotations and human review remain visible.
+Existing human IME, notifications and live-model acceptance limits remain.
+
 # Current release gate — v0.9.67 / Build 100 (2026-11-12)
 
 Manual update-check behavior, network boundaries and validation:

@@ -27,8 +27,7 @@ extension WorkOSModel {
             signatures: signatures).filter { relation in
                 let review = reviewLookup[relation.id]
                 return !(review?.applies(to: relation) == true && review?.decision == "irrelevant") &&
-                    documents[relation.fromID]?.excerpt.contains(relation.fromQuote) == true &&
-                    documents[relation.toID]?.excerpt.contains(relation.toQuote) == true
+                    MemoryRelationCore.isGrounded(relation, documents: documents)
             }.sorted { lhs, rhs in
                 let left = reviewLookup[lhs.id]
                 let right = reviewLookup[rhs.id]
@@ -45,12 +44,10 @@ extension WorkOSModel {
         if let cached = activeRelationCache { return cached }
         guard let database else { return [] }
         let entries = inferredMemoryRelations.filter(\.hasRelationship)
-        var signatures: [String: String] = [:]
         var documents: [String: MemoryEvidenceDocument] = [:]
         for relation in entries {
-            for id in [relation.fromID, relation.toID] where signatures[id] == nil {
+            for id in [relation.fromID, relation.toID] where documents[id] == nil {
                 if let document = try? database.evidenceDocument(entityID: id) {
-                    signatures[id] = document.signature
                     documents[id] = document
                 }
             }
@@ -60,9 +57,7 @@ extension WorkOSModel {
         let current = entries.filter { relation in
             let review = reviewLookup[relation.id]
             return !(review?.applies(to: relation) == true && review?.decision == "irrelevant") &&
-                MemoryRelationCore.isCurrent(relation, signatures: signatures) &&
-                documents[relation.fromID]?.excerpt.contains(relation.fromQuote) == true &&
-                documents[relation.toID]?.excerpt.contains(relation.toQuote) == true
+                MemoryRelationCore.isGrounded(relation, documents: documents)
         }
         activeRelationCache = current
         return current
