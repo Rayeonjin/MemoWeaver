@@ -64,4 +64,3 @@ termination. No forced quit or running-process check bypass was used.
 The actual local Ollama endpoint (127.0.0.1:11434) was unavailable, including
 outside the sandbox. Live business-relationship quality and real Korean IME
 composition are not verified. No real notes were sent for AI tests.
-
