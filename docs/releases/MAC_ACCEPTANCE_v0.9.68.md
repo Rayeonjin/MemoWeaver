@@ -11,6 +11,7 @@ click-through sign-off. Actual execution results: [evidence](../BUSINESS_MEMORY_
 - [x] Restoring a review returns current evidence; editing a source hides stale AI.
 - [x] Human links preserve kind/reason and show absence of AI evidence honestly.
 - [x] Light/dark, two widths, normal editing/navigation and IME guard regressions.
+- [x] Installed Build 101/version/map/return-to-notes; live data hashes unchanged.
 - [ ] Manual click-through of relation label/evidence/review controls.
 - [ ] Actual live Ollama quality on owner-approved sample business notes.
 

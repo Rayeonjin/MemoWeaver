@@ -7,9 +7,11 @@ read-only originals. Human reason/type and independent AI evidence coexist.
 See [validation](BUSINESS_MEMORY_MAP_2026-11-14.md) and
 [release notes](releases/CHANGELOG_v0.9.68.md). Current gate:
 `./install-v0.9.68.sh --verify`: all eleven groups and full native build passed.
-Strict signature/legal copies passed. Separate QA click-through timed out;
-installation awaits normal termination of an unresponsive build-directory app
-process. Live Ollama unavailable. No schema migration or note rewriting.
+Strict signature/legal copies passed. Installed at ~/Applications on 2026-11-15
+following the owner's normal app shutdown and complete private backup. Actual
+Build 101/map/return-to-notes UI verified; all audited data row hashes/counts
+unchanged. Separate fixture click-through timed out; live Ollama unavailable.
+No schema migration or note rewriting.
 
 ## Current update — v0.9.67 / Build 100 (2026-11-12)
 

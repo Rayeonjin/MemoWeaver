@@ -56,10 +56,20 @@ corrected to use the current saved note snapshot before restoring its body.
 Packaged third-party legal files and strict app signature verification passed.
 A separate click-through QA app could not be inspected because computer-use
 launch timed out. No manual click-through acceptance is claimed for that app.
-The normal installed app was quit, but a separate build-directory process remains
-running and cannot currently be selected by computer use. The standard backup
-and installer correctly refuse to proceed; installation is pending its normal
-termination. No forced quit or running-process check bypass was used.
+On 2026-11-15, the owner normally quit the remaining build-directory process.
+The standard complete data archive and preferences backup succeeded, then the
+verified v0.9.68 / Build 101 app was installed at ~/Applications/MemoWeaver.app.
+The installer preserved the previous app. No running-process check was bypassed.
+
+Actual installed-app computer use confirmed Build 101 in App information, the
+business-relationship memory map (one existing note, zero relations) and return
+to the unchanged editor/preview. No relation analysis or sample notes were added
+to the live store. Both before/after read-only audits found identical counts and
+complete row hashes for the audited notes, archives, schedules, notebook joins,
+virtual memories, manual links and AI relation/fact tables where present.
+SQLite quick_check returned ok. The installed executable hash matches the full
+verified build; strict signature and packaged legal-file checks passed.
+All data/preferences/app backups remain outside public Git.
 
 The actual local Ollama endpoint (127.0.0.1:11434) was unavailable, including
 outside the sandbox. Live business-relationship quality and real Korean IME
