@@ -4,9 +4,9 @@ Markdown 원문과 미리보기를 나란히 놓고 쓰는 Mac 메모 앱입니�
 
 메모는 내 Mac에 저장됩니다. 수식이나 다이어그램도 원문으로 작성하고 옆에서 결과를 확인할 수 있습니다. 메모가 쌓이면 기억지도에서 서로 어떤 업무로 이어지는지 살펴볼 수 있고요. AI 기능을 쓰고 싶다면 Ollama를 연결하면 됩니다.
 
-**현재 버전: v0.9.69 · 빌드 102 · 검증 후보(QA)**
+**현재 버전: v0.9.70 · 빌드 103 · 검증 후보(QA)**
 
-[변경 이력](docs/releases/CHANGELOG_v0.9.69.md) · [설치·업데이트 안내](docs/INSTALL.md) · [문서 모음](docs/README.md)
+[변경 이력](docs/releases/CHANGELOG_v0.9.70.md) · [설치·업데이트 안내](docs/INSTALL.md) · [문서 모음](docs/README.md)
 
 ![MemoWeaver의 Markdown 원문 편집창과 Mermaid·LaTeX·표 미리보기](docs/images/editor-preview.jpg)
 
@@ -15,6 +15,7 @@ Markdown 원문과 미리보기를 나란히 놓고 쓰는 Mac 메모 앱입니�
 ## 주요 기능
 
 - Markdown 원문 편집과 미리보기, 창 비율 조절
+- 표의 행·열 편집, 본문 변경 이력 비교·복원, 비동기 이미지 붙여넣기
 - LaTeX 수식, Mermaid 다이어그램, Markmap 마인드맵, 표, 코드 블록
 - `[[메모 제목]]` 링크와 이 메모를 참조하는 역방향 링크
 - 업무 관계와 원문 근거를 보여 주는 기억지도, 확대·축소와 드래그
@@ -67,7 +68,7 @@ xcode-select --install
 
 ```bash
 chmod +x *.sh
-./install-v0.9.69.sh
+./install-v0.9.70.sh
 ```
 
 빌드가 끝나면 **`/Applications/MemoWeaver.app`**에 설치하고 실행합니다. Finder의 **응용 프로그램**에서 찾을 수 있습니다. 기존 앱이 사용자 폴더에 있어도 기본 설치 위치는 같습니다. 폴더에 쓰기 권한이 없으면 관리자 암호를 물을 수 있습니다.
@@ -90,7 +91,7 @@ AI 기능은 Ollama와 모델을 따로 준비한 뒤 앱의 AI 설정에서 연
 
 ```bash
 ./backup-before-real-use.sh
-./install-v0.9.69.sh
+./install-v0.9.70.sh
 ```
 
 위 명령은 기존 메모가 있을 때 쓰는 순서입니다. 처음 설치한다면 백업은 건너뛰세요. 새 버전에서는 그 버전의 README에 적힌 설치 명령을 사용하면 됩니다.
@@ -99,9 +100,9 @@ AI 기능은 Ollama와 모델을 따로 준비한 뒤 앱의 AI 설정에서 연
 
 ## 테스트한 범위
 
-v0.9.69에서 자동 검사 12개 묶음과 macOS 빌드를 통과했습니다. 별도 예시 데이터로 지도 확대, 이동, 드래그, 관계 선택, 원문 열기도 확인했습니다. 앱을 교체하기 전후로 확인한 데이터의 건수와 해시는 같았습니다.
+v0.9.70에서 자동 검사 12개 묶음과 macOS 빌드를 통과했습니다. 한글·이모지가 있는 표 편집, 본문 복원, 이미지 삽입의 실행 취소·다시 실행과 입력 조합 보호를 임시 데이터로 검사했습니다. 설치 전후 기존 데이터 파일과 DB 테이블의 해시도 일치했습니다.
 
-한글을 조합하는 도중의 동작, Ollama의 관계 판단 품질, 알림 수신, 실제 트랙패드 핀치 동작은 추가 테스트가 남아 있습니다. 아직 정식 안정 버전으로 표시하지 않은 이유입니다. [자세한 테스트 기록](docs/reviews/D3_MEMORY_MAP_2026-11-15.md) · [남은 확인 항목](docs/releases/MAC_ACCEPTANCE_v0.9.69.md)
+실제 한글 입력기를 이용한 조합 중 동작은 아직 확인을 마치지 못했습니다. 자동으로 만든 조합 상태 검사와는 구분해 기록합니다. Ollama의 관계 판단 품질, 알림 수신, 실제 트랙패드 핀치도 수동 확인 항목으로 남아 있습니다. [편집기 변경 기록](docs/reviews/EDITOR_IMPROVEMENTS_2026-11-16.md) · [검사 결과와 남은 항목](docs/releases/MAC_ACCEPTANCE_v0.9.70.md)
 
 ## 개발 응원하기
 
@@ -139,7 +140,7 @@ MemoWeaver 이름과 로고의 사용 범위는 [이름 정책](docs/legal/TRADE
 | `docs/images/`, `docs/examples/` | 소개 이미지와 예시 메모 |
 | `Vendor/`, `THIRD_PARTY_LICENSES/` | 외부 리소스와 원문 라이선스 |
 
-최상위의 `install-v0.9.69.sh`, `build.sh`, `install.sh`, `backup-before-real-use.sh`는
+최상위의 `install-v0.9.70.sh`, `build.sh`, `install.sh`, `backup-before-real-use.sh`는
 지금 사용하는 설치·빌드·백업 명령입니다. 과거 버전 설치 스크립트는
 `scripts/install/legacy/`에 모아 두었습니다. [폴더별 안내](docs/REPOSITORY_LAYOUT.md)
 

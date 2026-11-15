@@ -36,7 +36,7 @@ New core test passed using the actual JavaScriptCore bundle: deterministic finit
 positions, collision separation, held node positions, ID-as-data safety, rejected
 dangling edges, empty graph, 110-node solve and viewport anchor/inverse/clamps/fit.
 The first measured 110-node solve was approximately 0.7s outside the UI thread.
-All twelve groups of `./install-v0.9.69.sh --verify` and the full native arm64
+All twelve groups of `./scripts/install/legacy/install-v0.9.69.sh --verify` and the full native arm64
 app build passed. After manual inspection found virtual accessibility elements
 were not exposed correctly, their enabled state and retained stable identities
 were fixed. A final interaction guard also ensures a simple click during initial

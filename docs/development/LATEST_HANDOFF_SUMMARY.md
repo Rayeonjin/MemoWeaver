@@ -1,3 +1,21 @@
+## 편집기 개선 — v0.9.70 / 빌드 103 (2026-11-16)
+
+네 가지 편집기 개선을 적용했습니다. 원문·미리보기 분리, 기존 NSTextView,
+데이터 형식·경로는 그대로입니다. [구현 기록](../reviews/EDITOR_IMPROVEMENTS_2026-11-16.md)과
+[실제 검사 결과](../releases/MAC_ACCEPTANCE_v0.9.70.md)를 먼저 읽으세요.
+현재 전체 검사 명령은 `./install-v0.9.70.sh --verify`입니다.
+
+전체 12개 검사 묶음과 macOS 빌드·서명을 통과했습니다. 테스트 코드 타입 이름
+오타를 고친 뒤 마지막 네이티브 검사와 빌드를 재실행했습니다. 설치는
+`/Applications/MemoWeaver.app`에 완료했고, 교체 전후 실제 데이터 파일 19개와
+DB 테이블 15개의 해시가 일치했습니다. 기존 앱과 전체 데이터·설정은 비공개
+백업에 보관합니다. 사용자 Applications의 이전 앱은 앞선 정리 작업에서
+별도 백업 후 제거했으며, 그때 메모 폴더는 변경하지 않았습니다.
+
+직접 입력 검사 창은 `Tests/EditorIMEPreview.swift`입니다. 실제 입력기의
+marked text 감지 여부는 수동 검사 결과를 확인하세요. 자동 조합 보호 검사와
+실제 입력 확인을 혼동하지 마세요.
+
 ## 기본 설치 위치 변경 — 2026-11-16
 
 현재 설치 스크립트는 기존 사용자 폴더 앱의 유무와 관계없이
@@ -49,7 +67,7 @@ reset are presentation-only. Existing business edges, review, both quotations
 and read-only source access are retained. No similarity edges, schema change,
 web view, runtime network or note-body transfer to JavaScript. Read
 [D3 map evidence](../reviews/D3_MEMORY_MAP_2026-11-15.md). Gate:
-`./install-v0.9.69.sh --verify`: all twelve groups/full build passed, followed
+`./scripts/install/legacy/install-v0.9.69.sh --verify`: all twelve groups/full build passed, followed
 by final accessibility/click-during-layout native checks/build. Isolated UI zoom/pan/drag/edge/source
 inspection passed. Installed Build 102, checked controls/version and exact live
 store hashes/counts unchanged. Pins/camera are transient; physical pinch and prior

@@ -61,15 +61,17 @@ struct MarkdownInsertRequest: Equatable {
     // In a math or Mermaid block, insert at the caret without adding blank lines.
     let inlineSnippet: Bool
     let wrapsSelection: Bool
+    let replaceDocument: Bool
     let beginsOnNewLine: Bool
 
     init(source: String, caretBack: Int, inlineSnippet: Bool = false,
-         wrapsSelection: Bool = false, beginsOnNewLine: Bool = false) {
+         wrapsSelection: Bool = false, beginsOnNewLine: Bool = false, replaceDocument: Bool = false) {
         id = UUID()
         self.source = source
         self.caretBack = caretBack
         self.inlineSnippet = inlineSnippet
         self.wrapsSelection = wrapsSelection
+        self.replaceDocument = replaceDocument
         self.beginsOnNewLine = beginsOnNewLine
     }
 }

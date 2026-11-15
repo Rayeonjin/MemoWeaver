@@ -1,6 +1,6 @@
 # 설치·업데이트·백업 안내
 
-**v0.9.69 · 빌드 102** 기준 안내입니다. macOS 14 이상에서 설치할 수 있습니다. Apple 개발 도구가 필요하지만, GitHub에 로그인할 필요는 없습니다.
+**v0.9.70 · 빌드 103** 기준 안내입니다. macOS 14 이상에서 설치할 수 있습니다. Apple 개발 도구가 필요하지만, GitHub에 로그인할 필요는 없습니다.
 
 ## 처음 설치하기
 
@@ -11,7 +11,7 @@
 
 ```bash
 chmod +x *.sh
-./install-v0.9.69.sh
+./install-v0.9.70.sh
 ```
 
 빌드가 끝나면 앱이 설치되고 실행됩니다. 테스트까지 먼저 해 보고 싶다면 아래의 `--verify` 명령을 사용하세요. 위 설치 명령만으로는 테스트가 실행되지 않습니다.
@@ -19,12 +19,12 @@ chmod +x *.sh
 ## 설치하지 않고 검사·빌드하기
 
 ```bash
-./install-v0.9.69.sh --verify
+./install-v0.9.70.sh --verify
 ```
 
 12개 테스트 묶음을 실행한 뒤 앱을 빌드합니다. 이미 설치된 앱은 그대로 두고, 새 앱을 `build/Release/MemoWeaver.app`에 만듭니다.
 
-테스트 없이 빌드만 하려면 `./build.sh` 또는 `./install-v0.9.69.sh --build-only`를 실행하세요.
+테스트 없이 빌드만 하려면 `./build.sh` 또는 `./install-v0.9.70.sh --build-only`를 실행하세요.
 
 ## 응용 프로그램 폴더는 어디인가요?
 
@@ -52,8 +52,8 @@ chmod +x *.sh
 
 ```bash
 ./backup-before-real-use.sh
-./install-v0.9.69.sh --verify
-./install-v0.9.69.sh
+./install-v0.9.70.sh --verify
+./install-v0.9.70.sh
 ```
 
 새 버전에서는 그 버전의 README에 적힌 설치 명령을 사용하세요. **설정 → 앱 정보 → 업데이트 확인**에서 새 버전이 나왔는지 볼 수 있지만, 다운로드와 설치는 직접 해야 합니다.
@@ -86,4 +86,4 @@ chmod +x *.sh
 - Swift 빌드 실패: 소스 폴더의 `build/Logs/swiftc-release.log`를 확인합니다.
 - 검사 실패: 먼저 출력된 실패 항목을 확인합니다. `--verify`는 설치된 앱을 교체하지 않습니다.
 
-어디까지 테스트했는지는 [v0.9.69 확인 항목](releases/MAC_ACCEPTANCE_v0.9.69.md)과 [자세한 테스트 기록](reviews/D3_MEMORY_MAP_2026-11-15.md)에서 볼 수 있습니다.
+어디까지 테스트했는지는 [v0.9.70 확인 항목](releases/MAC_ACCEPTANCE_v0.9.70.md)과 [자세한 테스트 기록](reviews/EDITOR_IMPROVEMENTS_2026-11-16.md)에서 볼 수 있습니다.

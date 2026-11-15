@@ -7,7 +7,7 @@ import tempfile
 root = Path(__file__).resolve().parents[1]
 with tempfile.TemporaryDirectory(prefix='mw-install-destination-') as directory:
     scratch = Path(directory)
-    launcher = scratch / 'install-v0.9.69.sh'
+    launcher = scratch / 'install-v0.9.70.sh'
     launcher.write_bytes((root / launcher.name).read_bytes())
     launcher.chmod(0o755)
     log = scratch / 'calls'

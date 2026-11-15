@@ -1,5 +1,5 @@
 #!/bin/bash
-# MemoWeaver v0.9.69 Build 102: offline d3-force memory map build/install launcher.
+# MemoWeaver v0.9.70 Build 103: editor reliability and source tools build/install launcher.
 # Safe verification: static/native smoke and full CLT build before optional install.
 # Preserves com.local.workos.notes and ~/Library/Application Support/WorkOS/.
 set -euo pipefail
@@ -40,7 +40,7 @@ run_tests() {
 }
 case "${1:-}" in
   --help|-h)
-    printf 'Usage: ./install-v0.9.69.sh [--verify|--build-only]\n'
+    printf 'Usage: ./install-v0.9.70.sh [--verify|--build-only]\n'
     printf '  No options: compile and install /Applications/MemoWeaver.app.\n'
     printf '  --verify: run source/AppKit tests and FULL app build (does NOT install).\n  --build-only: compile app only, do NOT replace the installed app.\n'
     exit 0
@@ -67,7 +67,7 @@ on_error() {
   exit "$status"
 }
 trap on_error ERR
-printf '[MemoWeaver] Starting build and installation. Optional tests: ./install-v0.9.69.sh --verify\n'
+printf '[MemoWeaver] Starting build and installation. Optional tests: ./install-v0.9.70.sh --verify\n'
 # Standard installation always targets Finder's shared Applications folder.
 # An existing per-user copy must not silently change the destination.
 printf '[MemoWeaver] Selected: /Applications (standard installation).\n'

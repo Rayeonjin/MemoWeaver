@@ -19,11 +19,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.9.69</string>
+	<string>0.9.70</string>
 	<key>CFBundleVersion</key>
-	<string>102</string>
+	<string>103</string>
 	<key>MemoWeaverReleaseTag</key>
-	<string>v0.9.69-qa</string>
+	<string>v0.9.70-qa</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
 	<key>LSMinimumSystemVersion</key>

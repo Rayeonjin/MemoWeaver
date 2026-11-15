@@ -13,6 +13,8 @@ final class WorkOSMarkdownTextView: NSTextView {
     deinit { if let navigationObserver { NotificationCenter.default.removeObserver(navigationObserver) } }
 
     func deactivateForNavigation() {
+        imageRequestID = UUID()
+        highlightGeneration = UUID()
         wikiCompletion.close()
         slashCoordinator?.dismissCompletion()
         // The popover may be the key window. Release the responder on this
@@ -24,10 +26,22 @@ final class WorkOSMarkdownTextView: NSTextView {
     // Synchronous, failure-aware attachment save owned by the active note.
     // This callback is invoked only for explicit ⌘V image paste.
     var pastePNGIntoNote: ((Data) -> String?)?
+    var imageStorageDirectory: URL?
+    var canInsertImage: (() -> Bool)?
+    private var imageRequestID = UUID()
+    private var sourceRevision = 0
+    private static let imageQueue = DispatchQueue(label: "memoweaver.editor.images", qos: .userInitiated)
+    override func didChangeText() {
+        sourceRevision += 1
+        super.didChangeText()
+    }
     var reportImageImportError: ((String) -> Void)?
     // Source Markdown stays ordinary NSTextStorage characters. Both visual
     // features below are paint-only: no saved attributes and no undo entries.
     private var syntaxRefreshWork: DispatchWorkItem?
+    private static let highlightQueue = DispatchQueue(label: "memoweaver.editor.highlight", qos: .userInitiated)
+    private var highlightAnalysis: DispatchWorkItem?
+    private var highlightGeneration = UUID()
     private var highlightedRange = NSRange(location: 0, length: 0)
     private var syntaxRefreshAfterIME = false
     // Repaint only the previous/new caret row on movement. Invalidating the
@@ -135,6 +149,8 @@ final class WorkOSMarkdownTextView: NSTextView {
     }
 
     func scheduleSyntaxRefresh() {
+        highlightGeneration = UUID()
+        highlightAnalysis?.cancel()
         // Never recolor marked text during Korean IME composition. Heavy
         // Markdown regex work is delayed and restricted to the visible page.
         if hasMarkedText() { syntaxRefreshAfterIME = true; return }
@@ -180,23 +196,35 @@ final class WorkOSMarkdownTextView: NSTextView {
             }
             let start = min(length, visible.location)
             let end = min(length, max(start, NSMaxRange(visible)))
-            // A short context window covers most nearby fences without
-            // scanning/coloring a full old scratchpad on every input.
-            let contextual = max(0, start - 900)
+            // Parse delimiter state from the full prefix off the main thread;
+            // inline rules and paint stay bounded to complete visible lines.
+            let contextual = start
             let firstLine = text.lineRange(for: NSRange(location: contextual, length: 0)).location
             let lastLine = text.lineRange(for: NSRange(location: max(0, end - 1), length: 0))
             let windowEnd = min(length, NSMaxRange(lastLine))
             if windowEnd > firstLine {
                 let window = NSRange(location: firstLine, length: windowEnd - firstLine)
-                let snippet = text.substring(with: window)
-                for span in MarkdownEditorHighlightCore.spans(in: snippet) {
-                    let absolute = NSRange(location: window.location + span.range.location,
-                                           length: span.range.length)
-                    guard NSMaxRange(absolute) <= length else { continue }
-                    manager.addTemporaryAttribute(.foregroundColor,
-                        value: syntaxColor(span.kind), forCharacterRange: absolute)
+                let snapshot = string
+                let generation = highlightGeneration
+                let analysis = DispatchWorkItem { [weak self] in
+                    let spans = MarkdownEditorHighlightCore.spans(in: snapshot, range: window)
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self, self.highlightGeneration == generation,
+                              self.string == snapshot, self.syntaxColorsEnabled,
+                              !self.hasMarkedText(), self.isNavigationActive,
+                              let manager = self.layoutManager else { return }
+                        for span in spans {
+                            manager.addTemporaryAttribute(.foregroundColor,
+                                value: self.syntaxColor(span.kind), forCharacterRange: span.range)
+                        }
+                        self.highlightedRange = window
+                        manager.invalidateDisplay(forCharacterRange: window)
+                        self.setNeedsDisplay(self.visibleRect)
+                    }
                 }
-                highlightedRange = window
+                highlightAnalysis = analysis
+                Self.highlightQueue.async(execute: analysis)
+
             }
         }
         // Explicit display invalidation preserves the v0.9.10 fix for
@@ -329,6 +357,7 @@ final class WorkOSMarkdownTextView: NSTextView {
             return
         }
         if !hasActualTable {
+            if imageStorageDirectory != nil, beginImageImport(board, at: nil) { return }
             // Every clipboard image uses exactly the same atomic storage path
             // as the already-working Finder image drag. Never paste a path.
             switch MemoWeaverEditorImageInput.read(board) {
@@ -364,6 +393,7 @@ final class WorkOSMarkdownTextView: NSTextView {
             reportImageImportError?("한글 조합 입력을 완료한 다음 이미지를 붙여넣으세요.")
             return
         }
+        if imageStorageDirectory != nil, beginImageImport(board, at: nil) { return }
         switch MemoWeaverEditorImageInput.read(board) {
         case .png(let png): _ = insertAttachment(png, at: nil)
         case .failed(let message): reportImageImportError?(message)
@@ -371,6 +401,58 @@ final class WorkOSMarkdownTextView: NSTextView {
             reportImageImportError?("클립보드에 지원되는 이미지가 없습니다. 형식: " +
                                     MemoWeaverEditorImageInput.typeSummary(board))
         }
+    }
+
+    @discardableResult
+    func beginImageImport(_ board: NSPasteboard, at dropLocation: NSPoint?) -> Bool {
+        guard let directory = imageStorageDirectory,
+              let snapshot = MemoWeaverEditorImageInput.snapshot(board) else { return false }
+        guard isEditable, !hasMarkedText(), isNavigationActive else {
+            reportImageImportError?("한글 조합을 완료하고 편집 중인 메모에 이미지를 넣어 주세요.")
+            return true
+        }
+        var replacement = selectedRange()
+        if let dropLocation {
+            let position = characterIndexForInsertion(at: convert(dropLocation, from: nil))
+            replacement = NSRange(location: min(position, (string as NSString).length), length: 0)
+        }
+        let token = UUID()
+        imageRequestID = token
+        let revision = sourceRevision
+        let original = string
+        Self.imageQueue.async { [weak self] in
+            var path: String?
+            var failure: String?
+            switch snapshot.decode() {
+            case .png(let png):
+                do { path = try MemoWeaverAttachments.storePNG(png, in: directory) }
+                catch { failure = error.localizedDescription }
+            case .failed(let message): failure = message
+            case .notImage: break
+            }
+            let storedPath = path, errorMessage = failure
+            DispatchQueue.main.async { [weak self] in
+                guard let self, self.imageRequestID == token, self.sourceRevision == revision,
+                      self.string == original, self.imageStorageDirectory == directory,
+                      self.window != nil, self.isNavigationActive, self.isEditable,
+                      self.canInsertImage?() != false,
+                      !self.hasMarkedText() else {
+                    if let storedPath {
+                        Self.imageQueue.async {
+                            let file = MemoWeaverAttachments.folder(in: directory)
+                                .appendingPathComponent((storedPath as NSString).lastPathComponent)
+                            try? FileManager.default.removeItem(at: file)
+                        }
+                    }
+                    if self?.isNavigationActive == true { self?.reportImageImportError?("이미지 처리 중 메모가 변경되어 삽입을 취소했습니다. 다시 붙여넣어 주세요.") }
+                    return
+                }
+                if let storedPath {
+                    _ = self.replaceSourceUndoably("![이미지](" + storedPath + ")", range: replacement)
+                } else if let errorMessage { self.reportImageImportError?(errorMessage) }
+            }
+        }
+        return true
     }
 
     private func insertAttachment(_ png: Data, at dropLocation: NSPoint?) -> Bool {
@@ -412,6 +494,7 @@ final class WorkOSMarkdownTextView: NSTextView {
 
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
         let board = sender.draggingPasteboard
+        if imageStorageDirectory != nil, beginImageImport(board, at: sender.draggingLocation) { return true }
         switch MemoWeaverEditorImageInput.read(board) {
         case .png(let png):
             _ = insertAttachment(png, at: sender.draggingLocation)
@@ -433,6 +516,14 @@ final class WorkOSMarkdownTextView: NSTextView {
     // actions operate only on the validated table at the caret/selection.
     override func menu(for event: NSEvent) -> NSMenu? {
         let menu = super.menu(for: event) ?? NSMenu()
+        if !hasMarkedText(), isEditable {
+            for action in MarkdownTableEditingCore.Action.allCases where
+                MarkdownTableEditingCore.change(in: string, selection: selectedRange(), action: action) != nil {
+                let item = NSMenuItem(title: action.title, action: #selector(editMarkdownTable(_:)), keyEquivalent: "")
+                item.target = self; item.tag = action.rawValue
+                menu.addItem(item)
+            }
+        }
         guard !hasMarkedText(),
               MarkdownTableTextCore.conversion(in: string, selection: selectedRange()) != nil
         else { return menu }
@@ -446,6 +537,24 @@ final class WorkOSMarkdownTextView: NSTextView {
         copy.target = self
         menu.addItem(copy)
         return menu
+    }
+
+    @discardableResult
+    func replaceSourceUndoably(_ source: String, range: NSRange) -> Bool {
+        guard isEditable, !hasMarkedText(), range.location >= 0,
+              range.location <= (string as NSString).length, range.length >= 0,
+              range.length <= (string as NSString).length - range.location else { return false }
+        breakUndoCoalescing()
+        insertText(source, replacementRange: range)
+        breakUndoCoalescing()
+        return true
+    }
+
+    @objc func editMarkdownTable(_ sender: NSMenuItem) {
+        guard let action = MarkdownTableEditingCore.Action(rawValue: sender.tag),
+              let change = MarkdownTableEditingCore.change(in: string, selection: selectedRange(), action: action),
+              replaceSourceUndoably(change.source, range: change.range) else { return }
+        undoManager?.setActionName(action.title)
     }
 
     @objc func convertMarkdownTableToTSV(_ sender: Any?) {
@@ -483,6 +592,8 @@ struct MarkdownPlainEditor: NSViewRepresentable {
     let onOpenWikiLink: (String) -> Void
     let onImagePaste: (Data) -> String?
     let onImageImportError: (String) -> Void
+    var imageStorageDirectory: URL? = nil
+    var canInsertImage: (() -> Bool)? = nil
     let onChange: (String) -> Void
     let onTemplateInsertion: () -> Void
     let onContextChange: (MarkdownEditingContext) -> Void
@@ -525,6 +636,8 @@ struct MarkdownPlainEditor: NSViewRepresentable {
         editor.openWikiLink = onOpenWikiLink
         editor.pastePNGIntoNote = onImagePaste
         editor.reportImageImportError = onImageImportError
+        editor.imageStorageDirectory = imageStorageDirectory
+        editor.canInsertImage = canInsertImage
         editor.registerForDraggedTypes([.fileURL, .png, .tiff,
             NSPasteboard.PasteboardType("public.jpeg"),
             NSPasteboard.PasteboardType("public.heic")])
@@ -611,6 +724,8 @@ struct MarkdownPlainEditor: NSViewRepresentable {
         (editor as? WorkOSMarkdownTextView)?.openWikiLink = onOpenWikiLink
         (editor as? WorkOSMarkdownTextView)?.pastePNGIntoNote = onImagePaste
         (editor as? WorkOSMarkdownTextView)?.reportImageImportError = onImageImportError
+        (editor as? WorkOSMarkdownTextView)?.imageStorageDirectory = imageStorageDirectory
+        (editor as? WorkOSMarkdownTextView)?.canInsertImage = canInsertImage
         let targetFont = NSFont.monospacedSystemFont(ofSize: CGFloat(fontSize), weight: .regular)
         if abs((editor.font?.pointSize ?? 0) - targetFont.pointSize) > 0.1 {
             editor.font = targetFont // display-only; string, selection and undo stay intact
@@ -632,7 +747,18 @@ struct MarkdownPlainEditor: NSViewRepresentable {
             }
         }
         if let insertRequest, context.coordinator.lastRequestID != insertRequest.id {
+            guard !editor.hasMarkedText() else { return }
             context.coordinator.lastRequestID = insertRequest.id
+            if insertRequest.replaceDocument {
+                guard (editor as? WorkOSMarkdownTextView)?.replaceSourceUndoably(insertRequest.source,
+                    range: NSRange(location: 0, length: (editor.string as NSString).length)) == true else { return }
+                editor.undoManager?.setActionName("본문 이력 복원")
+                let coordinator = context.coordinator
+                DispatchQueue.main.async { [weak editor, weak coordinator] in
+                    if let editor { coordinator?.forceRefreshContext(in: editor) }
+                }
+                return
+            }
             let selected = editor.selectedRange()
             let ns = editor.string as NSString
             let selectedText = ns.substring(with: NSIntersectionRange(selected, NSRange(location: 0, length: ns.length)))

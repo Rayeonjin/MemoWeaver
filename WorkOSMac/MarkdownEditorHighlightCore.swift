@@ -27,20 +27,22 @@ enum MarkdownEditorHighlightCore {
     private static let italic = expression(#"(?<!\*)\*(?!\*)(?=\S)[^*\r\n]+?(?<=\S)\*(?!\*)"#)
     private static let math = expression(#"(?<!\$)\$(?!\$)(?=\S)[^\$\r\n]+?(?<=\S)\$(?!\$)"#)
 
-    static func spans(in source: String) -> [Span] {
+    static func spans(in source: String, range: NSRange? = nil) -> [Span] {
         var result: [Span] = []
         var fence: MarkdownFenceSyntax.Fence?
-        var inDisplayMath = false
+        var mathCloser: String?
         var utf16Start = 0
 
         // NSString splits LF code units inside CRLF grapheme clusters.
         for raw in (source as NSString).components(separatedBy: "\n") {
+            if let range, utf16Start >= NSMaxRange(range) { break }
+            let paintsLine = range == nil || utf16Start + (raw as NSString).length >= range!.location
             // Keep the original UTF-16 offset even for Windows CRLF input.
             let line = raw.hasSuffix("\r") ? String(raw.dropLast()) : raw
             let length = (line as NSString).length
             let whole = NSRange(location: 0, length: length)
             func add(_ kind: Kind, _ local: NSRange) {
-                guard local.location != NSNotFound, local.length > 0,
+                guard paintsLine, local.location != NSNotFound, local.length > 0,
                       NSMaxRange(local) <= length else { return }
                 result.append(Span(kind: kind,
                                    range: NSRange(location: utf16Start + local.location,
@@ -59,14 +61,19 @@ enum MarkdownEditorHighlightCore {
                     add(.fence, whole)
                     fence = nil
                 }
-            } else if let opening = MarkdownFenceSyntax.opening(line), !inDisplayMath {
+            } else if let opening = MarkdownFenceSyntax.opening(line), mathCloser == nil {
                 add(.fence, whole)
                 fence = opening
             } else if MarkdownListSyntax.indentation(line) <= 3,
-                      line.trimmingCharacters(in: .whitespaces) == "$$" {
+                      let closer = mathCloser,
+                      line.trimmingCharacters(in: .whitespaces) == closer {
                 add(.mathDelimiter, whole)
-                inDisplayMath.toggle()
-            } else if !inDisplayMath {
+                mathCloser = nil
+            } else if mathCloser == nil, MarkdownListSyntax.indentation(line) <= 3,
+                      ["$$", "\\["].contains(line.trimmingCharacters(in: .whitespaces)) {
+                add(.mathDelimiter, whole)
+                mathCloser = line.trimmingCharacters(in: .whitespaces) == "$$" ? "$$" : "\\]"
+            } else if mathCloser == nil && paintsLine {
                 // Indented code is source, not a Markdown heading or list.
                 if MarkdownListSyntax.indentation(line) < 4 {
                     if first(heading) != nil { add(.heading, whole) }

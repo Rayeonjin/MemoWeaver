@@ -1,4 +1,5 @@
 import AppKit
+import ImageIO
 
 // AppKit exposes screenshots and file drags in several representations.
 // Normalize them to one bounded PNG before invoking the note's atomic store.
@@ -49,17 +50,57 @@ enum MemoWeaverEditorImageInput {
         rawImageTypes.contains(where: { board.availableType(from: [$0]) != nil }) || fileURL(board) != nil
     }
 
+    struct Snapshot {
+        let file: URL?
+        let representations: [Data]
+        func decode() -> Result {
+            if let file,
+               let size = (try? file.resourceValues(forKeys: [.fileSizeKey]))?.fileSize,
+               size > 0, size <= maximumFileBytes,
+               let data = try? Data(contentsOf: file), let png = normalizePNG(data) { return .png(png) }
+            for data in representations {
+                if let png = normalizePNG(data) { return .png(png) }
+            }
+            return .failed("이미지를 읽지 못했거나 크기 제한을 초과했습니다. PNG/JPEG 파일로 다시 시도해 주세요.")
+        }
+    }
+
+    // NSPasteboard must be captured on the main thread. File reads, decoding,
+    // PNG encoding and attachment writes happen on the import queue.
+    static func snapshot(_ board: NSPasteboard) -> Snapshot? {
+        let file = fileURL(board)
+        var values: [Data] = [], bytes = 0
+        func append(_ data: Data?) {
+            guard let data, !data.isEmpty, data.count <= maximumClipboardRepresentationBytes - bytes else { return }
+            values.append(data); bytes += data.count
+        }
+        for item in board.pasteboardItems ?? [] {
+            for type in rawImageTypes where item.types.contains(type) { append(item.data(forType: type)) }
+        }
+        if values.isEmpty {
+            for type in rawImageTypes { append(board.data(forType: type)) }
+        }
+        if values.isEmpty, file == nil { append(NSImage(pasteboard: board)?.tiffRepresentation) }
+        guard file != nil || !values.isEmpty || containsImage(board) else { return nil }
+        return Snapshot(file: file, representations: values)
+    }
+
     private static func normalizePNG(_ raw: Data) -> Data? {
         guard !raw.isEmpty, raw.count <= maximumClipboardRepresentationBytes else { return nil }
         if MemoWeaverAttachments.pngIsValid(raw) { return raw }
-        let bitmap = NSBitmapImageRep(data: raw) ??
-            NSImage(data: raw)?.tiffRepresentation.flatMap { NSBitmapImageRep(data: $0) }
-        guard let bitmap,
-              bitmap.pixelsWide > 0, bitmap.pixelsHigh > 0,
-              bitmap.pixelsWide <= 8192, bitmap.pixelsHigh <= 8192,
-              bitmap.pixelsWide * bitmap.pixelsHigh <= 32 * 1024 * 1024,
-              let png = bitmap.representation(using: .png, properties: [:]),
-              MemoWeaverAttachments.pngIsValid(png) else { return nil }
+        guard let source = CGImageSourceCreateWithData(raw as CFData, nil),
+              let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+              let width = properties[kCGImagePropertyPixelWidth] as? Int,
+              let height = properties[kCGImagePropertyPixelHeight] as? Int,
+              width > 0, height > 0, width <= 8192, height <= 8192,
+              width * height <= 32 * 1024 * 1024,
+              let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else { return nil }
+        let output = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(output, "public.png" as CFString, 1, nil) else { return nil }
+        CGImageDestinationAddImage(destination, image, nil)
+        guard CGImageDestinationFinalize(destination) else { return nil }
+        let png = output as Data
+        guard MemoWeaverAttachments.pngIsValid(png) else { return nil }
         return png
     }
 

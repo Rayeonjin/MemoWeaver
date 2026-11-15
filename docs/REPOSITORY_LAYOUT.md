@@ -8,7 +8,7 @@ MemoWeaver/
 ├── LICENSE / NOTICE           # 프로젝트 라이선스와 고지
 ├── THIRD_PARTY_NOTICES.md      # 외부 라이브러리 고지
 ├── AGENTS.md                  # 개발 작업 지침
-├── install-v0.9.69.sh          # 현재 버전 설치·검사
+├── install-v0.9.70.sh          # 현재 버전 설치·검사
 ├── build.sh / install.sh      # 빌드와 설치 위치 지정
 ├── backup-before-real-use.sh  # 메모 데이터 백업
 ├── WorkOSMac/                 # 앱 소스와 리소스

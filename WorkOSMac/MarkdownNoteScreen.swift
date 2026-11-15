@@ -112,7 +112,7 @@ struct MarkdownNoteEditorScreen: View {
                     fallbackTitle: displayTitle,
                     onAdditionalInfo: { showAdditionalInfo = true },
                     onCheckpoint: { flush(checkpoint: true) },
-                    onHistory: { showHistory = true }, onExport: export)
+                    onHistory: openHistory, onExport: export)
                 if !note.isMarkdown {
                     HStack(spacing: 6) {
                         Image(systemName: "lock.shield")
@@ -171,7 +171,12 @@ struct MarkdownNoteEditorScreen: View {
                                 wikiCandidates: { model.wikiCandidates($0, excluding: note.id) },
                                 onOpenWikiLink: { model.openWikiLink($0, sourceID: note.id) },
                                 onImagePaste: { png in model.storePastedPNG(png, for: note.id) },
-                                onImageImportError: { message in model.alertText = "붙여넣기 실패: " + message }) { value in
+                                onImageImportError: { message in model.alertText = "붙여넣기 실패: " + message },
+                                imageStorageDirectory: model.database?.directory,
+                                canInsertImage: {
+                                    mountGeneration == model.dataGeneration && model.selectedNoteID == note.id &&
+                                    model.notes.contains(where: { $0.id == note.id && $0.deletedAt.isEmpty })
+                                }) { value in
                 guard draft != value else { return }
                 draft = value
                 model.editorWasUsed()
@@ -238,7 +243,7 @@ struct MarkdownNoteEditorScreen: View {
             case "trash": confirmDelete = true
             case "restore": model.markDeleted(note, deleted: false)
             case "checkpoint": flush(checkpoint: true)
-            case "history": showHistory = true
+            case "history": openHistory()
             case "exportMarkdown": export(.markdown)
             case "exportHTML": export(.html)
             case "exportPDF": export(.pdf)
@@ -293,33 +298,16 @@ struct MarkdownNoteEditorScreen: View {
                 onRestore: { model.markDeleted(note, deleted: false) })
         }
         .sheet(isPresented: $showHistory) {
-            // Revision bodies remain raw source; HTML notes use their legacy history reader.
-            NavigationStack {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 12) {
-                        ForEach(Array(note.revisions.enumerated()), id: \.offset) { item in
-                            let revision = item.element
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text(WorkOSJSON.string(revision, "action", default: "저장 이력"))
-                                    .font(.headline)
-                                Text(WorkOSDate.display(WorkOSJSON.string(revision, "at")))
-                                    .font(.caption).foregroundStyle(.secondary)
-                                Text(WorkOSJSON.string(revision, "bodyFormat") == "markdown"
-                                     ? WorkOSJSON.string(revision, "body")
-                                     : LegacyNoteTextConverter.text(from: WorkOSJSON.string(revision, "body")))
-                                    .font(.system(.caption, design: .monospaced))
-                                    .textSelection(.enabled)
-                            }
-                            Divider()
-                        }
-                    }
-                    .padding(18)
-                }
-                .navigationTitle("Markdown 변경 이력")
-                .frame(minWidth: 610, minHeight: 400)
-                .toolbar { Button("닫기") { showHistory = false } }
-            }
+            MemoWeaverRevisionCompareView(revisions: note.revisions, current: draft) { source in
+                guard mountGeneration == model.dataGeneration,
+                      MemoWeaverLayoutSwitchSafety.prepare() else { return }
+                flush(checkpoint: true)
+                guard saveLabel != "저장 실패" else { return }
+                insertRequest = MarkdownInsertRequest(source: source, caretBack: 0, replaceDocument: true)
+                showHistory = false
+            } onClose: { showHistory = false }
         }
+
         .confirmationDialog("이 메모를 휴지통으로 이동하시겠습니까?", isPresented: $confirmDelete) {
             Button("휴지통으로 이동", role: .destructive) {
                 flush(checkpoint: true)
@@ -400,6 +388,11 @@ struct MarkdownNoteEditorScreen: View {
             try? await Task.sleep(nanoseconds: 1_000_000_000)
             if !Task.isCancelled { flush(checkpoint: false) }
         }
+    }
+
+    private func openHistory() {
+        guard MemoWeaverLayoutSwitchSafety.prepare() else { return }
+        showHistory = true
     }
 
     private func flush(checkpoint: Bool) {

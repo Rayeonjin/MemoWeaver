@@ -1,9 +1,17 @@
+# Current release gate — v0.9.70 / Build 103 (2026-11-16)
+
+Editor changes and validation: [implementation](../reviews/EDITOR_IMPROVEMENTS_2026-11-16.md),
+[actual acceptance](../releases/MAC_ACCEPTANCE_v0.9.70.md).
+Run `./install-v0.9.70.sh --verify`. Synthetic marked-text tests are not a substitute
+for observing the user's actual input method. Previous live-model, notification and
+trackpad acceptance limits remain. No schema or third-party changes.
+
 # Current release gate — v0.9.69 / Build 102 (2026-11-15)
 
 D3 map implementation, exact package/license inventory and actual evidence:
 [D3 memory map](../reviews/D3_MEMORY_MAP_2026-11-15.md). The existing 110-node bound remains.
 Physics positions do not imply similarity or prove business relationships.
-Use `./install-v0.9.69.sh --verify`. Earlier live Ollama/real IME acceptance
+Use `./scripts/install/legacy/install-v0.9.69.sh --verify`. Earlier live Ollama/real IME acceptance
 limits remain; the new force engine is not an AI quality change.
 
 # Current release gate — v0.9.68 / Build 101 (2026-11-14)
