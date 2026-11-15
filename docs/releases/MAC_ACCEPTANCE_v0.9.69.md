@@ -1,18 +1,23 @@
-# v0.9.69 native acceptance
+# v0.9.69 테스트 확인표
 
-Only disposable notes/databases/preferences may be used for tests.
-Execution evidence: [D3 map](../D3_MEMORY_MAP_2026-11-15.md).
+테스트에는 별도로 만든 메모·데이터베이스·설정만 사용합니다.
+자세한 결과는 [기억지도 테스트 기록](../D3_MEMORY_MAP_2026-11-15.md)에 남겨 두었습니다.
 
-- [x] Real bundled d3-force computes deterministic finite positions and honors pins.
-- [x] Viewport cursor anchoring, clamps, inverse transform and fit are correct.
-- [x] Native zoom/pan/node drag/reset and accessible relationship actions work.
-- [x] Layout/gestures leave business edge IDs and both quotations unchanged.
-- [x] Old background completions cannot restore nodes removed by a later graph.
-- [x] Native light/dark, two widths, editor/panes/IME guard and backup regressions.
-- [x] Manual isolated QA app zoom/drag/relation/source click-through.
-- [x] Installed app version, graph/notes navigation, unchanged data checks.
+## 확인한 항목
 
-- [ ] Physical trackpad pinch on an actual device.
+- [x] 앱에 포함된 d3-force가 같은 입력에 같은 좌표를 계산하며, 좌표가 유효하고 드래그한 위치를 유지함
+- [x] 커서 위치를 기준으로 확대·축소하고, 배율 제한·좌표 변환·전체 맞춤이 동작함
+- [x] 지도 확대·이동·노드 드래그·초기화와 접근성 기능을 통한 관계 선택이 동작함
+- [x] 지도를 배치하거나 움직여도 기존 업무 관계 ID와 양쪽 인용문이 바뀌지 않음
+- [x] 뒤늦게 끝난 배치 계산이 이미 지도에서 제거된 메모를 다시 표시하지 않음
+- [x] 밝은·어두운 테마, 두 가지 창 너비, 편집기·패널·입력기 보호 로직과 백업 관련 회귀 테스트 통과
+- [x] 별도 테스트 앱에서 확대·드래그·관계 선택·원문 열기를 직접 확인함
+- [x] 설치된 앱의 버전, 기억지도와 메모 화면 전환, 기존 데이터가 그대로인지 확인함
 
-Existing live Ollama judgment quality, real Korean composition and notification
-acceptance limits remain. Force layout does not determine business relevance.
+## 더 확인할 항목
+
+- [ ] 실제 트랙패드에서 손가락으로 핀치 확대·축소하기
+
+Ollama가 실제로 제안하는 관계의 품질, 한글 입력기의 글자 조합 중 동작,
+알림 수신도 추가 확인이 남아 있습니다. 지도의 자동 배치는 화면에서 메모를
+놓을 위치만 계산합니다. 업무상 관련이 있는지를 판단하는 기능은 아닙니다.
