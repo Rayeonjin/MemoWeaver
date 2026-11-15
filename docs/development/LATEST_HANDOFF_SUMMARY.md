@@ -1,3 +1,15 @@
+## 저장소 폴더 정리 — 2026-11-16
+
+최상위 파일을 19개에서 11개로 줄였습니다. 과거 설치 스크립트는
+`scripts/install/legacy/`, 저작권·브랜드 문서는 `docs/legal/`, 기준 해시는
+`Tests/baselines/`로 옮겼습니다. 개발 문서와 검토 기록은 각각
+`docs/development/`, `docs/reviews/`에 모았습니다.
+[폴더별 안내](../REPOSITORY_LAYOUT.md)에서 이전 위치와 새 위치를 볼 수 있습니다.
+
+현재 설치·빌드·백업 명령, 앱 소스 경로, 데이터 경로, 버전은 그대로입니다.
+빌드와 검사 도구가 새 문서 위치를 사용하도록 수정했으며, 앱 안의 고지 파일
+이름과 법적 문서 원문, 외부 리소스, 기준 해시 명세는 바꾸지 않았습니다.
+
 ## 소개 이미지와 후원 안내 — 2026-11-15
 
 README에 격리된 예시 데이터로 촬영한 편집·미리보기 및 기억지도 이미지를
@@ -9,7 +21,7 @@ Buy Me a Coffee·Ko-fi 링크를 같은 자발적 후원 취지로 연결했습�
 ## 한국어 공개 문서 정리 — 2026-11-15
 
 README를 Catoshi의 사용자 중심 구성에 맞춰 한국어로 정리했습니다.
-설치·업데이트·백업 안내는 [INSTALL.md](INSTALL.md)에 모았으며, 문서 색인과
+설치·업데이트·백업 안내는 [INSTALL.md](../INSTALL.md)에 모았으며, 문서 색인과
 GitHub 안내 및 v0.9.69 변경 이력도 한국어로 갱신했습니다. 새 설치는
 `~/Applications`, 기존 공용 앱만 있으면 `/Applications`를 사용하는 현재
 스크립트 동작을 명시했습니다. 앱 코드·버전·설치 동작·라이선스는 변경하지
@@ -23,7 +35,7 @@ calculation and native AppKit drawing/gestures. Zoom, pan, node dragging, fit an
 reset are presentation-only. Existing business edges, review, both quotations
 and read-only source access are retained. No similarity edges, schema change,
 web view, runtime network or note-body transfer to JavaScript. Read
-[D3 map evidence](D3_MEMORY_MAP_2026-11-15.md). Gate:
+[D3 map evidence](../reviews/D3_MEMORY_MAP_2026-11-15.md). Gate:
 `./install-v0.9.69.sh --verify`: all twelve groups/full build passed, followed
 by final accessibility/click-during-layout native checks/build. Isolated UI zoom/pan/drag/edge/source
 inspection passed. Installed Build 102, checked controls/version and exact live
@@ -36,9 +48,9 @@ Memory map edges now represent source-checked AI business relationships or expli
 human links. Embedding similarity remains candidate discovery only, never a map
 edge. Relationship labels open details with both quotes, direction, review and
 read-only originals. Human reason/type and independent AI evidence coexist.
-See [validation](BUSINESS_MEMORY_MAP_2026-11-14.md) and
-[release notes](releases/CHANGELOG_v0.9.68.md). Current gate:
-`./install-v0.9.68.sh --verify`: all eleven groups and full native build passed.
+See [validation](../reviews/BUSINESS_MEMORY_MAP_2026-11-14.md) and
+[release notes](../releases/CHANGELOG_v0.9.68.md). Current gate:
+`./scripts/install/legacy/install-v0.9.68.sh --verify`: all eleven groups and full native build passed.
 Strict signature/legal copies passed. Installed at ~/Applications on 2026-11-15
 following the owner's normal app shutdown and complete private backup. Actual
 Build 101/map/return-to-notes UI verified; all audited data row hashes/counts
@@ -48,9 +60,9 @@ No schema migration or note rewriting.
 ## Current update — v0.9.67 / Build 100 (2026-11-12)
 
 Manual GitHub update checking is available in Settings → App information.
-Read [release notes](releases/CHANGELOG_v0.9.67.md) and
-[validation](UPDATE_CHECK_2026-11-12.md). Current gate:
-`./install-v0.9.67.sh --verify`. Publish a matching version tag and keep the
+Read [release notes](../releases/CHANGELOG_v0.9.67.md) and
+[validation](../reviews/UPDATE_CHECK_2026-11-12.md). Current gate:
+`./scripts/install/legacy/install-v0.9.67.sh --verify`. Publish a matching version tag and keep the
 bundle MemoWeaverReleaseTag synchronized. No automatic checks/install or schema
 change. All eight verification groups and full macOS build passed. Installed
 Build 100, verified actual manual-check/rate-limit UI, signature/legal copies
@@ -62,17 +74,17 @@ preserved below.
 
 Three stability-review findings were addressed: completion lifecycle/focus on
 navigation, bound target priority and math backlink exclusion. Read
-[release notes](releases/CHANGELOG_v0.9.66.md) and
-[validation](WIKI_STABILITY_2026-11-08.md). Current gate is
-`./install-v0.9.66.sh --verify`; no schema migration or app installation.
+[release notes](../releases/CHANGELOG_v0.9.66.md) and
+[validation](../reviews/WIKI_STABILITY_2026-11-08.md). Current gate is
+`./scripts/install/legacy/install-v0.9.66.sh --verify`; no schema migration or app installation.
 The history below records the earlier 0.9.65 update and baseline.
 
 ## Current update — v0.9.65 / Build 98 (2026-11-05)
 
 Desktop usability, four review fixes and manual wiki links/backlinks are now
-implemented. Read [release notes](releases/CHANGELOG_v0.9.65.md) and
-[validation evidence](USABILITY_UPDATE_2026-11-05.md) before using this candidate.
-Current gate: `./install-v0.9.65.sh --verify`. Real IME/GUI acceptance is pending.
+implemented. Read [release notes](../releases/CHANGELOG_v0.9.65.md) and
+[validation evidence](../reviews/USABILITY_UPDATE_2026-11-05.md) before using this candidate.
+Current gate: `./scripts/install/legacy/install-v0.9.65.sh --verify`. Real IME/GUI acceptance is pending.
 Mobile/QR work was explicitly deferred. No schema change or app installation.
 The history below documents the earlier v0.9.64 baseline.
 
@@ -94,7 +106,7 @@ in `THIRD_PARTY_LICENSE_AUDIT_2026-10-29.md`; manual GUI acceptance remains pend
 
 On 2026-10-29 the owner selected the same copyright-holder attribution as
 Catoshi: `Copyright (c) 2026 Rayeonjin`. MemoWeaver retains Apache License 2.0;
-Catoshi's separate community license was not adopted. `COPYRIGHT.md` clarifies
+Catoshi's separate community license was not adopted. `docs/legal/COPYRIGHT.md` clarifies
 scope and third-party exceptions. The build now includes the project's LICENSE,
 NOTICE, COPYRIGHT and brand policy documents alongside third-party notices.
 
@@ -123,7 +135,7 @@ release notes and acceptance documents are under `docs/releases/`. README stays
 at the repository root, with quick links and a directory map. `docs/README.md`
 and `scripts/README.md` index the relocated material.
 
-`./build.sh`, `./install.sh`, `./install-v0.9.64.sh --verify` and the backup
+`./build.sh`, `./install.sh`, `./scripts/install/legacy/install-v0.9.64.sh --verify` and the backup
 entrypoint remain at the root. Test scripts resolve the repository root from
 their new location. App source, legal asset bytes and private-folder boundaries
 are unchanged. Original baseline hash manifests intentionally retain the old
@@ -184,7 +196,7 @@ QA suites and a full native arm64 SwiftUI/AppKit compile/link with ad-hoc
 signature verification. Detailed evidence is in `STABILITY_REVIEW_2026-10-29.md`.
 Human first-click/Korean IME, notification delivery, live Ollama, GUI and real
 write-save-restart/restore acceptance remain NOT RUN.
-`./install-v0.9.64.sh --verify` is the home Mac acceptance gate and DOES NOT
+`./scripts/install/legacy/install-v0.9.64.sh --verify` is the home Mac acceptance gate and DOES NOT
 install or overwrite the existing app.
 
 Before source publication: verify copyright holder identity, Apache 2.0 license
@@ -198,7 +210,7 @@ adoption, `NOTICE`/brand policy, no sensitive files, and full licensing of the
 3. Confirm normal notes workflow, not just unit tests, with temporary data.
 4. Produce changelog + real Mac acceptance notes, new release number/build,
    and update this handoff before merge/tag/push.
-5. Read `docs/WEEKLY_CODEX_PLAYBOOK.md`; stay out of user's live DB.
+5. Read `docs/development/WEEKLY_CODEX_PLAYBOOK.md`; stay out of user's live DB.
 
 The private transfer archive also contains the full 155K historical Korean
 handoff and the exact original v0.9.64 source ZIP. Neither belongs in public Git.

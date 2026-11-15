@@ -46,7 +46,7 @@ assert (root/'THIRD_PARTY_NOTICES.md').exists()
 plist=plistlib.loads((w/'Info.plist').read_bytes())
 assert (plist['CFBundleShortVersionString'],plist['CFBundleVersion'])==('0.9.63','96')
 assert plist['CFBundleIdentifier']=='com.local.workos.notes'
-for row in (root/'QA/v0.9.60-core-source.sha256').read_text().splitlines():
+for row in (root/'Tests/baselines/v0.9.60-core-source.sha256').read_text().splitlines():
  digest, name=row.split('  ',1)
  assert hashlib.sha256((root/name).read_bytes()).hexdigest()==digest,name + ' changed'
 print('PASS v0.9.63 static notification/UI wiring, release checks and protected core source hashes')

@@ -30,7 +30,7 @@ we recommend a backed-up trial, not a claim of production reliability.
 - `scripts/tests/test-v0.9.27-pinned-paste-ui.sh`: source/layout/clipboard policy;
   AppKit clipboard execution SKIPPED on Linux.
 - `scripts/tests/test-v0.9.64-schedule.sh`: planner/backup tests passed unchanged, for regression.
-- All eight protected core source hashes match `QA/v0.9.60-core-source.sha256`.
+- All eight protected core source hashes match `Tests/baselines/v0.9.60-core-source.sha256`.
 
 ## UI drift corrected in this version
 

@@ -1,7 +1,7 @@
 # Current release gate — v0.9.69 / Build 102 (2026-11-15)
 
 D3 map implementation, exact package/license inventory and actual evidence:
-[D3 memory map](D3_MEMORY_MAP_2026-11-15.md). The existing 110-node bound remains.
+[D3 memory map](../reviews/D3_MEMORY_MAP_2026-11-15.md). The existing 110-node bound remains.
 Physics positions do not imply similarity or prove business relationships.
 Use `./install-v0.9.69.sh --verify`. Earlier live Ollama/real IME acceptance
 limits remain; the new force engine is not an AI quality change.
@@ -9,31 +9,31 @@ limits remain; the new force engine is not an AI quality change.
 # Current release gate — v0.9.68 / Build 101 (2026-11-14)
 
 Business relationship map behavior and actual validation are recorded in
-[the update evidence](BUSINESS_MEMORY_MAP_2026-11-14.md). Use
-`./install-v0.9.68.sh --verify`. AI interpretation is not proof of a business
+[the update evidence](../reviews/BUSINESS_MEMORY_MAP_2026-11-14.md). Use
+`./scripts/install/legacy/install-v0.9.68.sh --verify`. AI interpretation is not proof of a business
 relationship; both current-source quotations and human review remain visible.
 Existing human IME, notifications and live-model acceptance limits remain.
 
 # Current release gate — v0.9.67 / Build 100 (2026-11-12)
 
 Manual update-check behavior, network boundaries and validation:
-[update-check evidence](UPDATE_CHECK_2026-11-12.md).
-Use `./install-v0.9.67.sh --verify`. Human IME/notification acceptance remains
+[update-check evidence](../reviews/UPDATE_CHECK_2026-11-12.md).
+Use `./scripts/install/legacy/install-v0.9.67.sh --verify`. Human IME/notification acceptance remains
 pending; this is a QA candidate. Previous evidence is retained below.
 
 # Current release gate — v0.9.66 / Build 99 (2026-11-08)
 
 Three wiki/navigation fixes and their evidence are recorded in
-[the stability update](WIKI_STABILITY_2026-11-08.md).
-Use `./install-v0.9.66.sh --verify`. Real input-method/mouse/notification acceptance
+[the stability update](../reviews/WIKI_STABILITY_2026-11-08.md).
+Use `./scripts/install/legacy/install-v0.9.66.sh --verify`. Real input-method/mouse/notification acceptance
 remains pending. This is a QA candidate. Earlier evidence is preserved below.
 
 # Current release gate — v0.9.65 / Build 98 (2026-11-05)
 
-Current checks and limits are in [the usability update](USABILITY_UPDATE_2026-11-05.md).
-Use `./install-v0.9.65.sh --verify`. This is a QA candidate, not a stable-release
+Current checks and limits are in [the usability update](../reviews/USABILITY_UPDATE_2026-11-05.md).
+Use `./scripts/install/legacy/install-v0.9.65.sh --verify`. This is a QA candidate, not a stable-release
 certification. Real Korean IME, mouse-driven acceptance and notification delivery
-remain manual gates in [the checklist](releases/MAC_ACCEPTANCE_v0.9.65.md).
+remain manual gates in [the checklist](../releases/MAC_ACCEPTANCE_v0.9.65.md).
 Mobile/QR work is deferred. The tables below preserve the previous baseline.
 
 # Known risks and release gates (2026-10-29)

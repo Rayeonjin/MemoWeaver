@@ -17,7 +17,7 @@
 - [ ] All modified or added tests actually executed; FAIL/SKIP disclosed.
 - [ ] No change in third-party license copies/JS bundle without full audit.
 - [ ] `./tools/public-source-preflight.sh` passed; no secrets/notes/build files.
-- [ ] Update `docs/LATEST_HANDOFF_SUMMARY.md` and QA checklist.
+- [ ] Update `docs/development/LATEST_HANDOFF_SUMMARY.md` and QA checklist.
 - [ ] Commit on weekly branch; merge fast-forward; optional `-qa` tag; push
       only from home Mac. Avoid fake stable/production declarations.
 - [ ] Preserve private fallback ZIP and full source state outside public Git.

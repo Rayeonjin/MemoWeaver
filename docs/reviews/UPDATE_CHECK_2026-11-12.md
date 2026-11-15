@@ -37,7 +37,7 @@ origins, absent body/credentials, empty/malformed/offline/403/429/404/500 errors
 incomplete lists, no request on construction, duplicate check suppression and
 old cancelled response generation protection.
 
-Final verification: all eight groups in `./install-v0.9.67.sh --verify` passed,
+Final verification: all eight groups in `./scripts/install/legacy/install-v0.9.67.sh --verify` passed,
 including the isolated native navigation/editor harness, followed by a complete
 arm64 macOS compile/link and ad-hoc signature. Installed v0.9.67 / Build 100 at
 `~/Applications/MemoWeaver.app`; its executable hash matches the verified build.

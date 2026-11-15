@@ -52,7 +52,7 @@ assert 'static let hoverDelay: TimeInterval = 0.13' in passive
 plist=plistlib.loads((w/'Info.plist').read_bytes())
 assert (plist['CFBundleShortVersionString'],plist['CFBundleVersion']) == ('0.9.61','94')
 assert plist['CFBundleIdentifier']=='com.local.workos.notes', 'existing settings identity must not change'
-for row in (r/'QA/v0.9.60-core-source.sha256').read_text().splitlines():
+for row in (r/'Tests/baselines/v0.9.60-core-source.sha256').read_text().splitlines():
  digest,name = row.split('  ',1)
  assert hashlib.sha256((r/name).read_bytes()).hexdigest()==digest, name + ' changed'
 print('PASS v0.9.61: compact editor toolbar, attached table picker, tooltip exact layout and click-through')

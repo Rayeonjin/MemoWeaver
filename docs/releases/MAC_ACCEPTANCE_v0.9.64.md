@@ -1,7 +1,7 @@
 # MemoWeaver v0.9.64 - macOS owner acceptance (manual; not yet passed)
 
 Do not run restore tests on daily data. Quit app before backing up.
-Run `./backup-before-real-use.sh`, then `./install-v0.9.64.sh --verify`
+Run `./backup-before-real-use.sh`, then `./scripts/install/legacy/install-v0.9.64.sh --verify`
 without replacing the installed app.
 
 ## P0: Math symbol consistency

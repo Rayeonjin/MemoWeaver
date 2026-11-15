@@ -6,11 +6,11 @@ change and no changes to planner, persistence, or AI.
 ## Safely test on macOS
 
 1. Quit MemoWeaver. Run `./backup-before-real-use.sh` to preserve your data.
-2. `./install-v0.9.64.sh --verify` runs regression checks and builds the app
+2. `./scripts/install/legacy/install-v0.9.64.sh --verify` runs regression checks and builds the app
    without touching the installed app.
 3. Verify `docs/releases/MAC_ACCEPTANCE_v0.9.64.md` first, especially symbols and note
    editing. Follow `docs/releases/MAC_ACCEPTANCE_v0.9.63.md` for planner/notifications.
-4. Only after passing tests: `./install-v0.9.64.sh` if you choose to install.
+4. Only after passing tests: `./scripts/install/legacy/install-v0.9.64.sh` if you choose to install.
 
 Linux supports source parsing and Foundation/SQLite tests but cannot validate
 native SwiftUI/AppKit build, hover/click, keyboard/IME or notification delivery.

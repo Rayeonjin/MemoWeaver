@@ -41,7 +41,7 @@ relation retains both quotes; separate incident stays unconnected; human link an
 AI evidence coexist; stale source rejects evidence; negative relation stays off
 map; existing JSON roundtrip retains both forms of relationship.
 
-Final gate: all eleven groups of `./install-v0.9.68.sh --verify` passed, followed
+Final gate: all eleven groups of `./scripts/install/legacy/install-v0.9.68.sh --verify` passed, followed
 by a complete native arm64 macOS compile/link and ad-hoc signature. Existing
 navigation/undo, synthetic marked-text guard, clipboard, panes, backup, notebooks,
 update checking, legal assets and offline preview regressions passed.

@@ -28,7 +28,7 @@ note/attachment storage paths. Mobile/QR pairing is deferred by the owner.
 - Include metadata changes in history checkpoints and avoid identical repeats.
 - Provide isolated native QA with independent DB, recovery files, preferences
   and disabled system-notification mutation. Original release checks stay frozen;
-  `./install-v0.9.65.sh --verify` runs the current functional gates and full build.
+  `./scripts/install/legacy/install-v0.9.65.sh --verify` runs the current functional gates and full build.
 
 Rollback: return to the preceding source commit, rebuild, and preserve all
 current user data. The new wiki JSON fields are additive. The old editor will

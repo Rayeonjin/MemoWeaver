@@ -91,4 +91,4 @@ chmod +x *.sh
 - Swift 빌드 실패: 소스 폴더의 `build/Logs/swiftc-release.log`를 확인합니다.
 - 검사 실패: 먼저 출력된 실패 항목을 확인합니다. `--verify`는 설치된 앱을 교체하지 않습니다.
 
-어디까지 테스트했는지는 [v0.9.69 확인 항목](releases/MAC_ACCEPTANCE_v0.9.69.md)과 [자세한 테스트 기록](D3_MEMORY_MAP_2026-11-15.md)에서 볼 수 있습니다.
+어디까지 테스트했는지는 [v0.9.69 확인 항목](releases/MAC_ACCEPTANCE_v0.9.69.md)과 [자세한 테스트 기록](reviews/D3_MEMORY_MAP_2026-11-15.md)에서 볼 수 있습니다.

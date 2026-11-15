@@ -9,7 +9,7 @@ git pull --ff-only origin main
 git switch -c weekly/YYYY-MM-DD-topic
 ```
 
-Read `AGENTS.md`, `docs/LATEST_HANDOFF_SUMMARY.md`, any relevant source/tests
+Read `AGENTS.md`, `docs/development/LATEST_HANDOFF_SUMMARY.md`, any relevant source/tests
 and previous Mac acceptance findings. Define a narrow change with a rollback
 path. Make changes only on the branch. Avoid introducing more features just
 because nearby code is visible.
@@ -32,7 +32,7 @@ Check current test script named for the updated version. For the current candida
 
 After testing a subsequent weekly release, update `Info.plist`, installer
 script name, RELEASE/CHANGELOG/MAC_ACCEPTANCE docs and
-`docs/LATEST_HANDOFF_SUMMARY.md`, only recording evidence from actual execution.
+`docs/development/LATEST_HANDOFF_SUMMARY.md`, only recording evidence from actual execution.
 
 ```bash
 git add -A

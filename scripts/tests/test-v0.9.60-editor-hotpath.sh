@@ -56,7 +56,7 @@ assert 'if (isAutomaticMemoryIndexing || isAutomaticRelationAnalysis)' in activi
 assert 'if backgroundAITask == nil { scheduleBackgroundAI() }' in activity
 assert 'lastEditorAIPauseAt' in activity
 # Avoid any destructive schema update in this performance-focused release.
-for row in (r/'QA/review-stability-core-source.sha256').read_text().splitlines():
+for row in (r/'Tests/baselines/review-stability-core-source.sha256').read_text().splitlines():
  digest,name=row.split('  ',1)
  assert hashlib.sha256((r/name).read_bytes()).hexdigest()==digest, name+' changed'
 assert 'CREATE TABLE IF NOT EXISTS note_notebooks' in (w/'Storage.swift').read_text()

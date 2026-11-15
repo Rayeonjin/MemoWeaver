@@ -176,7 +176,7 @@ for item in manifest['packages']+manifest['embeddedComponents']+maven['packages'
 supp=json.loads((out/'supplemental-sources.json').read_text())
 for f in supp:
  if not f['path'].endswith(('.gradle','.pom','.json')):legal.add(f['path'])
-sections=[(name,(r/name).read_text()) for name in ['LICENSE','NOTICE','COPYRIGHT.md']] + [(str((r/'THIRD_PARTY_NOTICES.md').relative_to(r)),intro),('THIRD_PARTY_LICENSES/SOURCE_AVAILABILITY.md',source_text)]
+sections=[(name,(r/('docs/legal/'+name if name == 'COPYRIGHT.md' else name)).read_text()) for name in ['LICENSE','NOTICE','COPYRIGHT.md']] + [(str((r/'THIRD_PARTY_NOTICES.md').relative_to(r)),intro),('THIRD_PARTY_LICENSES/SOURCE_AVAILABILITY.md',source_text)]
 for path in sorted(legal):sections.append((path,(r/path).read_text(encoding='utf-8',errors='strict')))
 combined=''.join('\n'+'='*78+'\n'+name+'\n'+'='*78+'\n'+content+'\n'for name,content in sections)
 (out/'ALL_LICENSES.txt').write_text(combined)

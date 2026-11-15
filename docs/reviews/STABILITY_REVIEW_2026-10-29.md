@@ -27,7 +27,7 @@ AI response state uses a generation token to ignore canceled prior requests.
 
 ## Actual verification
 
-- `./install-v0.9.64.sh --verify`: PASS on native arm64 macOS with CLT,
+- `./scripts/install/legacy/install-v0.9.64.sh --verify`: PASS on native arm64 macOS with CLT,
   targeting macOS 14.0; all twelve suites below completed before app compilation.
 - Full app compiled and linked, then ad-hoc codesigned and signature-verified.
 - Final `codesign --verify --strict --verbose=2`: PASS.
@@ -81,8 +81,8 @@ these behaviors. Full third-party diagram licensing audit remains pending.
 
 - Full QA/build output: `../build/Logs/stability-verify.log`.
 - Compiler/signing diagnostics: `../build/Logs/swiftc-release.log`.
-- Original protected-source manifest remains `../QA/v0.9.60-core-source.sha256`;
-  current QA uses `../QA/review-stability-core-source.sha256` for reviewed edits.
+- Original protected-source manifest remains `../Tests/baselines/v0.9.60-core-source.sha256`;
+  current QA uses `../Tests/baselines/review-stability-core-source.sha256` for reviewed edits.
 - The private transfer folder contains `BEFORE_STABILITY_2026-10-29.tar.gz`,
   a full pre-edit source snapshot excluding generated build outputs. The exact
   original release ZIP is also preserved. Neither archive belongs in public Git.

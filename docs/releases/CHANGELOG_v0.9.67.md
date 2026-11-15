@@ -19,5 +19,5 @@ Settings → App information. Implementation uses Foundation/SwiftUI only.
   another request. This service never accesses the note store or AI queues.
 
 Evidence: `../UPDATE_CHECK_2026-11-12.md`. Current gate:
-`./install-v0.9.67.sh --verify`. No schema/data migration, third-party dependency
+`./scripts/install/legacy/install-v0.9.67.sh --verify`. No schema/data migration, third-party dependency
 or renderer-asset replacement. All earlier IME acceptance limits remain.

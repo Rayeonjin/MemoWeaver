@@ -43,7 +43,7 @@ assert 'case .math: return [.fraction, .squareRoot, .gatheredEquations, .aligned
 assert 'case .gatheredEquations:' in syntax and 'case .alignedEquations:' in syntax
 assert 'String.raw' not in section
 # Protect all storage and hotpath files from accidental changes.
-for row in (r/'QA/v0.9.60-core-source.sha256').read_text().splitlines():
+for row in (r/'Tests/baselines/v0.9.60-core-source.sha256').read_text().splitlines():
     digest, relative = row.split('  ',1)
     actual=hashlib.sha256((r/relative).read_bytes()).hexdigest()
     assert digest==actual, f'unexpected critical file change: {relative}'

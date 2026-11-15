@@ -1,33 +1,27 @@
 #!/bin/bash
-# MemoWeaver v0.9.64 Build 97: native zoned unified toolbar build/install launcher.
+# MemoWeaver v0.9.65 Build 98: native zoned unified toolbar build/install launcher.
 # Safe verification: static/native smoke and full CLT build before optional install.
 # Preserves com.local.workos.notes and ~/Library/Application Support/WorkOS/.
 set -euo pipefail
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd -P)"
 cd "$ROOT"
 if [[ "$(uname -s)" != Darwin ]]; then
   printf '[MemoWeaver] macOS 14+ and Apple Command Line Tools required.\n' >&2
   exit 1
 fi
 run_tests() {
-  # Earlier scripts assert old global toolbar groups and historical bundle
-  # versions. This release verifies the native zoned toolbar and fixed source paths.
+  # Historical version/hash assertions stay frozen. Run behavior checks against
+  # the current source, including the isolated native navigation/link harness.
   local test
   local test_directory="$ROOT/scripts/tests"
   local -a tests=(
     test-third-party-licenses.sh
-    test-review-stability.sh
-    test-v0.9.64-schedule.sh
-    test-v0.9.64-pointer-symbols.sh
-    test-v0.9.64-toolkit.sh
-    test-v0.9.64-live-preview.sh
-    test-v0.9.64-optimization.sh
-    test-v0.9.60-brand-data.sh
-    test-v0.9.59-ratio-cycle.sh
-    test-v0.9.60-editor-hotpath.sh
+    test-v0.9.65-core.sh
     test-side-preview.sh
+    test-v0.9.59-ratio-cycle.sh
     test-v0.9.51-notebooks.sh
     test-v0.9.27-pinned-paste-ui.sh
+    test-v0.9.65-native.sh
   )
   for test in "${tests[@]}"; do
     [[ -x "$test_directory/$test" ]] || {
@@ -41,7 +35,7 @@ run_tests() {
 }
 case "${1:-}" in
   --help|-h)
-    printf 'Usage: ./install-v0.9.64.sh [--verify|--build-only]\n'
+    printf 'Usage: ./scripts/install/legacy/install-v0.9.65.sh [--verify|--build-only]\n'
     printf '  No options: compile and install MemoWeaver immediately.\n'
     printf '  --verify: run source/AppKit tests and FULL app build (does NOT install).\n  --build-only: compile app only, do NOT replace the installed app.\n'
     exit 0
@@ -68,7 +62,7 @@ on_error() {
   exit "$status"
 }
 trap on_error ERR
-printf '[MemoWeaver] Starting build and installation. Optional tests: ./install-v0.9.64.sh --verify\n'
+printf '[MemoWeaver] Starting build and installation. Optional tests: ./scripts/install/legacy/install-v0.9.65.sh --verify\n'
 # Install into the existing legacy application's parent directory when possible.
 # User Applications is preferred when both locations contain an existing app.
 if [[ -d "$HOME/Applications/MemoWeaver.app" || -d "$HOME/Applications/기억의 집.app" || -d "$HOME/Applications/WorkOS.app" ]]; then

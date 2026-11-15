@@ -12,6 +12,11 @@ root = Path(__file__).resolve().parents[1]
 legal = root / 'THIRD_PARTY_LICENSES'
 manifest = json.loads((legal / 'manifest.json').read_text())
 
+def project_notice(filename):
+    if filename in {'COPYRIGHT.md', 'TRADEMARKS.md', 'BRAND_ASSETS.md'}:
+        return root / 'docs/legal' / filename
+    return root / filename
+
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -56,7 +61,7 @@ for needle in ['Eclipse Public License', 'Cure53', 'Ralf S. Engelschall', 'Gaeta
     assert needle in text, 'Consolidated notice missing: ' + needle
 assert len(text) > 100_000
 for filename in ['LICENSE', 'NOTICE', 'COPYRIGHT.md']:
-    assert (root / filename).read_text() in text, 'Standalone export missing current project notice: ' + filename
+    assert project_notice(filename).read_text() in text, 'Standalone export missing current project notice: ' + filename
 # The native map reuses four already-audited ISC versions in a separate bundle.
 force = json.loads((root / 'Vendor/force-layout/manifest.json').read_text())
 assert digest(local_file(force['asset'])) == force['sha256'], 'Force runtime changed'
@@ -81,7 +86,7 @@ if args.app:
         if source.is_file():
             assert source.read_bytes() == (resources / 'Licenses' / source.relative_to(legal)).read_bytes(), str(source)
     for filename in ['LICENSE', 'NOTICE', 'COPYRIGHT.md', 'TRADEMARKS.md', 'BRAND_ASSETS.md', 'THIRD_PARTY_NOTICES.md']:
-        assert (root / filename).read_bytes() == (resources / filename).read_bytes(), filename
+        assert project_notice(filename).read_bytes() == (resources / filename).read_bytes(), filename
     for asset in manifest['assets']:
         assert digest(resources / Path(asset['path']).name) == asset['sha256']
 print('PASS: retained assets, npm/embedded/Maven notices, EPL source links and complete legal-file hashes' + ('; app copies match' if args.app else ''))

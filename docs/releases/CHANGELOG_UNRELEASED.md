@@ -16,8 +16,8 @@ candidate, not a new production release. No schema or identifier changes.
 - Repair Bash 3.2 empty-array handling in current QA, pin CLT SDK/module caches,
   and add isolated regression coverage for these fixes.
 
-Original `QA/v0.9.60-core-source.sha256` and original-transfer manifests remain
-unchanged. Current installer checks use `QA/review-stability-core-source.sha256`
+Original `Tests/baselines/v0.9.60-core-source.sha256` and original-transfer manifests remain
+unchanged. Current installer checks use `Tests/baselines/review-stability-core-source.sha256`
 for reviewed storage/recovery edits; this is not an assertion of unchanged code.
 
 See `docs/releases/MAC_ACCEPTANCE_UNRELEASED.md` for manual acceptance still required.

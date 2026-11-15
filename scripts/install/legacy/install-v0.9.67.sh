@@ -1,9 +1,9 @@
 #!/bin/bash
-# MemoWeaver v0.9.66 Build 99: native zoned unified toolbar build/install launcher.
+# MemoWeaver v0.9.67 Build 100: native zoned unified toolbar build/install launcher.
 # Safe verification: static/native smoke and full CLT build before optional install.
 # Preserves com.local.workos.notes and ~/Library/Application Support/WorkOS/.
 set -euo pipefail
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd -P)"
 cd "$ROOT"
 if [[ "$(uname -s)" != Darwin ]]; then
   printf '[MemoWeaver] macOS 14+ and Apple Command Line Tools required.\n' >&2
@@ -15,6 +15,7 @@ run_tests() {
   local test
   local test_directory="$ROOT/scripts/tests"
   local -a tests=(
+    test-update-check.sh
     test-third-party-licenses.sh
     test-v0.9.65-core.sh
     test-side-preview.sh
@@ -35,7 +36,7 @@ run_tests() {
 }
 case "${1:-}" in
   --help|-h)
-    printf 'Usage: ./install-v0.9.66.sh [--verify|--build-only]\n'
+    printf 'Usage: ./scripts/install/legacy/install-v0.9.67.sh [--verify|--build-only]\n'
     printf '  No options: compile and install MemoWeaver immediately.\n'
     printf '  --verify: run source/AppKit tests and FULL app build (does NOT install).\n  --build-only: compile app only, do NOT replace the installed app.\n'
     exit 0
@@ -62,7 +63,7 @@ on_error() {
   exit "$status"
 }
 trap on_error ERR
-printf '[MemoWeaver] Starting build and installation. Optional tests: ./install-v0.9.66.sh --verify\n'
+printf '[MemoWeaver] Starting build and installation. Optional tests: ./scripts/install/legacy/install-v0.9.67.sh --verify\n'
 # Install into the existing legacy application's parent directory when possible.
 # User Applications is preferred when both locations contain an existing app.
 if [[ -d "$HOME/Applications/MemoWeaver.app" || -d "$HOME/Applications/기억의 집.app" || -d "$HOME/Applications/WorkOS.app" ]]; then

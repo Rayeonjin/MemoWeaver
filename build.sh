@@ -111,9 +111,9 @@ fi
 cp "$ROOT/THIRD_PARTY_NOTICES.md" "$STAGED_APP/Contents/Resources/THIRD_PARTY_NOTICES.md"
 # Carry the project's actual license and attribution into every compiled app.
 # Source permissions and brand permissions remain separate documents.
-for legal_file in LICENSE NOTICE COPYRIGHT.md TRADEMARKS.md BRAND_ASSETS.md; do
+for legal_file in LICENSE NOTICE docs/legal/COPYRIGHT.md docs/legal/TRADEMARKS.md docs/legal/BRAND_ASSETS.md; do
   [[ -s "$ROOT/$legal_file" ]] || fail "Required legal notice missing: $legal_file"
-  cp "$ROOT/$legal_file" "$STAGED_APP/Contents/Resources/$legal_file"
+  cp "$ROOT/$legal_file" "$STAGED_APP/Contents/Resources/$(basename "$legal_file")"
 done
 # Ship original upstream legal texts and EPL source-availability notices.
 [[ -s "$ROOT/THIRD_PARTY_LICENSES/manifest.json" && -s "$ROOT/THIRD_PARTY_LICENSES/ALL_LICENSES.txt" ]] || fail "Third-party license inventory missing."

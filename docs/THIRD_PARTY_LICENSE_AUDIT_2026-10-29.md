@@ -124,7 +124,7 @@ Completed before the final application build:
   injection protection in non-executable JSON.
 - Public-source preflight: no excluded user data or credential patterns.
 
-Final verification: `./install-v0.9.64.sh --verify` PASSED all 13 suites, then
+Final verification: `./scripts/install/legacy/install-v0.9.64.sh --verify` PASSED all 13 suites, then
 compiled/linked the native arm64 macOS app and verified its local ad-hoc signature.
 `python3 tools/verify-third-party-licenses.py --app build/Release/MemoWeaver.app`
 PASSED exact comparison of every legal resource and both unchanged JS assets.
@@ -156,7 +156,7 @@ packaging/export change. No app installation or live database access occurs.
 - `./scripts/tests/test-third-party-licenses.sh`: offline integrity plus Swift export test.
 - `./tools/license-audit/reproduce.sh`: optional networked investigation-only
   rebuild; npm lifecycle scripts are disabled and installed assets are untouched.
-- `./install-v0.9.64.sh --verify`: all current QA suites and native app build.
+- `./scripts/install/legacy/install-v0.9.64.sh --verify`: all current QA suites and native app build.
 - `python3 tools/verify-third-party-licenses.py --app build/Release/MemoWeaver.app`:
   compare every packaged original legal file and retained runtime hash.
 

@@ -32,7 +32,7 @@ The seven current verification groups passed against the final source:
 - Offline preview, legal/export notices, ratio policy, notebooks/migration and
   AppKit clipboard tests.
 
-`./install-v0.9.66.sh --verify`: PASS end-to-end on the frozen final source,
+`./scripts/install/legacy/install-v0.9.66.sh --verify`: PASS end-to-end on the frozen final source,
 including the complete native arm64/macOS 14-target compile/link/ad-hoc sign.
 Strict code-signature verification, exact packaged legal-resource comparisons,
 source/app version equality (0.9.66 / 99), public-source preflight and its own

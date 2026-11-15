@@ -51,7 +51,7 @@ assert '.frame(height: 30, alignment: .center)' in header, 'toolbar row stays 30
 plist=plistlib.loads((w/'Info.plist').read_bytes())
 assert (plist['CFBundleShortVersionString'], plist['CFBundleVersion']) == ('0.9.64','97')
 assert plist['CFBundleIdentifier']=='com.local.workos.notes'
-for row in (r/'QA/review-stability-core-source.sha256').read_text().splitlines():
+for row in (r/'Tests/baselines/review-stability-core-source.sha256').read_text().splitlines():
     digest,name=row.split('  ',1)
     assert hashlib.sha256((r/name).read_bytes()).hexdigest()==digest, name+' changed'
 print('PASS v0.9.64: pointer-selectable slash popover contract, guard, dismissal and editor focus')

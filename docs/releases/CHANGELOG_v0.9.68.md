@@ -18,4 +18,4 @@ The memory map now emphasizes business context rather than similar wording.
 - Reuse review/restore, source revision checks and import/export formats. No
   database migration, editor replacement or renderer/library changes.
 
-Validation and limits: [evidence](../BUSINESS_MEMORY_MAP_2026-11-14.md).
+Validation and limits: [evidence](../reviews/BUSINESS_MEMORY_MAP_2026-11-14.md).

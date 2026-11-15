@@ -34,7 +34,7 @@ git pull --ff-only origin main
 git switch -c weekly/YYYY-MM-DD-topic
 ```
 
-앱 코드를 수정했다면 관련 테스트를 실행하세요. 현재 전체 테스트와 빌드 명령은 `./install-v0.9.69.sh --verify`입니다. 공개 전에는 `./tools/public-source-preflight.sh`를 실행합니다. 자세한 절차는 [개발 지침](WEEKLY_CODEX_PLAYBOOK.md)을 따릅니다.
+앱 코드를 수정했다면 관련 테스트를 실행하세요. 현재 전체 테스트와 빌드 명령은 `./install-v0.9.69.sh --verify`입니다. 공개 전에는 `./tools/public-source-preflight.sh`를 실행합니다. 자세한 절차는 [개발 지침](development/WEEKLY_CODEX_PLAYBOOK.md)을 따릅니다.
 
 강제 푸시나 이력 재작성은 하지 않습니다. 앱 결과물, 개인 메모, SQLite, 첨부 파일, 백업, 키·토큰은 업로드하지 않습니다. QA 태그는 테스트할 버전의 소스를 찾기 위한 표시입니다. 정식 안정 버전이라는 뜻은 아닙니다.
 

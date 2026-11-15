@@ -101,7 +101,7 @@ AI 기능은 Ollama와 모델을 따로 준비한 뒤 앱의 AI 설정에서 연
 
 v0.9.69에서 자동 검사 12개 묶음과 macOS 빌드를 통과했습니다. 별도 예시 데이터로 지도 확대, 이동, 드래그, 관계 선택, 원문 열기도 확인했습니다. 앱을 교체하기 전후로 확인한 데이터의 건수와 해시는 같았습니다.
 
-한글을 조합하는 도중의 동작, Ollama의 관계 판단 품질, 알림 수신, 실제 트랙패드 핀치 동작은 추가 테스트가 남아 있습니다. 아직 정식 안정 버전으로 표시하지 않은 이유입니다. [자세한 테스트 기록](docs/D3_MEMORY_MAP_2026-11-15.md) · [남은 확인 항목](docs/releases/MAC_ACCEPTANCE_v0.9.69.md)
+한글을 조합하는 도중의 동작, Ollama의 관계 판단 품질, 알림 수신, 실제 트랙패드 핀치 동작은 추가 테스트가 남아 있습니다. 아직 정식 안정 버전으로 표시하지 않은 이유입니다. [자세한 테스트 기록](docs/reviews/D3_MEMORY_MAP_2026-11-15.md) · [남은 확인 항목](docs/releases/MAC_ACCEPTANCE_v0.9.69.md)
 
 ## 개발 응원하기
 
@@ -119,9 +119,9 @@ Copyright (c) 2026 **Rayeonjin**.
 
 프로젝트 자체 코드는 [Apache License 2.0](LICENSE)을 따릅니다. 사용·수정·재배포 시 해당 라이선스와 저작권·고지 유지 조건을 준수해야 합니다. 외부 라이브러리에는 각자의 라이선스가 적용됩니다.
 
-[저작권 안내](COPYRIGHT.md) · [프로젝트 고지](NOTICE) · [외부 라이브러리 고지](THIRD_PARTY_NOTICES.md)
+[저작권 안내](docs/legal/COPYRIGHT.md) · [프로젝트 고지](NOTICE) · [외부 라이브러리 고지](THIRD_PARTY_NOTICES.md)
 
-MemoWeaver 이름과 로고의 사용 범위는 [이름 정책](TRADEMARKS.md)과 [브랜드 자산 정책](BRAND_ASSETS.md)을 참고하세요. 파생 앱을 공식 MemoWeaver로 오인하게 하는 브랜딩은 허용하지 않습니다.
+MemoWeaver 이름과 로고의 사용 범위는 [이름 정책](docs/legal/TRADEMARKS.md)과 [브랜드 자산 정책](docs/legal/BRAND_ASSETS.md)을 참고하세요. 파생 앱을 공식 MemoWeaver로 오인하게 하는 브랜딩은 허용하지 않습니다.
 
 ## 개발과 문의
 
@@ -129,10 +129,18 @@ MemoWeaver 이름과 로고의 사용 범위는 [이름 정책](TRADEMARKS.md)�
 
 | 위치 | 내용 |
 |---|---|
-| `WorkOSMac/` | macOS 앱 소스 |
-| `Tests/`, `scripts/tests/` | 회귀 검사와 실행 스크립트 |
-| `docs/` | 설치 안내, 검증 기록, 개발 문서 |
-| `docs/releases/` | 버전별 변경 이력과 확인 항목 |
+| `WorkOSMac/` | macOS 앱 소스와 앱에 포함되는 리소스 |
+| `Tests/` | 회귀 테스트 코드와 `baselines/`의 기준 해시 |
+| `scripts/` | 테스트·진단 도구, `install/legacy/`의 과거 설치 스크립트 |
+| `docs/` | 설치 안내와 문서 목록 |
+| `docs/development/` | 개발 절차, 인계, 배포 체크리스트 |
+| `docs/reviews/`, `docs/releases/` | 테스트·검토 기록과 버전별 변경 이력 |
+| `docs/legal/` | 저작권·이름·브랜드 안내 |
+| `docs/images/`, `docs/examples/` | 소개 이미지와 예시 메모 |
 | `Vendor/`, `THIRD_PARTY_LICENSES/` | 외부 리소스와 원문 라이선스 |
 
-개발 시 [작업 지침](AGENTS.md), [최신 인계](docs/LATEST_HANDOFF_SUMMARY.md), [검사 안내](scripts/README.md)를 먼저 확인하세요. 저장소에는 개인 메모·백업·모델 파일·서명 인증서를 포함하지 않습니다.
+최상위의 `install-v0.9.69.sh`, `build.sh`, `install.sh`, `backup-before-real-use.sh`는
+지금 사용하는 설치·빌드·백업 명령입니다. 과거 버전 설치 스크립트는
+`scripts/install/legacy/`에 모아 두었습니다. [폴더별 안내](docs/REPOSITORY_LAYOUT.md)
+
+개발 시 [작업 지침](AGENTS.md), [최신 인계](docs/development/LATEST_HANDOFF_SUMMARY.md), [검사 안내](scripts/README.md)를 먼저 확인하세요. 저장소에는 개인 메모·백업·모델 파일·서명 인증서를 포함하지 않습니다.

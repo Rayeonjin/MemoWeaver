@@ -12,7 +12,8 @@ with tempfile.TemporaryDirectory(prefix="mw-public-source-") as scratch:
     shutil.copyfile(source_script, script)
     resources = root / "WorkOSMac/Resources"
     resources.mkdir(parents=True)
-    for name in ("LICENSE", "NOTICE", "TRADEMARKS.md", "AGENTS.md"):
+    for name in ("LICENSE", "NOTICE", "docs/legal/TRADEMARKS.md", "AGENTS.md"):
+        (root / name).parent.mkdir(parents=True, exist_ok=True)
         (root / name).write_text("Synthetic test fixture\n")
     for name in ("official-diagrams.js", "katex-mathml.js"):
         (resources / name).write_text("fixture\n")

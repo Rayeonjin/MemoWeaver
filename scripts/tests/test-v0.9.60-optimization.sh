@@ -52,7 +52,7 @@ assert 'func virtualMemories() throws -> [VirtualMemory]' in store
 assert 'virtualMemories: virtualMemories' in read('MemoryModel.swift')
 assert 'virtualSourceTexts: texts' in read('RecallScreens.swift')
 # Reject unintended persistence / window / clipboard changes.
-manifest=(r/'QA/v0.9.60-core-source.sha256').read_text().splitlines()
+manifest=(r/'Tests/baselines/v0.9.60-core-source.sha256').read_text().splitlines()
 for row in manifest:
   digest,relative=row.split('  ',1)
   assert hashlib.sha256((r/relative).read_bytes()).hexdigest()==digest,relative+' was modified'

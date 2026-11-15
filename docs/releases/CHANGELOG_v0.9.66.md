@@ -15,7 +15,7 @@ No schema, identity, note-source or attachment-path migration.
   Old optional binding fields are retained without rewriting user source.
 
 Validation and remaining manual gates: `../WIKI_STABILITY_2026-11-08.md` and
-`MAC_ACCEPTANCE_v0.9.66.md`. Use `./install-v0.9.66.sh --verify` from the repository
+`MAC_ACCEPTANCE_v0.9.66.md`. Use `./scripts/install/legacy/install-v0.9.66.sh --verify` from the repository
 root. The functional script names from 0.9.65 remain reusable; old hash/version
 baseline checks are not rewritten.
 

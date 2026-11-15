@@ -2,7 +2,7 @@
 
 Only temporary notes/databases/preferences may be used for QA.
 Checked items below are automated/isolated native fixture checks, not a manual
-click-through sign-off. Actual execution results: [evidence](../BUSINESS_MEMORY_MAP_2026-11-14.md).
+click-through sign-off. Actual execution results: [evidence](../reviews/BUSINESS_MEMORY_MAP_2026-11-14.md).
 
 - [x] Identical wording/vectors alone never produces a map edge.
 - [x] A typed AI relation shows its direction, explanation and both exact quotes.

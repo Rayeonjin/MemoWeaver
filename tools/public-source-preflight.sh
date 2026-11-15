@@ -7,7 +7,7 @@ cd "$ROOT"
 FAILED=0
 REPORT="$(mktemp "${TMPDIR:-/tmp}/memoweaver-source-scan.XXXXXXXX")"
 trap 'rm -f -- "$REPORT"' EXIT
-if [[ ! -s LICENSE || ! -s NOTICE || ! -s TRADEMARKS.md || ! -s AGENTS.md ]]; then
+if [[ ! -s LICENSE || ! -s NOTICE || ! -s docs/legal/TRADEMARKS.md || ! -s AGENTS.md ]]; then
   echo 'FAIL: required source/attribution/brand documents are missing' >&2
   FAILED=1
 fi

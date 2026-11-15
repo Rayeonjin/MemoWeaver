@@ -7,8 +7,8 @@ candidate; v0.9.64 / Build 97 remains the historical baseline.
 
 ## On every new session
 
-1. Read `README.md`, `docs/LATEST_HANDOFF_SUMMARY.md`,
-   `docs/WEEKLY_CODEX_PLAYBOOK.md`, and `docs/KNOWN_RISKS_RELEASE_GATES.md`.
+1. Read `README.md`, `docs/development/LATEST_HANDOFF_SUMMARY.md`,
+   `docs/development/WEEKLY_CODEX_PLAYBOOK.md`, and `docs/development/KNOWN_RISKS_RELEASE_GATES.md`.
 2. Read the current source files relevant to the request before writing code.
 3. Check `git status --short`; preserve uncommitted work and existing notes.
 4. Plan one small weekly release: scope, safety boundary, evidence, and rollback.
@@ -56,7 +56,7 @@ backups, and explicit user approval. No silent destructive migrations.
 - Preserve project provenance in `NOTICE`, Apache 2.0 `LICENSE`, and separate
   library rights in `THIRD_PARTY_NOTICES.md`. Do not present MemoWeaver source
   license as covering upstream third-party assets.
-- Reserve product names and icon under `TRADEMARKS.md`/`BRAND_ASSETS.md`.
+- Reserve product names and icon under `docs/legal/TRADEMARKS.md`/`docs/legal/BRAND_ASSETS.md`.
   Factual attribution is allowed; confusing derivative branding is not.
 
 ## Mandatory validation before proposing a weekly update
