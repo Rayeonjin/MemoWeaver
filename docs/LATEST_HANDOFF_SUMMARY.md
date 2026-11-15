@@ -1,3 +1,13 @@
+## 한국어 공개 문서 정리 — 2026-11-15
+
+README를 Catoshi의 사용자 중심 구성에 맞춰 한국어로 정리했습니다.
+설치·업데이트·백업 안내는 [INSTALL.md](INSTALL.md)에 모았으며, 문서 색인과
+GitHub 안내 및 v0.9.69 변경 이력도 한국어로 갱신했습니다. 새 설치는
+`~/Applications`, 기존 공용 앱만 있으면 `/Applications`를 사용하는 현재
+스크립트 동작을 명시했습니다. 앱 코드·버전·설치 동작·라이선스는 변경하지
+않았습니다. 로컬 문서 링크와 공개 소스 검사, diff 공백 검사를 확인했습니다.
+과거 검증 기록과 외부 라이선스 원문은 보존합니다.
+
 ## Current update — v0.9.69 / Build 102 (2026-11-15)
 
 The memory map uses pinned local d3-force 3.0.0 for background coordinate

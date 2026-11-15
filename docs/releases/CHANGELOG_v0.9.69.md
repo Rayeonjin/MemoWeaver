@@ -1,23 +1,16 @@
-# v0.9.69 · Build 102 — 2026-11-15
+# v0.9.69 · 빌드 102 — 2026-11-15
 
-Memory-map exploration now supports local d3-force automatic layout, native zoom,
-panning and node dragging while preserving business relationships and evidence.
+기억지도에 d3-force 자동 배치와 확대·축소·이동·노드 드래그를 추가했습니다. 기존 업무 관계와 원문 근거는 유지합니다.
 
-- Bundle exact ISC d3-force 3.0.0 plus its three pinned dependencies offline.
-  Existing diagram assets are unchanged. Original notices are retained.
-- Compute bounded layout in JavaScriptCore on a background queue, passing only
-  node IDs, accepted edges and coordinates. No web view/network/AI/body transfer.
-- Mouse wheel or trackpad pinch zooms; precise trackpad scrolling and background
-  dragging pan. Buttons provide zoom, fit and layout reset. +/- and 0 work while
-  the map has keyboard focus. Zoom is anchored under the cursor.
-- Drag a node to hold its presentation position; layout reset releases those
-  positions. Pins/camera are transient UI state, never stored as business links.
-- Native accessible node/relation controls keep selection and evidence details
-  available. Directional AI relations show arrows. Zooming out reduces label noise.
-- Keep pending initial layout running on simple clicks; cancel/recompute only
-  for actual node dragging. Retain native accessibility elements while visible.
-- Reject stale layout responses after graph changes/removal. Keep the 110-node
-  display bound and all existing source/review/manual-link behavior.
+- 마우스 휠과 트랙패드 핀치로 확대·축소하고, 트랙패드 스크롤이나 빈 공간 드래그로 지도를 이동합니다. 확대는 커서 위치를 기준으로 합니다.
+- 확대·축소, 전체 맞춤, 배치 초기화 버튼을 제공합니다. 지도에 키보드 초점이 있을 때 `+`, `-`, `0`도 사용할 수 있습니다.
+- 노드를 드래그하면 해당 위치를 유지하며 주변 노드가 다시 배치됩니다. 배치 초기화로 풀 수 있습니다. 배치와 카메라 상태는 현재 화면에서만 유지됩니다.
+- 노드와 관계를 선택해 설명과 원문 근거를 확인합니다. 방향이 있는 AI 관계는 화살표로 표시합니다. 축소하면 라벨을 줄여 복잡함을 낮춥니다.
+- 단순 클릭으로 초기 배치 계산이 취소되지 않도록 했습니다. 실제 드래그에만 계산을 취소하고 다시 시작하며, 접근성 요소도 안정적으로 유지합니다.
+- 지도 변경 후 도착한 오래된 계산 결과는 무시합니다. 기존 110개 노드 표시 제한과 관계 검토·수동 연결 동작을 유지합니다.
+- ISC 라이선스의 d3-force 3.0.0과 고정 버전 의존성 3개를 앱에 포함했습니다. 기존 다이어그램 리소스와 외부 저작권 고지는 보존했습니다.
+- 배치는 JavaScriptCore의 별도 작업 큐에서 제한된 횟수만 계산합니다. 전달 정보는 노드 ID·기존 연결·좌표뿐이며 메모 본문을 전달하거나 네트워크를 사용하지 않습니다.
 
-Gate: `./install-v0.9.69.sh --verify`.
-Actual evidence/limits: [D3 map](../D3_MEMORY_MAP_2026-11-15.md).
+검사 명령: `./install-v0.9.69.sh --verify`
+
+실행한 검사와 남은 확인 사항은 [상세 검증 기록](../D3_MEMORY_MAP_2026-11-15.md)에 정리했습니다.
