@@ -92,6 +92,8 @@ cp "$SOURCE_DIR/Info.plist" "$STAGED_APP/Contents/Info.plist"
 # or package manager are needed at runtime.
 [[ -s "$SOURCE_DIR/Resources/katex-mathml.js" ]] || fail "KaTeX local renderer missing; extract the whole ZIP."
 cp "$SOURCE_DIR/Resources/katex-mathml.js" "$STAGED_APP/Contents/Resources/katex-mathml.js"
+[[ -s "$SOURCE_DIR/Resources/memory-force-layout.js" ]] || fail "Local d3-force runtime missing."
+cp "$SOURCE_DIR/Resources/memory-force-layout.js" "$STAGED_APP/Contents/Resources/memory-force-layout.js"
 # An optional, prebuilt, SINGLE-file official Mermaid + Markmap bundle.
 # Prepared once on a developer machine. Never downloaded by the app.
 OFFICIAL_JS="$SOURCE_DIR/Resources/official-diagrams.js"
@@ -161,7 +163,7 @@ if "$SWIFTC" \
     -module-cache-path "$BUILD_DIR/ModuleCache" \
     -framework AppKit -framework CoreText -framework SwiftUI -framework Combine \
     -framework UniformTypeIdentifiers -framework WebKit -framework PDFKit \
-    -framework UserNotifications -lsqlite3 \
+    -framework UserNotifications -framework JavaScriptCore -lsqlite3 \
     "${SOURCES[@]}" \
     -o "$STAGED_APP/Contents/MacOS/MemoWeaver" >"$LOG_FILE" 2>&1; then
   : # Success; AppKit/SwiftUI compilation and linking completed.

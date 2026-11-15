@@ -17,6 +17,9 @@ import SwiftUI
     }
     @MainActor static func main() throws {
         setbuf(stdout, nil)
+        if ProcessInfo.processInfo.environment["MEMOWEAVER_FORCE_PREVIEW"] == "1" {
+            try D3ForcePreview.run(); return
+        }
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("mw-native-release-" + UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
         let suite = "mw-native-" + UUID().uuidString

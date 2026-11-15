@@ -2,7 +2,7 @@
 
 You are maintaining a long-running, local-first macOS notes app, not building
 an IDE, task manager, or an AI-first chat app. **Start with the current sources,
-not old changelogs.** Current version is v0.9.68 / Build 101 (2026-11-14), a QA
+not old changelogs.** Current version is v0.9.69 / Build 102 (2026-11-15), a QA
 candidate; v0.9.64 / Build 97 remains the historical baseline.
 
 ## On every new session
@@ -61,7 +61,7 @@ backups, and explicit user approval. No silent destructive migrations.
 
 ## Mandatory validation before proposing a weekly update
 
-- On Mac, start with `./install-v0.9.68.sh --verify` for the baseline.
+- On Mac, start with `./install-v0.9.69.sh --verify` for the baseline.
   For later versions, update the versioned script, then run `--verify` first.
 - Run latest relevant regression suites including SQLite backups/notebooks,
   editing hot path, pane ratios, offline preview, clipboard and symbols.

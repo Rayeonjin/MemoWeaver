@@ -1,3 +1,11 @@
+# Current release gate — v0.9.69 / Build 102 (2026-11-15)
+
+D3 map implementation, exact package/license inventory and actual evidence:
+[D3 memory map](D3_MEMORY_MAP_2026-11-15.md). The existing 110-node bound remains.
+Physics positions do not imply similarity or prove business relationships.
+Use `./install-v0.9.69.sh --verify`. Earlier live Ollama/real IME acceptance
+limits remain; the new force engine is not an AI quality change.
+
 # Current release gate — v0.9.68 / Build 101 (2026-11-14)
 
 Business relationship map behavior and actual validation are recorded in

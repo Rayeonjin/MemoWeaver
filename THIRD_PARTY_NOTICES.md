@@ -240,3 +240,18 @@ preserved where npm supplied no standalone license file; no year is fabricated.
 - ELK Java source provenance follows the upstream elkjs 0.9.3 release declaration (ELK 0.9.1 plus PR 955), build.gradle and checksum-verified Maven sources. The original upstream GWT compilation is not independently reproduced.
 - FastDom and boolbase npm archives omit standalone license files; original SPDX declarations and authors are preserved with standard permission text, without inventing an upstream copyright year.
 - Inventory, original notice collection and source availability verification are engineering evidence, not a legal warranty or a native GUI acceptance sign-off.
+
+## Native memory-map force layout
+
+The separately bundled `memory-force-layout.js` uses the unmodified npm UMD
+distributions d3-force 3.0.0, d3-dispatch 3.0.1, d3-quadtree 3.0.1 and
+d3-timer 3.0.1, all under ISC. These exact versions and original licenses are
+already listed in the retained renderer inventory and ALL_LICENSES.txt. Their
+original LICENSE files remain under THIRD_PARTY_LICENSES/packages and ship in
+the app. This new use does not replace or rebuild the existing diagram bundle.
+
+Pinned download integrity, file hashes and reproducible concatenation are
+recorded in Vendor/force-layout/manifest.json. Vendor/force-layout/bridge.js and
+the timer host shim are MemoWeaver integration code; upstream distributions
+are retained without modification. Only node IDs, accepted edges and coordinates
+enter the local JavaScriptCore solver. No network or source-note body is used.

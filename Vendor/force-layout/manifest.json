@@ -1,0 +1,60 @@
+{
+  "asset": "WorkOSMac/Resources/memory-force-layout.js",
+  "sha256": "54059b0fc92471e0c25c6efc3cdbd213a5b0419ea8041fc5ec37e1fc47869d9e",
+  "bootstrap": "// Bounded synchronous JavaScriptCore host; no timer callbacks run.\nvar setTimeout = function(){return 1;}, clearTimeout = function(){}, setInterval = function(){return 1;}, clearInterval = function(){};\n",
+  "packages": [
+    {
+      "name": "d3-force",
+      "version": "3.0.0",
+      "license": "ISC",
+      "sourceURL": "https://registry.npmjs.org/d3-force/-/d3-force-3.0.0.tgz",
+      "integrity": "sha512-zxV/SsA+U4yte8051P4ECydjD/S+qeYtnaIyAs9tgHCqfguma/aAQDjo85A9Z6EKhBirHRJHXIgJUlffT4wdLg==",
+      "sha256": {
+        "d3-force.js": "8647156c97e06fb311ea187bb07b091f607397028a4ae0fea757fa11f821cda3",
+        "LICENSE": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee",
+        "package.json": "ca4e64d4d988c7e9e6cbb9c095a1f6ec76b7d246e175fa76b3af76341d45924b"
+      },
+      "licensePath": "THIRD_PARTY_LICENSES/packages/d3-force/3.0.0/LICENSE"
+    },
+    {
+      "name": "d3-dispatch",
+      "version": "3.0.1",
+      "license": "ISC",
+      "sourceURL": "https://registry.npmjs.org/d3-dispatch/-/d3-dispatch-3.0.1.tgz",
+      "integrity": "sha512-rzUyPU/S7rwUflMyLc1ETDeBj0NRuHKKAcvukozwhshr6g6c5d8zh4c2gQjY2bZ0dXeGLWc1PF174P2tVvKhfg==",
+      "sha256": {
+        "d3-dispatch.js": "99318f63080daa3b24546e3d34ab85c568048e82a4e0d1ed4840114fff3d42ab",
+        "LICENSE": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee",
+        "package.json": "6d9bb49819ec45e2187304df1b25e731c246d646cd2eb5aa2fe06e6c9cc7ad84"
+      },
+      "licensePath": "THIRD_PARTY_LICENSES/packages/d3-dispatch/3.0.1/LICENSE"
+    },
+    {
+      "name": "d3-quadtree",
+      "version": "3.0.1",
+      "license": "ISC",
+      "sourceURL": "https://registry.npmjs.org/d3-quadtree/-/d3-quadtree-3.0.1.tgz",
+      "integrity": "sha512-04xDrxQTDTCFwP5H6hRhsRcb9xxv2RzkcsygFzmkSIOJy3PeRJP7sNk3VRIbKXcog561P9oU0/rVH6vDROAgUw==",
+      "sha256": {
+        "d3-quadtree.js": "65724dac9a6fc8719a269fd9d4d0a558eb0076e9a35468d2cbabad575bf88b98",
+        "LICENSE": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee",
+        "package.json": "33a6359ba16b818144a5a99f598f791564995b4dc7a059eb4a22796c49861091"
+      },
+      "licensePath": "THIRD_PARTY_LICENSES/packages/d3-quadtree/3.0.1/LICENSE"
+    },
+    {
+      "name": "d3-timer",
+      "version": "3.0.1",
+      "license": "ISC",
+      "sourceURL": "https://registry.npmjs.org/d3-timer/-/d3-timer-3.0.1.tgz",
+      "integrity": "sha512-ndfJ/JxxMd3nw31uyKoY2naivF+r29V+Lc0svZxe1JvvIRmi8hUsrMvdOwgS1o6uBHmiz91geQ0ylPP0aj1VUA==",
+      "sha256": {
+        "d3-timer.js": "775a04a85c1bd07c8d008928635436cbcd1f1d5ffd84101551c3376b2bdc34be",
+        "LICENSE": "e008c5e25a6be382593089c29bfabbc553c6378eee02895aec46ce396cc404ee",
+        "package.json": "d2b6cb2200728b60982aa30c4caf787f0bda2c066ef9176282ab54ba656403cb"
+      },
+      "licensePath": "THIRD_PARTY_LICENSES/packages/d3-timer/3.0.1/LICENSE"
+    }
+  ],
+  "bridgeSHA256": "e11da9d324784c059de05f980c86101b94120178465eea13e2ded40c1435536f"
+}

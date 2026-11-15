@@ -23,3 +23,6 @@
 
 - [업무 관계 중심 기억지도 — 2026-11-14](BUSINESS_MEMORY_MAP_2026-11-14.md)
 - [v0.9.68 변경 사항](releases/CHANGELOG_v0.9.68.md)
+
+- [d3-force 기억지도 — 2026-11-15](D3_MEMORY_MAP_2026-11-15.md)
+- [v0.9.69 변경 사항](releases/CHANGELOG_v0.9.69.md)

@@ -57,8 +57,26 @@ for needle in ['Eclipse Public License', 'Cure53', 'Ralf S. Engelschall', 'Gaeta
 assert len(text) > 100_000
 for filename in ['LICENSE', 'NOTICE', 'COPYRIGHT.md']:
     assert (root / filename).read_text() in text, 'Standalone export missing current project notice: ' + filename
+# The native map reuses four already-audited ISC versions in a separate bundle.
+force = json.loads((root / 'Vendor/force-layout/manifest.json').read_text())
+assert digest(local_file(force['asset'])) == force['sha256'], 'Force runtime changed'
+assert digest(local_file('Vendor/force-layout/bridge.js')) == force['bridgeSHA256']
+force_parts = [force['bootstrap']]
+versions = {p['name']: p for p in manifest['packages']}
+for name in ['d3-dispatch', 'd3-quadtree', 'd3-timer', 'd3-force']:
+    row = next(p for p in force['packages'] if p['name'] == name)
+    audited = versions[name]
+    assert row['version'] == audited['version'] and row['integrity'] == audited['integrity']
+    assert row['license'] == 'ISC'
+    assert digest(local_file(row['licensePath'])) == row['sha256']['LICENSE']
+    for filename in [name + '.js', 'package.json']:
+        assert digest(local_file('Vendor/force-layout/' + name + '/' + filename)) == row['sha256'][filename]
+    force_parts.append(local_file('Vendor/force-layout/' + name + '/' + name + '.js').read_text())
+force_parts.append(local_file('Vendor/force-layout/bridge.js').read_text())
+assert '\n'.join(force_parts) == local_file(force['asset']).read_text(), 'Force runtime concatenation mismatch'
 if args.app:
     resources = args.app.resolve() / 'Contents/Resources'
+    assert digest(resources / 'memory-force-layout.js') == force['sha256']
     for source in legal.rglob('*'):
         if source.is_file():
             assert source.read_bytes() == (resources / 'Licenses' / source.relative_to(legal)).read_bytes(), str(source)

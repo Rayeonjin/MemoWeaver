@@ -1,6 +1,6 @@
 import SwiftUI
 
-// Memory map is deliberately a native SwiftUI canvas; no CDN or web view is required.
+// Native map controls and drawing; local d3-force only computes coordinates.
 struct MemoryMapScreen: View {
     @EnvironmentObject private var model: WorkOSModel
     @State private var selectedNodeID = ""
@@ -86,7 +86,7 @@ struct MemoryMapScreen: View {
                     Text("선택한 기록과 직접 연결된 최대 8개를 우선 표시합니다.")
                         .font(.caption).foregroundStyle(.secondary)
                 } else {
-                    Text("큰 지도는 가로·세로 스크롤로 탐색할 수 있습니다.")
+                    Text("빈 공간을 드래그해 이동하고 휠·핀치로 확대할 수 있습니다.")
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
@@ -168,136 +168,6 @@ struct MemoryMapScreen: View {
             model.regenerateMemoryGraph()
             selectedNodeID = effectiveSelectedID
         }
-    }
-}
-
-struct MemoryGraphCanvas: View {
-    let data: MemoryGraphData
-    let selectedID: String
-    let linkingFrom: String
-    let onSelect: (String) -> Void
-    var onSelectEdge: (String) -> Void = { _ in }
-
-    private let nodeWidth: CGFloat = 148
-    private let nodeHeight: CGFloat = 56
-
-    static func color(_ group: Int) -> Color {
-        let palette: [Color] = [.blue, .teal, .orange, .purple, .pink, .mint, .indigo, .brown]
-        return palette[abs(group) % palette.count]
-    }
-
-    private var layout: (size: CGSize, coordinates: [String: CGPoint]) {
-        if data.nodes.count <= 9 {
-            let size = CGSize(width: 860, height: 560)
-            guard let center = data.nodes.first else { return (size, [:]) }
-            var coordinates: [String: CGPoint] = [center.id: CGPoint(x: 430, y: 280)]
-            let neighbors = Array(data.nodes.dropFirst())
-            for (index, node) in neighbors.enumerated() {
-                let angle = (Double(index) / Double(max(1, neighbors.count))) * Double.pi * 2 - Double.pi / 2
-                let radius: CGFloat = 220
-                coordinates[node.id] = CGPoint(x: 430 + cos(angle) * radius,
-                                                y: 280 + sin(angle) * radius)
-            }
-            return (size, coordinates)
-        }
-        let grouped = Dictionary(grouping: data.nodes, by: \.cluster)
-        let clusters = grouped.keys.sorted { (grouped[$0]?.count ?? 0) > (grouped[$1]?.count ?? 0) }
-        let columns = max(2, min(4, Int(ceil(sqrt(Double(max(1, clusters.count)))))))
-        let cellsWide: CGFloat = 460
-        let cellsHigh: CGFloat = 340
-        let rows = max(1, Int(ceil(Double(clusters.count) / Double(columns))))
-        let resultSize = CGSize(width: max(1040, CGFloat(columns) * cellsWide),
-                                height: max(630, CGFloat(rows) * cellsHigh))
-        var points: [String: CGPoint] = [:]
-        for (groupIndex, key) in clusters.enumerated() {
-            let center = CGPoint(x: (CGFloat(groupIndex % columns) + 0.5) * cellsWide,
-                                 y: (CGFloat(groupIndex / columns) + 0.5) * cellsHigh)
-            let members = (grouped[key] ?? []).sorted { $0.title < $1.title }
-            if members.count == 1 { points[members[0].id] = center; continue }
-            // Multiple rings keep labels clickable even in a larger cluster.
-            let perRing = 9
-            for (offset, node) in members.enumerated() {
-                let ring = offset / perRing
-                let index = offset % perRing
-                let count = min(perRing, members.count - ring * perRing)
-                let angle = (Double(index) / Double(count)) * Double.pi * 2 - Double.pi / 2
-                let radius = CGFloat(115 + ring * 116)
-                points[node.id] = CGPoint(x: center.x + cos(angle) * radius,
-                                          y: center.y + sin(angle) * radius)
-            }
-        }
-        return (resultSize, points)
-    }
-
-    var body: some View {
-        let geometry = layout
-        ScrollView([.horizontal, .vertical]) {
-            ZStack(alignment: .topLeading) {
-                Canvas { context, _ in
-                    for edge in data.edges {
-                        guard let a = geometry.coordinates[edge.first],
-                              let b = geometry.coordinates[edge.second] else { continue }
-                        var path = Path()
-                        path.move(to: a)
-                        path.addLine(to: b)
-                        let hasInference = !edge.inferredType.isEmpty
-                        let style = StrokeStyle(lineWidth: edge.confirmed ? 2.6 : (hasInference ? 2.2 : 1.4),
-                                                lineCap: .round,
-                                                dash: edge.confirmed ? [] : (hasInference ? [3, 3] : [5, 5]))
-                        context.stroke(path, with: .color(edge.confirmed ? Color.accentColor :
-                            (hasInference ? Color.teal.opacity(0.95) : .secondary.opacity(0.57))), style: style)
-                    }
-                }
-                ForEach(data.edges) { edge in
-                    if let a = geometry.coordinates[edge.first], let b = geometry.coordinates[edge.second] {
-                        Button { onSelectEdge(edge.id) } label: {
-                            Text(edge.confirmed ? ReferencePanelCore.manualLabel(edge.manualKind) : edge.inferredType)
-                                .font(.caption2.weight(.medium))
-                                .padding(.horizontal, 6).padding(.vertical, 3)
-                                .background(.regularMaterial, in: Capsule())
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityIdentifier("memory.relation." + edge.id)
-                        .help("업무 관계와 원문 근거 확인")
-                        .position(x: (a.x + b.x) / 2, y: (a.y + b.y) / 2)
-                    }
-                }
-                ForEach(data.nodes) { node in
-                    let selected = node.id == selectedID
-                    Button { onSelect(node.id) } label: {
-                        VStack(spacing: 4) {
-                            Label(node.title, systemImage: node.kind == "archive" ? "archivebox" : "doc.text")
-                                .font(.system(size: 13, weight: .semibold))
-                                .lineLimit(2)
-                                .multilineTextAlignment(.center)
-                            Text(node.kind == "archive" ? "TXT 자료" : node.subtitle)
-                                .font(.system(size: 11))
-                                .foregroundStyle(.secondary)
-                                .lineLimit(1)
-                        }
-                        .frame(width: nodeWidth, height: nodeHeight)
-                        .background(RoundedRectangle(cornerRadius: 11)
-                            .fill(Self.color(node.cluster).opacity(selected ? 0.32 : 0.20)))
-                        .overlay(RoundedRectangle(cornerRadius: 11)
-                            .stroke(selected ? Color.accentColor : Self.color(node.cluster).opacity(0.60),
-                                    lineWidth: selected ? 2.5 : 1.2))
-                        .overlay(alignment: .topTrailing) {
-                            if node.id == linkingFrom {
-                                Image(systemName: "link.circle.fill")
-                                    .foregroundStyle(.blue)
-                                    .padding(3)
-                            }
-                        }
-                    }
-                    .buttonStyle(.plain)
-                    .position(geometry.coordinates[node.id] ?? .zero)
-                    .memoTooltip(node.title, when: node.title.count > 26)
-                }
-            }
-            .frame(width: geometry.size.width, height: geometry.size.height)
-        }
-        .background(Color(nsColor: .controlBackgroundColor).opacity(0.45))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 

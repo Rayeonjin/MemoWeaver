@@ -1,3 +1,17 @@
+## Current update — v0.9.69 / Build 102 (2026-11-15)
+
+The memory map uses pinned local d3-force 3.0.0 for background coordinate
+calculation and native AppKit drawing/gestures. Zoom, pan, node dragging, fit and
+reset are presentation-only. Existing business edges, review, both quotations
+and read-only source access are retained. No similarity edges, schema change,
+web view, runtime network or note-body transfer to JavaScript. Read
+[D3 map evidence](D3_MEMORY_MAP_2026-11-15.md). Gate:
+`./install-v0.9.69.sh --verify`: all twelve groups/full build passed, followed
+by final accessibility/click-during-layout native checks/build. Isolated UI zoom/pan/drag/edge/source
+inspection passed. Installed Build 102, checked controls/version and exact live
+store hashes/counts unchanged. Pins/camera are transient; physical pinch and prior
+live Ollama/real IME limits remain.
+
 ## Current update — v0.9.68 / Build 101 (2026-11-14)
 
 Memory map edges now represent source-checked AI business relationships or explicit

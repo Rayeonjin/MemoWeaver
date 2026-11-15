@@ -61,6 +61,7 @@ import SwiftUI
         host.appearance = NSAppearance(named:.aqua)
         window.setContentSize(NSSize(width:1400,height:1000))
         UsabilityNativeSmoke.pump()
+        D3ForceNativeChecks.run(host: host, model: model, window: window)
         print("PASS: native business map, dual evidence/read-only source, hide/restore, manual preservation, stale edit, light/dark at two widths; fixture relations without live inference")
         if let value = ProcessInfo.processInfo.environment["MEMOWEAVER_BUSINESS_MAP_HOLD_SECONDS"], let seconds = Double(value) {
             window.title = "MemoWeaver — business map isolated QA"
