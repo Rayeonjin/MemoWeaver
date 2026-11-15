@@ -4,7 +4,7 @@
 
 ## 처음 설치하기
 
-1. [v0.9.69 검증 후보 소스](https://github.com/Rayeonjin/MemoWeaver/archive/refs/tags/v0.9.69-qa.zip)를 내려받아 압축을 풉니다.
+1. [최신 소스 ZIP](https://github.com/Rayeonjin/MemoWeaver/archive/refs/heads/main.zip)를 내려받아 압축을 풉니다.
 2. 터미널에서 `xcode-select --install`로 Apple 개발 도구를 설치합니다. 이미 설치되어 있으면 다음 단계로 넘어갑니다.
 3. 터미널에 `cd `를 입력하고 소스 폴더를 끌어다 놓은 뒤 Enter를 누릅니다.
 4. 아래 명령을 실행합니다. 앱이 실행 중이면 먼저 정상 종료합니다.
@@ -28,16 +28,11 @@ chmod +x *.sh
 
 ## 응용 프로그램 폴더는 어디인가요?
 
-| 설치 전 상태 | 설치되는 위치 |
-|---|---|
-| 새로 설치 | `~/Applications/MemoWeaver.app` |
-| 사용자 응용 프로그램 폴더에 기존 앱이 있음 | `~/Applications/MemoWeaver.app` |
-| 공용 응용 프로그램 폴더에만 기존 앱이 있음 | `/Applications/MemoWeaver.app` |
-| 두 위치 모두 기존 앱이 있음 | 사용자 폴더 우선, 공용 폴더의 앱은 그대로 남음 |
+기본 설치 위치는 **`/Applications/MemoWeaver.app`**입니다. Finder 사이드바의 **응용 프로그램**에서 열 수 있습니다. 처음 설치할 때도, 기존 앱을 업데이트할 때도 같은 위치를 사용합니다.
 
-`~`는 현재 사용자의 홈 폴더입니다. Finder의 **이동 → 폴더로 이동…**에서 `~/Applications`를 입력하면 내 계정의 응용 프로그램 폴더가 열립니다. Finder 사이드바의 응용 프로그램은 보통 공용 `/Applications`입니다.
+예전에 `~/Applications`에 설치한 앱이 있어도 새 앱은 `/Applications`에 설치합니다. 사용자 폴더의 이전 앱은 자동으로 지우지 않습니다. 두 사본이 있다면 업데이트 후 `/Applications/MemoWeaver.app`을 실행하세요. 메모는 두 앱 모두 같은 사용자 데이터 폴더에서 읽습니다.
 
-예전 이름인 `기억의 집.app`, `WorkOS.app`이 있어도 기존 설치로 인식합니다. 두 폴더에 앱이 모두 있다면 어느 쪽을 실행하는지 확인해 주세요.
+2026-11-16 이전 태그·ZIP의 설치 스크립트는 예전 위치 선택 방식을 유지합니다. 새 기본 위치를 사용하려면 최신 소스를 받으세요.
 
 설치할 폴더를 직접 고르려면 다음 명령을 사용하세요.
 

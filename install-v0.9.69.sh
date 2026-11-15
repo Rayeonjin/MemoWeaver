@@ -41,7 +41,7 @@ run_tests() {
 case "${1:-}" in
   --help|-h)
     printf 'Usage: ./install-v0.9.69.sh [--verify|--build-only]\n'
-    printf '  No options: compile and install MemoWeaver immediately.\n'
+    printf '  No options: compile and install /Applications/MemoWeaver.app.\n'
     printf '  --verify: run source/AppKit tests and FULL app build (does NOT install).\n  --build-only: compile app only, do NOT replace the installed app.\n'
     exit 0
     ;;
@@ -68,16 +68,8 @@ on_error() {
 }
 trap on_error ERR
 printf '[MemoWeaver] Starting build and installation. Optional tests: ./install-v0.9.69.sh --verify\n'
-# Install into the existing legacy application's parent directory when possible.
-# User Applications is preferred when both locations contain an existing app.
-if [[ -d "$HOME/Applications/MemoWeaver.app" || -d "$HOME/Applications/기억의 집.app" || -d "$HOME/Applications/WorkOS.app" ]]; then
-  printf '[MemoWeaver] Selected: ~/Applications (existing user app).\n'
-  "$ROOT/install.sh" --user --yes --open
-elif [[ -d '/Applications/MemoWeaver.app' || -d '/Applications/기억의 집.app' || -d '/Applications/WorkOS.app' ]]; then
-  printf '[MemoWeaver] Selected: /Applications (existing system app).\n'
-  "$ROOT/install.sh" --yes --open
-else
-  printf '[MemoWeaver] Selected: ~/Applications (new install).\n'
-  "$ROOT/install.sh" --user --yes --open
-fi
+# Standard installation always targets Finder's shared Applications folder.
+# An existing per-user copy must not silently change the destination.
+printf '[MemoWeaver] Selected: /Applications (standard installation).\n'
+"$ROOT/install.sh" --yes --open
 printf '[MemoWeaver] Installation command completed.\n'

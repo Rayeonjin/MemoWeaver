@@ -47,9 +47,9 @@ Markdown 원문과 미리보기를 나란히 놓고 쓰는 Mac 메모 앱입니�
 
 ### 1. 소스 받기
 
-[현재 검증 후보 v0.9.69 소스 ZIP](https://github.com/Rayeonjin/MemoWeaver/archive/refs/tags/v0.9.69-qa.zip)을 내려받아 압축을 풉니다. GitHub 로그인은 필요하지 않습니다.
+[설치 스크립트가 반영된 최신 소스 ZIP](https://github.com/Rayeonjin/MemoWeaver/archive/refs/heads/main.zip)을 내려받아 압축을 풉니다. GitHub 로그인은 필요하지 않습니다.
 
-문서 수정 등을 포함한 [최신 개발 소스 ZIP](https://github.com/Rayeonjin/MemoWeaver/archive/refs/heads/main.zip)도 받을 수 있습니다. 위 버전 이후의 변경이 들어 있을 수 있습니다.
+[v0.9.69 당시 소스 ZIP](https://github.com/Rayeonjin/MemoWeaver/archive/refs/tags/v0.9.69-qa.zip)도 보관하고 있습니다. 이 과거 ZIP은 사용자 응용 프로그램 폴더에 설치하는 이전 방식을 사용합니다.
 
 ### 2. Apple 개발 도구 설치
 
@@ -70,9 +70,9 @@ chmod +x *.sh
 ./install-v0.9.69.sh
 ```
 
-빌드가 끝나면 앱을 설치하고 실행합니다. 새 설치 위치는 **`~/Applications/MemoWeaver.app`**, 즉 내 계정의 응용 프로그램 폴더입니다. 기존 앱이 공용 `/Applications`에만 있으면 그 위치에 업데이트합니다.
+빌드가 끝나면 **`/Applications/MemoWeaver.app`**에 설치하고 실행합니다. Finder의 **응용 프로그램**에서 찾을 수 있습니다. 기존 앱이 사용자 폴더에 있어도 기본 설치 위치는 같습니다. 폴더에 쓰기 권한이 없으면 관리자 암호를 물을 수 있습니다.
 
-Finder에서 **이동 → 폴더로 이동…**을 선택하고 `~/Applications`를 입력하면 새로 설치한 앱을 찾을 수 있습니다. 두 설치 위치의 차이와 검사만 실행하는 방법은 [설치 안내](docs/INSTALL.md)에 정리했습니다.
+설치 위치를 직접 고르거나 검사만 실행하려면 [설치 안내](docs/INSTALL.md)를 참고하세요.
 
 ## 처음 실행했다면
 

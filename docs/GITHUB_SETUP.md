@@ -14,7 +14,7 @@ cd MemoWeaver
 ./install-v0.9.69.sh --verify
 ```
 
-마지막 명령은 테스트와 빌드만 합니다. 설치하려면 앱을 정상 종료하고 `./install-v0.9.69.sh`를 실행하세요. 새 설치 위치는 `~/Applications/MemoWeaver.app`입니다.
+마지막 명령은 테스트와 빌드만 합니다. 설치하려면 앱을 정상 종료하고 `./install-v0.9.69.sh`를 실행하세요. 최신 소스의 기본 설치 위치는 `/Applications/MemoWeaver.app`입니다. 과거 태그 ZIP은 당시 설치 방식을 유지합니다.
 
 같은 폴더에서 최신 변경 사항을 받으려면 다음 명령을 실행하세요.
 

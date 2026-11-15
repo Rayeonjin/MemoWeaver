@@ -209,4 +209,4 @@ fi
 if [[ -n "$PREVIOUS" && -d "$PREVIOUS" ]]; then rm -rf -- "$PREVIOUS"; fi
 
 printf '\n[MemoWeaver] Build complete: %s\n' "$OUTPUT_APP"
-printf '[MemoWeaver] Install: ./install.sh --user\n'
+printf '[MemoWeaver] Install: ./install.sh\n'

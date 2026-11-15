@@ -16,8 +16,8 @@ usage() {
   cat <<'HELP'
 Usage: ./install.sh [--user] [--yes] [--open] [--install-only]
 
-  ./install.sh --user   Build and install ~/Applications/MemoWeaver.app
-  ./install.sh          Build and install /Applications/MemoWeaver.app
+  ./install.sh          Build and install /Applications/MemoWeaver.app (default)
+  ./install.sh --user   Explicitly install ~/Applications/MemoWeaver.app
   ./install.sh --yes    Allow replacement/renaming of an existing app
   ./install.sh --open   Open new app after installation
   ./install.sh --install-only  Install already compiled MemoWeaver.app
