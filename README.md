@@ -105,7 +105,9 @@ v0.9.69는 12개 검사 묶음과 전체 macOS 빌드를 통과했습니다. 격
 
 MemoWeaver가 기록을 정리하고 업무의 맥락을 찾는 데 도움이 되었다면, 작은 후원으로 개발을 응원해 주세요.
 
-**[☕ Buy Me a Coffee](https://buymeacoffee.com/rayeonjin) · [♥ Ko-fi](https://ko-fi.com/rayeonjin)**
+**[🧚 Fairy에서 개발 응원하기](https://fairy.hada.io/@catoshi)**
+
+다른 후원 경로: [☕ Buy Me a Coffee](https://buymeacoffee.com/rayeonjin) · [♥ Ko-fi](https://ko-fi.com/rayeonjin)
 
 후원은 자발적인 응원이며 앱 사용이나 기능 이용의 조건이 아닙니다. 후원 여부에 따라 기능·업데이트·지원 우선순위를 구분하지 않습니다.
 
