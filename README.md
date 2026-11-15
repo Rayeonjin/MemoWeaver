@@ -108,7 +108,7 @@ v0.9.70에서 자동 검사 12개 묶음과 macOS 빌드를 통과했습니다. 
 
 MemoWeaver를 잘 쓰고 계신다면 후원으로 개발을 응원해 주세요.
 
-**[🧚 Fairy에서 개발 응원하기](https://fairy.hada.io/@catoshi)**
+**[🧚 Fairy에서 Studio RAYEONJIN 응원하기](https://fairy.hada.io/@studio-rayeonjin)**
 
 다른 후원 경로: [☕ Buy Me a Coffee](https://buymeacoffee.com/rayeonjin) · [♥ Ko-fi](https://ko-fi.com/rayeonjin)
 
